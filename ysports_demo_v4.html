@@ -29,28 +29,25 @@
   --gray:#6b82a8;
 }
 body{
+  margin:0;
+  padding:0;
   font-family:'Outfit', sans-serif;
   background:#090b11;
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  padding:16px 8px 40px;
+  height:100vh;
   color:#fff;
+  overflow:hidden;
 }
 
-/* ── PHONE FRAME SIMULATOR ── */
-.app-frame{width:100%;max-width:390px;}
-.frame-label{text-align:center;color:var(--dim);font-size:10px;letter-spacing:2px;margin-bottom:8px;font-weight:600;}
-.phone{background:#12151f;border-radius:52px;padding:10px;border:2px solid #252d45;width:100%;box-shadow:0 25px 60px rgba(0,0,0,0.85);}
-.screen-wrap{background:var(--navy);border-radius:44px;overflow:hidden;height:780px;position:relative;display:flex;flex-direction:column;}
-.notch{height:28px;display:flex;align-items:center;justify-content:center;background:var(--navy);flex-shrink:0;}
-.notch-pill{width:90px;height:5px;background:#1e2d4a;border-radius:10px;}
-.statusbar{display:flex;justify-content:space-between;padding:2px 20px 5px;background:var(--navy);flex-shrink:0;}
-.statusbar span{color:var(--muted);font-size:10px;font-weight:500;}
+/*  REAL MOBILE LAYOUT  */
+.app-frame{width:100%; height:100vh;}
+.frame-label{display:none;}
+.phone{background:#12151f;border-radius:0;padding:0;border:none;width:100%;height:100%;box-shadow:none;}
+.screen-wrap{background:var(--navy);border-radius:0;overflow:hidden;height:100%;position:relative;display:flex;flex-direction:column;}
+.notch{display:none;}
+.statusbar{display:none;}
 
-/* ── SCREENS ROUTER ── */
-.screen{display:none;flex-direction:column;height:calc(780px - 56px - 28px - 17px);}
+/*  SCREENS ROUTER  */
+.screen{display:none;flex-direction:column;height:100%;}
 .screen.active{display:flex;}
 .scroll{flex:1;overflow-y:auto;scrollbar-width:none;padding-bottom:24px;}
 .scroll::-webkit-scrollbar{display:none;}
