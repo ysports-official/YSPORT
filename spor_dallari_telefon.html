@@ -1,0 +1,194 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Outfit',sans-serif;}
+.wrap{display:flex;justify-content:center;align-items:flex-start;padding:12px 0;background:transparent;}
+.phone{width:360px;background:#0d1117;border-radius:40px;overflow:hidden;border:2px solid #1e2d4a;box-shadow:0 30px 80px rgba(0,0,0,0.6);display:flex;flex-direction:column;height:720px;}
+.status-bar{background:#080d17;padding:10px 22px 6px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+.status-bar span{color:#6b82a8;font-size:10px;font-weight:500;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 8px;flex-shrink:0;}
+.back-btn{width:34px;height:34px;background:rgba(255,255,255,0.07);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:#fff;border:1px solid rgba(255,255,255,0.1);flex-shrink:0;}
+.topbar-title{color:#fff;font-size:16px;font-weight:700;letter-spacing:1px;}
+.total-badge{background:rgba(124,111,255,0.18);border:1px solid rgba(124,111,255,0.35);border-radius:20px;padding:4px 11px;color:#a78bfa;font-size:11px;font-weight:600;}
+.search-wrap{padding:0 14px 8px;flex-shrink:0;}
+.search-box{background:#161d2e;border:1px solid #1e2d4a;border-radius:12px;padding:10px 14px 10px 38px;color:#fff;font-size:13px;width:100%;outline:none;font-family:'Outfit',sans-serif;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' fill='%236b82a8' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.868-3.833zm-5.242 1.656a5 5 0 1 1 0-10 5 5 0 0 1 0 10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:11px center;}
+.search-box::placeholder{color:#4a6fa5;font-family:'Outfit',sans-serif;}
+.scroll{overflow-y:auto;flex:1;padding:0 14px 8px;scrollbar-width:none;}
+.scroll::-webkit-scrollbar{display:none;}
+.cat-section{margin-bottom:12px;}
+.cat-header{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;cursor:pointer;transition:all 0.15s;}
+.cat-icon{font-size:16px;width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cat-title{color:#fff;font-size:13px;font-weight:600;flex:1;}
+.cat-count{color:#6b82a8;font-size:10px;font-weight:500;}
+.cat-arrow{color:#4a6fa5;font-size:14px;transition:transform 0.2s;display:inline-block;}
+.cat-arrow.open{transform:rotate(90deg);}
+.sport-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:6px;}
+.sport-item{background:#161d2e;border-radius:12px;padding:10px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;border:1.5px solid #1e2d4a;transition:all 0.15s;}
+.sport-item:active{transform:scale(0.94);}
+.sport-item.sel{border-color:#7c6fff;background:rgba(124,111,255,0.13);}
+.sport-emoji{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.sport-name{color:#c8d8ff;font-size:9.5px;font-weight:500;text-align:center;line-height:1.3;}
+.sport-item.sel .sport-name{color:#c4b5fd;}
+.no-result{color:#6b82a8;font-size:13px;text-align:center;padding:30px 0;}
+.bottom-bar{background:#111827;border-top:1px solid #1e2d4a;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.sel-info{color:#8ba8d4;font-size:11px;}
+.sel-info b{color:#a78bfa;font-weight:700;}
+.apply-btn{background:linear-gradient(135deg,#4a3fff,#8b2fff);border:none;border-radius:10px;padding:9px 18px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;}
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%) translateY(60px);background:rgba(74,63,255,0.95);color:#fff;font-size:11px;padding:7px 16px;border-radius:20px;transition:transform 0.2s;z-index:999;pointer-events:none;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+.ci-bireysel{background:linear-gradient(135deg,#1a4fff,#4060ff);}
+.ci-takim{background:linear-gradient(135deg,#059669,#10b981);}
+.ci-motor{background:linear-gradient(135deg,#dc2626,#ef4444);}
+.ci-kis{background:linear-gradient(135deg,#0891b2,#06b6d4);}
+.ci-su{background:linear-gradient(135deg,#0369a1,#3b82f6);}
+.ci-geleneksel{background:linear-gradient(135deg,#b45309,#f59e0b);}
+.ci-engelli{background:linear-gradient(135deg,#7c3aed,#a855f7);}
+.ci-diger{background:linear-gradient(135deg,#db2777,#ec4899);}
+.ci-wushu{background:linear-gradient(135deg,#be123c,#f43f5e);}
+
+.ch-bireysel{background:rgba(26,79,255,0.10);border:1px solid rgba(26,79,255,0.22);}
+.ch-takim{background:rgba(5,150,105,0.10);border:1px solid rgba(5,150,105,0.22);}
+.ch-motor{background:rgba(220,38,38,0.10);border:1px solid rgba(220,38,38,0.22);}
+.ch-kis{background:rgba(8,145,178,0.10);border:1px solid rgba(8,145,178,0.22);}
+.ch-su{background:rgba(3,105,161,0.10);border:1px solid rgba(3,105,161,0.22);}
+.ch-geleneksel{background:rgba(180,83,9,0.10);border:1px solid rgba(180,83,9,0.22);}
+.ch-engelli{background:rgba(124,58,237,0.10);border:1px solid rgba(124,58,237,0.22);}
+.ch-diger{background:rgba(219,39,119,0.10);border:1px solid rgba(219,39,119,0.22);}
+.ch-wushu{background:rgba(190,18,60,0.10);border:1px solid rgba(190,18,60,0.22);}
+</style>
+
+<div class="wrap">
+<div class="phone">
+  <div class="status-bar"><span>9:41</span><span>▲▲▲ WiFi 🔋</span></div>
+  <div class="topbar">
+    <div class="back-btn">‹</div>
+    <span class="topbar-title">SPOR DALLARI</span>
+    <span class="total-badge" id="totalBadge">63 Dal</span>
+  </div>
+  <div class="search-wrap">
+    <input class="search-box" id="searchBox" placeholder="Spor dalı ara..." oninput="filterSports(this.value)">
+  </div>
+  <div class="scroll" id="mainScroll">
+    <div id="catContainer"></div>
+    <div class="no-result" id="noResult" style="display:none;">Sonuç bulunamadı 🔍</div>
+  </div>
+  <div class="bottom-bar">
+    <div class="sel-info">Seçili: <b id="selCount">0</b> dal</div>
+    <button class="apply-btn" onclick="applyFilter()">Uygula ›</button>
+  </div>
+</div>
+</div>
+<div class="toast" id="toastEl"></div>
+
+<script>
+const CATS = [
+  { id:'bireysel', icon:'🏅', label:'Bireysel Sporlar', cls:'bireysel', sports:[
+    {e:'🏹',n:'Okçuluk'},{e:'🧭',n:'Oryantiring'},{e:'🏃',n:'Atletizm'},
+    {e:'🏸',n:'Badminton'},{e:'🥊',n:'Boks'},{e:'🤸',n:'Cimnastik'},
+    {e:'⚔️',n:'Eskrim Sporları'},{e:'⛳',n:'Golf'},{e:'🤼',n:'Güreş'},
+    {e:'🏋️',n:'Halter'},{e:'🥋',n:'Judo'},{e:'🥋',n:'Karate'},
+    {e:'🦵',n:'Kick Boks'},{e:'🧘',n:'Muay Thai'},{e:'🏓',n:'Masa Tenisi'},
+    {e:'🎾',n:'Tenis'},{e:'🏊',n:'Triatlon'},{e:'💪',n:'Vücut Geliştirme'},
+    {e:'🎯',n:'Modern Pentatlon'},{e:'🔫',n:'Atıcılık'},{e:'🧗',n:'Dağcılık'},
+  ]},
+  { id:'takim', icon:'👥', label:'Takım Sporları', cls:'takim', sports:[
+    {e:'🏀',n:'Basketbol'},{e:'🏐',n:'Voleybol'},{e:'🤾',n:'Hentbol'},
+    {e:'🏉',n:'Ragbi'},{e:'🤽',n:'Sutopu'},{e:'🏑',n:'Hokey'},
+    {e:'🏒',n:'Buz Hokeyi'},
+  ]},
+  { id:'su', icon:'🌊', label:'Su & Deniz Sporları', cls:'su', sports:[
+    {e:'🏊',n:'Yüzme'},{e:'🤿',n:'Sualtı Sporları'},
+    {e:'🚣',n:'Kürek'},{e:'🛶',n:'Kano'},{e:'⛵',n:'Yelken'},
+  ]},
+  { id:'motor', icon:'🚗', label:'Motor Sporları', cls:'motor', sports:[
+    {e:'🏎️',n:'Otomobil Sporları'},{e:'🏍️',n:'Motorsiklet'},
+  ]},
+  { id:'kis', icon:'❄️', label:'Kış & Buz Sporları', cls:'kis', sports:[
+    {e:'⛷️',n:'Kayak'},{e:'⛸️',n:'Buz Pateni'},{e:'🥌',n:'Curling'},
+  ]},
+  { id:'geleneksel', icon:'🏹', label:'Geleneksel Sporlar', cls:'geleneksel', sports:[
+    {e:'🏹',n:'Geleneksel Türk Okçuluğu'},{e:'🐎',n:'Geleneksel Atlı Spor'},
+    {e:'🤼',n:'Geleneksel Güreş'},{e:'💃',n:'Halk Oyunları'},
+    {e:'🎽',n:'Geleneksel Spor Dalları'},
+  ]},
+  { id:'wushu', icon:'🥋', label:'Dövüş & Savaş Sanatları', cls:'wushu', sports:[
+    {e:'🥋',n:'Taekwondo'},{e:'🥋',n:'Wushu Kungfu'},
+  ]},
+  { id:'engelli', icon:'♿', label:'Engelli & Özel Sporlar', cls:'engelli', sports:[
+    {e:'♿',n:'Bedensel Engelliler'},{e:'👁️',n:'Görme Engelliler'},
+    {e:'👂',n:'İşitme Engelliler'},{e:'⭐',n:'Özel Sporcular'},
+  ]},
+  { id:'diger', icon:'🎯', label:'Diğer & Gelişen Sporlar', cls:'diger', sports:[
+    {e:'🎮',n:'E-Spor'},{e:'🛹',n:'Kaykay'},{e:'🪂',n:'Hava Sporları'},
+    {e:'🧭',n:'İzcilik'},{e:'💃',n:'Dans Sporları'},{e:'🎳',n:'Bocce Bowling Dart'},
+    {e:'🎱',n:'Bilardo'},{e:'🏇',n:'Binicilik'},{e:'🚴',n:'Bisiklet'},
+    {e:'♟️',n:'Satranç'},{e:'🎓',n:'Üniversite Sporları'},{e:'🤝',n:'Herkes İçin Spor'},
+    {e:'🃏',n:'Briç'},{e:'🏊',n:'Gelişmekte Olan Branşlar'},
+  ]},
+];
+
+let openCats = new Set(['bireysel']);
+let selected = new Set();
+let searchQ = '';
+
+function render(){
+  const container = document.getElementById('catContainer');
+  const q = searchQ.toLowerCase();
+  let totalVisible = 0;
+  let html = '';
+  CATS.forEach(cat => {
+    const filtered = q ? cat.sports.filter(s=>s.n.toLowerCase().includes(q)) : cat.sports;
+    if(!filtered.length) return;
+    totalVisible += filtered.length;
+    const isOpen = openCats.has(cat.id) || q.length > 0;
+    html += `<div class="cat-section">
+      <div class="cat-header ch-${cat.cls}" onclick="toggleCat('${cat.id}')">
+        <div class="cat-icon ci-${cat.cls}">${cat.icon}</div>
+        <span class="cat-title">${cat.label}</span>
+        <span class="cat-count">${filtered.length}</span>
+        <span class="cat-arrow${isOpen?' open':''}">›</span>
+      </div>`;
+    if(isOpen){
+      html += `<div class="sport-grid">`;
+      filtered.forEach(sp => {
+        const key = cat.id+'_'+sp.n;
+        const isSel = selected.has(key);
+        html += `<div class="sport-item${isSel?' sel':''}" onclick="toggleSport('${key}','${sp.n}')">
+          <div class="sport-emoji ci-${cat.cls}">${sp.e}</div>
+          <span class="sport-name">${sp.n}</span>
+        </div>`;
+      });
+      html += `</div>`;
+    }
+    html += `</div>`;
+  });
+  container.innerHTML = html;
+  document.getElementById('noResult').style.display = (totalVisible===0 && q) ? 'block':'none';
+  document.getElementById('selCount').textContent = selected.size;
+  document.getElementById('totalBadge').textContent = totalVisible + ' Dal';
+}
+
+function toggleCat(id){
+  openCats.has(id) ? openCats.delete(id) : openCats.add(id);
+  render();
+}
+function toggleSport(key, name){
+  selected.has(key) ? (selected.delete(key), toast(name+' kaldırıldı')) : (selected.add(key), toast('✓ '+name+' seçildi'));
+  render();
+}
+function filterSports(q){ searchQ=q; render(); }
+function applyFilter(){
+  if(!selected.size){ toast('Lütfen en az bir dal seçin'); return; }
+  toast('✓ '+selected.size+' spor dalı uygulandı!');
+}
+let toastTimer;
+function toast(msg){
+  const el=document.getElementById('toastEl');
+  el.textContent=msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),2000);
+}
+render();
+</script>

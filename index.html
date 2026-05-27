@@ -1,0 +1,1730 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Y SPORTS — Akıllı Şehir Sporcu Ekosistemi</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+/* CSS RESET & MODERN DESIGN SYSTEM */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;overflow:hidden;background:#05070c;font-family:'Outfit',sans-serif;color:#fff;}
+:root{
+  --bg:#05070c;
+  --panel:#0b1120;
+  --card:rgba(15, 23, 42, 0.6);
+  --border:rgba(255, 255, 255, 0.08);
+  --border-glow:rgba(99, 57, 255, 0.35);
+  --blue:#1a4fff;
+  --pur:#6339ff;
+  --pur-light:#a78bff;
+  --gold:#f5a623;
+  --gold-glow:#ffd700;
+  --grn:#00c88c;
+  --red:#ef4444;
+  --cyan:#06b6d4;
+  --mu:#8ba8d4;
+  --dim:#4a6fa5;
+  --gr:#6b82a8;
+}
+
+#app{display:flex;width:100%;height:100%;background:radial-gradient(circle at top right, rgba(99, 57, 255, 0.12), transparent), radial-gradient(circle at bottom left, rgba(6, 182, 212, 0.08), transparent);}
+
+/* DESKTOP SIDEBAR */
+#sidebar{
+  width:260px;
+  background:rgba(7, 10, 20, 0.95);
+  border-right:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  flex-shrink:0;
+  z-index:900;
+  backdrop-filter:blur(20px);
+}
+.sb-logo{
+  padding:24px 20px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.sb-logo-icon{
+  width:40px;
+  height:40px;
+  background:linear-gradient(135deg, var(--blue), var(--pur));
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  box-shadow:0 0 15px rgba(99, 57, 255, 0.4);
+}
+.sb-logo-title h2{font-size:18px;font-weight:900;letter-spacing:1px;color:#fff;background:linear-gradient(to right, #fff, #a78bff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.sb-logo-title p{font-size:9.5px;color:var(--gold);font-weight:700;letter-spacing:1px;margin-top:1px;}
+
+.sb-role-select{
+  padding:16px 20px;
+  border-bottom:1px solid var(--border);
+}
+.sb-role-select label{font-size:10px;font-weight:700;color:var(--gr);letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:8px;}
+.sb-role-dropdown{
+  width:100%;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:10px 12px;
+  color:#fff;
+  font-size:12px;
+  font-weight:600;
+  outline:none;
+  cursor:pointer;
+  font-family:inherit;
+}
+.sb-role-dropdown option{background:#070a14;color:#fff;}
+
+.sb-menu{flex:1;overflow-y:auto;padding:16px 12px;}
+.sb-grp-lbl{font-size:9.5px;font-weight:800;color:var(--dim);letter-spacing:1.5px;text-transform:uppercase;padding:12px 10px 6px;}
+.sb-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px 12px;
+  border-radius:10px;
+  color:var(--mu);
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.15s;
+  margin-bottom:2px;
+}
+.sb-item:hover{background:rgba(255,255,255,0.03);color:#fff;}
+.sb-item.active{
+  background:rgba(99, 57, 255, 0.12);
+  border:1px solid rgba(99, 57, 255, 0.25);
+  color:#fff;
+  box-shadow:inset 0 0 10px rgba(99, 57, 255, 0.1);
+}
+.sb-item-ic{font-size:16px;}
+
+.sb-profile-btn{
+  padding:16px;
+  border-top:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  cursor:pointer;
+}
+.sb-profile-btn:hover{background:rgba(255,255,255,0.02);}
+.sb-profile-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg, var(--blue), var(--pur));display:flex;align-items:center;justify-content:center;font-size:18px;}
+.sb-profile-info h4{font-size:12px;font-weight:700;}
+.sb-profile-info p{font-size:10px;color:var(--gr);}
+
+/* MAIN VIEWPORT */
+#viewport{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;}
+
+/* TOPBAR */
+#topbar{
+  height:70px;
+  border-bottom:1px solid var(--border);
+  background:rgba(11, 17, 32, 0.4);
+  backdrop-filter:blur(20px);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 24px;
+  flex-shrink:0;
+  z-index:800;
+}
+.tb-left{display:flex;align-items:center;gap:12px;}
+.tb-title{font-size:16px;font-weight:700;}
+.tb-right{display:flex;align-items:center;gap:14px;}
+.tb-location{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:6px 14px;
+  font-size:11.5px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.15s;
+}
+.tb-location:hover{border-color:rgba(255,255,255,0.15);}
+.tb-notif{
+  width:36px;
+  height:36px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--border);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  font-size:16px;
+  position:relative;
+}
+.tb-notif-dot{width:8px;height:8px;border-radius:50%;background:var(--red);position:absolute;top:2px;right:2px;}
+
+/* TICKER BAND */
+.ticker-band{
+  height:34px;
+  background:rgba(99, 57, 255, 0.05);
+  border-bottom:1px solid var(--border);
+  overflow:hidden;
+  white-space:nowrap;
+  display:flex;
+  align-items:center;
+  flex-shrink:0;
+}
+.ticker-inner{
+  display:inline-block;
+  animation:tickerScroll 25s linear infinite;
+  padding-left:100%;
+}
+@keyframes tickerScroll{
+  0%{transform:translateX(0);}
+  100%{transform:translateX(-100%);}
+}
+.tick-item{display:inline-flex;align-items:center;gap:6px;margin-right:30px;font-size:11.5px;font-weight:700;}
+.tick-up{color:var(--grn);}
+.tick-dn{color:var(--red);}
+
+/* SCREENS SHELL */
+#screens{flex:1;overflow:hidden;position:relative;}
+.sc{
+  display:none;
+  flex-direction:column;
+  height:100%;
+  position:absolute;
+  inset:0;
+  overflow-y:auto;
+  padding:24px;
+  scrollbar-width:none;
+}
+.sc.on{display:flex;}
+.sc::-webkit-scrollbar{display:none;}
+
+/* MOBILE NAVIGATION BAR */
+#mob-nav{display:none;background:#070a14;border-top:1px solid var(--border);height:60px;flex-shrink:0;z-index:900;justify-content:space-around;align-items:center;}
+.mob-bn{background:none;border:none;color:var(--dim);display:flex;flex-direction:column;align-items:center;gap:3px;font-family:inherit;cursor:pointer;}
+.mob-bn.on{color:var(--pur-light);filter:drop-shadow(0 0 4px rgba(124,111,255,.8));}
+.mob-bn-ic{font-size:18px;}
+.mob-bn-lbl{font-size:9.5px;font-weight:600;}
+
+/* GLOBAL PREMIUM GRID LAYOUTS */
+.dashboard-grid{
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:20px;
+}
+.col-stacked{display:flex;flex-direction:column;gap:20px;}
+
+/* GLASSMORPHISM CARDS */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:20px;
+  backdrop-filter:blur(12px);
+  position:relative;
+  overflow:hidden;
+}
+.card.glow{border-color:var(--border-glow);box-shadow:0 0 20px rgba(99, 57, 255, 0.08);}
+.card-h2{font-size:14px;font-weight:800;color:var(--mu);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.card-h2::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* VALUATION HERO CARD */
+.val-hero{
+  background:linear-gradient(135deg, rgba(99,57,255,0.18), rgba(6,182,212,0.06));
+  border:1px solid var(--border-glow);
+  border-radius:20px;
+  padding:24px;
+  text-align:center;
+  box-shadow:0 10px 30px rgba(99, 57, 255, 0.15);
+}
+.val-hero-lbl{font-size:10px;font-weight:800;color:var(--pur-light);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.val-hero-num{font-family:'Bebas Neue';font-size:56px;color:#fff;letter-spacing:2px;line-height:1;margin-bottom:4px;text-shadow:0 0 20px rgba(255,255,255,0.15);}
+.val-hero-sub{font-size:13px;color:var(--grn);font-weight:700;}
+
+/* BUTTONS */
+.btn{
+  border:none;
+  border-radius:12px;
+  padding:12px 18px;
+  font-size:13px;
+  font-weight:700;
+  font-family:inherit;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  transition:all 0.15s;
+}
+.btn:active{transform:scale(0.97);}
+.btn-primary{background:linear-gradient(135deg, var(--blue), var(--pur));color:#fff;box-shadow:0 0 15px rgba(99, 57, 255, 0.3);}
+.btn-primary:hover{opacity:0.9;}
+.btn-success{background:linear-gradient(135deg, #059669, var(--grn));color:#fff;}
+.btn-gold{background:linear-gradient(135deg, var(--gold), #f59e0b);color:#1a1000;}
+.btn-sec{background:rgba(255,255,255,0.05);border:1px solid var(--border);color:#fff;}
+.btn-sec:hover{background:rgba(255,255,255,0.08);}
+
+/* INPUTS */
+.inp{
+  width:100%;
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:12px 14px;
+  color:#fff;
+  font-size:13px;
+  font-family:inherit;
+  outline:none;
+  transition:all 0.15s;
+}
+.inp:focus{border-color:var(--blue);box-shadow:0 0 10px rgba(26, 79, 255, 0.25);}
+select.inp{-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%236b82a8' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
+select.inp option{background:#0b1120;color:#fff;}
+
+/* VIDEO COMMITMENT TRACKER (CIRCULAR) */
+.commitment-container{display:flex;align-items:center;gap:20px;background:rgba(99, 57, 255, 0.05);border:1px solid var(--border-glow);border-radius:16px;padding:16px;}
+.circle-svg{width:80px;height:80px;transform:rotate(-90deg);flex-shrink:0;}
+.circle-bg{fill:none;stroke:rgba(255,255,255,0.05);stroke-width:8;}
+.circle-fill{fill:none;stroke:url(#gr-pur-grn);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 0.6s ease;}
+.comm-info{flex:1;}
+.comm-title{font-size:14px;font-weight:700;margin-bottom:2px;}
+.comm-sub{font-size:11.5px;color:var(--mu);line-height:1.5;}
+
+/* ATHLETE CARDS (BORSA) */
+.athlete-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:12px 14px;
+  cursor:pointer;
+  transition:all 0.15s;
+  margin-bottom:8px;
+}
+.athlete-item:hover{border-color:var(--border-glow);background:rgba(255,255,255,0.04);}
+.athlete-item-av{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  font-size:13px;
+  border:2.5px solid;
+  flex-shrink:0;
+}
+.athlete-item-info{flex:1;min-width:0;}
+.athlete-item-name{font-size:13.5px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.athlete-item-meta{font-size:10.5px;color:var(--gr);margin-top:2px;}
+.athlete-item-badge{display:inline-block;background:rgba(255,255,255,0.06);padding:2px 8px;border-radius:100px;font-size:9.5px;color:var(--mu);margin-top:4px;}
+.athlete-item-right{text-align:right;flex-shrink:0;}
+.athlete-item-price{font-family:'Bebas Neue';font-size:20px;letter-spacing:.5px;line-height:1;color:var(--pur-light);}
+.athlete-item-change{font-size:10.5px;font-weight:700;margin-top:2px;}
+.athlete-item-sgs{font-size:9.5px;color:var(--gr);margin-top:1px;}
+
+/* SPARKLINE CHART */
+.spark{display:flex;align-items:flex-end;gap:2px;height:24px;width:80px;flex-shrink:0;}
+.spark-bar{flex:1;border-radius:2px 2px 0 0;min-height:2px;}
+
+/* ORDER BOOK SHEET (CANLI AL/SAT) */
+.ob-table{width:100%;margin-top:8px;}
+.ob-row{display:flex;justify-content:space-between;padding:4px 0;font-size:11.5px;position:relative;}
+.ob-fill{position:absolute;top:0;bottom:0;left:0;opacity:0.12;border-radius:3px;z-index:1;}
+.ob-price{font-family:'Bebas Neue';font-size:13.5px;z-index:2;}
+.ob-qty{color:var(--t2);z-index:2;}
+
+/* VALUATION SLIDER ROW */
+.slider-row{margin-bottom:14px;}
+.slider-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.slider-lbl{font-size:12px;font-weight:600;color:var(--mu);}
+.slider-val{font-family:'Bebas Neue';font-size:18px;}
+input[type=range]{width:100%;height:5px;border-radius:3px;outline:none;-webkit-appearance:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;border:2px solid var(--bg);cursor:pointer;}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;border:2px solid var(--bg);cursor:pointer;}
+
+/* SEGMENTS */
+.seg-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--border);transition:all 0.15s;}
+.seg-dot{width:10px;height:10px;border-radius:50%;}
+.seg-info{flex:1;}
+.seg-title{font-size:12.5px;font-weight:700;}
+.seg-range{font-size:10.5px;color:var(--gr);margin-top:2px;}
+.seg-badge{font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:20px;}
+
+/* VIDEO COMPONENT (MEDIA / NETFLIX) */
+.media-card{background:var(--s);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:12px;cursor:pointer;position:relative;}
+.media-thumb{height:150px;background:linear-gradient(135deg, #101625, #080b13);display:flex;align-items:center;justify-content:center;font-size:42px;position:relative;}
+.media-badge{position:absolute;top:10px;left:10px;background:rgba(0,200,140,0.85);font-size:9px;font-weight:800;padding:3px 8px;border-radius:6px;}
+.media-duration{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.75);font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;}
+.media-body{padding:12px;}
+.media-title{font-size:13px;font-weight:700;color:#fff;}
+.media-meta{display:flex;gap:8px;font-size:10px;color:var(--gr);margin-top:4px;}
+
+/* MUNICIPALITY digital facilities */
+.facility-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.facility-card{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:14px;padding:12px;}
+.fac-top{display:flex;justify-content:space-between;align-items:flex-start;}
+.fac-title{font-size:13px;font-weight:700;}
+.fac-badge{font-size:9.5px;font-weight:600;padding:2px 6px;border-radius:6px;}
+.fac-progress{height:4px;background:rgba(255,255,255,0.05);border-radius:2px;margin:8px 0 4px;overflow:hidden;}
+.fac-fill{height:100%;border-radius:2px;}
+.fac-meta{font-size:10px;color:var(--gr);}
+
+/* AI VIDEO SCAN PROGRESS WIDGET */
+#ai-scan-widget{display:none;background:rgba(99, 57, 255, 0.08);border:1px solid var(--border-glow);border-radius:16px;padding:16px;margin-bottom:14px;animation:slideUp 0.3s ease;}
+@keyframes slideUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.scan-bar{height:6px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;margin:10px 0;}
+.scan-fill{height:100%;background:linear-gradient(90deg, var(--blue), var(--pur));width:0%;transition:width 3s linear;}
+.scan-check-list{display:flex;flex-direction:column;gap:6px;font-size:11.5px;}
+.scan-check-item{display:flex;align-items:center;gap:8px;}
+
+/* TOAST MESSAGE SYSTEM */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(50px);background:rgba(99, 57, 255, 0.95);color:#fff;font-size:12.5px;font-weight:600;padding:10px 24px;border-radius:30px;transition:all 0.25s;z-index:9999;pointer-events:none;white-space:nowrap;opacity:0;}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1;box-shadow:0 10px 25px rgba(99, 57, 255, 0.3);}
+
+/* MODAL BOX */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:1000;display:none;justify-content:center;align-items:center;}
+.modal-overlay.op{display:flex;}
+.modal{background:#0c1324;border:1px solid var(--border);border-radius:24px;width:90%;max-width:350px;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,0.8);}
+
+/* STYLES FOR GRAPHS */
+.cbr{display:flex;align-items:flex-end;gap:4px;height:80px;}
+.cbr-b{flex:1;border-radius:3px 3px 0 0;min-height:4px;}
+
+/* MOBILE RESPONSIVE MEDIA QUERIES */
+@media(max-width:850px){
+  #app{flex-direction:column;}
+  #sidebar{display:none;}
+  #mob-nav{display:flex;}
+  #topbar{padding:0 16px;height:60px;}
+  .dashboard-grid{grid-template-columns:1fr;}
+  .sc{padding:16px;}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- SVG GRADIENTS FOR SVG ICONS & CANVAS -->
+  <svg style="width:0;height:0;position:absolute;">
+    <defs>
+      <linearGradient id="gr-pur-grn" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#6339ff" />
+        <stop offset="100%" stop-color="#00c88c" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- 1. LEFT SIDEBAR (DESKTOP) -->
+  <aside id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-icon">🏆</div>
+      <div class="sb-logo-title">
+        <h2>Y SPORTS</h2>
+        <p>SMART CITY PLATFORM</p>
+      </div>
+    </div>
+
+    <!-- ROLE CHOOSER DROPDOWN -->
+    <div class="sb-role-select">
+      <label>SİSTEM GÖRÜNÜMÜ</label>
+      <select class="sb-role-dropdown" id="roleSelector" onchange="switchRole(this.value)">
+        <option value="sporcu">🏃 Sporcu Portalı</option>
+        <option value="sponsor">💼 Sponsor Portalı</option>
+        <option value="belediye">🏛️ Belediye & Akıllı Şehir</option>
+      </select>
+    </div>
+
+    <!-- NAVIGATION MENU -->
+    <nav class="sb-menu">
+      <div class="sb-grp-lbl" id="menuGroupLabel">SPORCU EKOSİSTEMİ</div>
+      <div id="sidebarMenu">
+        <!-- JS generates menu items dynamically based on active role -->
+      </div>
+    </nav>
+
+    <!-- FOOTER PROFILE BTN -->
+    <div class="sb-profile-btn" onclick="G('P15')">
+      <div class="sb-profile-av" id="sidebarProfileAvatar">🧑</div>
+      <div class="sb-profile-info">
+        <h4 id="sidebarProfileName">Ömer Yılmaz</h4>
+        <p id="sidebarProfileRole">Olimpiyat Karate</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 2. MAIN CONTAINER -->
+  <main id="viewport">
+    
+    <!-- TOP STATUS BAR -->
+    <header id="topbar">
+      <div class="tb-left">
+        <!-- BACK BTN -->
+        <button class="btn btn-sec" onclick="B()" style="padding:6px 12px;border-radius:8px;">‹ Geri</button>
+        <div class="tb-title" id="topbarTitle">Dashboard</div>
+      </div>
+      <div class="tb-right">
+        <div class="tb-location" onclick="openMaps()">
+          <span>📍</span>
+          <span id="cityName">Samsun</span>
+          <span style="opacity:0.5;">▼</span>
+        </div>
+        <div class="tb-notif" onclick="T('🔔 3 Yeni Bildirim Alındı!')">
+          🔔
+          <div class="tb-notif-dot"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- LIVE BOURSE TICKER -->
+    <div class="ticker-band">
+      <div class="ticker-inner" id="tickerInner">
+        <!-- Generated Dynamically by JS -->
+      </div>
+    </div>
+
+    <!-- SCREENS AREA -->
+    <div id="screens">
+
+      <!-- ============================================
+           SC1: SPORCU PANELİ (ATHLETE DASHBOARD)
+           ============================================ -->
+      <div class="sc on" id="P4">
+        <div class="dashboard-grid">
+          <!-- Left Column -->
+          <div class="col-stacked">
+            
+            <!-- Quick Stats Hero -->
+            <div class="card glow">
+              <div class="comm-title">Ekosistem Piyasa Değeriniz</div>
+              <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr; margin-top: 10px; align-items: center;">
+                <div>
+                  <div class="val-hero-num" id="userValDisplay" style="text-align: left; font-size: 46px;">350.000 TL</div>
+                  <div style="font-size: 11px; color: var(--gr); font-weight: 700; text-transform: uppercase;">SGD AI Hesaplaması</div>
+                </div>
+                <div style="text-align: right;">
+                  <span class="seg-badge" style="background: rgba(0, 200, 140, 0.15); color: var(--grn);">★ Olimpiyat Düzeyi</span>
+                  <div style="font-size: 13px; color: var(--pur-light); font-weight: 700; margin-top: 4px;">SGS Skoru: 85/100</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Video Commitment Tracker -->
+            <div class="card" onclick="G('P18')">
+              <div class="card-h2">🎬 Sponsor Video Taahhüt Takibi</div>
+              <div class="commitment-container">
+                <svg class="circle-svg">
+                  <circle class="circle-bg" cx="40" cy="40" r="34"></circle>
+                  <circle class="circle-fill" id="circularProgress" cx="40" cy="40" r="34" stroke-dasharray="213.6" stroke-dashoffset="106.8"></circle>
+                </svg>
+                <div class="comm-info">
+                  <div class="comm-title" id="commProgressText">Aylık Video Yükleme: 1 / 2</div>
+                  <div class="comm-sub" id="commSubText">Gecikme Cezası Risk Oranı: %0. Bu ay kalan 1 video için <strong>5 gününüz</strong> kalmıştır. Videolar min. 30 saniye olmalıdır.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Performance Graph -->
+            <div class="card">
+              <div class="card-h2">📊 SGS Gelişim Grafiği (Son 6 Ay)</div>
+              <div class="cbr" id="sgsGraph">
+                <!-- Generated by JS -->
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:10px;color:var(--gr);">
+                <span>Aralık</span><span>Ocak</span><span>Şubat</span><span>Mart</span><span>Nisan</span><span>Mayıs</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column (Sidebar metrics) -->
+          <div class="col-stacked">
+            <div class="card">
+              <div class="card-h2">💼 Aktif Sponsorunuz</div>
+              <div class="athlete-item" style="cursor: default; background: rgba(99, 57, 255, 0.04); border-color: var(--border-glow); margin-bottom: 0;">
+                <div class="athlete-item-av" style="background: rgba(26, 79, 255, 0.15); border-color: var(--blue);">💻</div>
+                <div class="athlete-item-info">
+                  <div class="athlete-item-name" style="font-size: 13px;">Yalçın Perik Yazılım</div>
+                  <div class="athlete-item-meta">Ana Sponsor · Aylık ₺25K</div>
+                  <span class="seg-badge" style="background: rgba(0, 200, 140, 0.12); color: var(--grn); font-size: 8px; margin-top: 4px;">✓ Sözleşme Aktif</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-h2">🏛️ Federasyon & Temsilci</div>
+              <div style="display:flex;flex-direction:column;gap:8px;font-size:12px;">
+                <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);"><span style="color:var(--gr);">Karate Federasyonu</span><span>Hanene Perik (%6 Pay)</span></div>
+                <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);"><span style="color:var(--gr);">Samsun İl Temsilcisi</span><span>Mehmet Perik (%6 Pay)</span></div>
+                <div style="display:flex;justify-content:space-between;padding:4px 0;"><span style="color:var(--gr);">Net Hak Ediş Payınız</span><span style="color:var(--gold-glow);font-weight:700;">%63 + KDV</span></div>
+              </div>
+            </div>
+
+            <div class="card" style="padding: 14px;">
+              <button class="btn btn-primary" style="width:100%;margin-bottom:8px;" onclick="G('P18')">🎬 Yeni Video Yükle</button>
+              <button class="btn btn-sec" style="width:100%;" onclick="G('P20')">📄 Sözleşmeyi İndir (PDF)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================
+           SC2: SPORCU MEDYA MERKEZİ (MEDIA ARCHIVE / AI CONTROL)
+           ============================================ -->
+      <div class="sc" id="P18">
+        <div class="dashboard-grid">
+          
+          <!-- Left Columns: Archive & AI Scanner -->
+          <div class="col-stacked">
+            
+            <!-- AI Video Control simulation -->
+            <div id="ai-scan-widget">
+              <div class="comm-title" style="color: var(--pur-light); display:flex; align-items:center; gap:8px;">
+                <span>🤖</span> AI Video Taahhüt Analizi
+              </div>
+              <div class="scan-bar"><div class="scan-fill" id="scanFillBar"></div></div>
+              <div class="scan-check-list">
+                <div class="scan-check-item" id="chkDuration">⚪ Süre Doğrulanıyor (Min 15 Saniye)...</div>
+                <div class="scan-check-item" id="chkBrand">⚪ Sponsor Marka Varlığı Aranıyor...</div>
+                <div class="scan-check-item" id="chkStatus" style="font-weight:700; margin-top:4px;">⚪ Analiz Sonu: Bekleniyor...</div>
+              </div>
+            </div>
+
+            <!-- Upload Video Action -->
+            <div class="card glow" style="text-align:center; padding:30px 20px;">
+              <div style="font-size:42px; margin-bottom:10px;">📹</div>
+              <h3>Yeni Sponsorluk Tanıtım Videosu Yükleyin</h3>
+              <p style="font-size:12px; color:var(--gr); margin:8px 0 16px; max-width:400px; margin-left:auto; margin-right:auto;">
+                Sponsorunuz için ayda en az 2 adet 15-60 saniyelik video paylaşmakla yükümlüsünüz. Yüklenen video yapay zeka tarafından taranarak marka görünürlüğü doğrulanacaktır.
+              </p>
+              <label class="btn btn-primary" style="display:inline-flex; width:auto;">
+                + Video Dosyası Seçin
+                <input type="file" accept="video/*" style="display:none;" onchange="simVideoScan(event)">
+              </label>
+            </div>
+
+            <!-- Video Archive -->
+            <div class="card">
+              <div class="card-h2">🎥 Bu Ay Yüklenen Taahhüt Videolarınız</div>
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;" id="videoGridContainer">
+                <div class="media-card" onclick="T('Video oynatılıyor...')">
+                  <div class="media-thumb">🥋<div class="media-badge">AI ONAYLANDI ✓</div><div class="media-duration">0:35</div></div>
+                  <div class="media-body">
+                    <div class="media-title">Karate Kumite Kata Tekrar Çalışması</div>
+                    <div class="media-meta"><span>12 Mayıs 2026</span><span>👁 1.2K</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right Column: Rules & Stats -->
+          <div class="col-stacked">
+            <div class="card">
+              <div class="card-h2">📋 Taahhüt Kuralları</div>
+              <div style="font-size:12px; line-height:1.8; color:var(--mu);">
+                • Videolar minimum **15 saniye**, maksimum **60 saniye** olmalıdır.<br>
+                • Sponsor ürün veya logoları görünür olmalı ya da sponsor markaya açıkça teşekkür edilmelidir.<br>
+                • Yapay zeka onayından sonra video sponsor onayına iletilir.<br>
+                • Her ayın 28. gününe kadar yüklemeler tamamlanmalıdır.
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-h2">📊 Medya Etki Raporu</div>
+              <div style="display:flex; flex-direction:column; gap:10px; font-size:12px;">
+                <div style="display:flex; justify-content:space-between;"><span>Aylık Toplam İzlenme:</span><span style="font-weight:700;">8.5K</span></div>
+                <div style="display:flex; justify-content:space-between;"><span>Marka Logosu Görünürlük Skoru:</span><span style="color:var(--grn); font-weight:700;">%92 (Harika)</span></div>
+                <div style="display:flex; justify-content:space-between;"><span>Gelir Katsayısı:</span><span style="color:var(--gold); font-weight:700;">x1.4 (Genç Yaş Bonusu)</span></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ============================================
+           SC3: SPORCU BORSASI & SGD DEĞERLEME (THE BOURSE & ORDER BOOK)
+           ============================================ -->
+      <div class="sc" id="P6">
+        <div class="dashboard-grid">
+          
+          <!-- Left Column: Valuations Sliders & AI Factors -->
+          <div class="col-stacked">
+            
+            <!-- Valuation Main Display -->
+            <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr; gap:16px;">
+              <div class="val-hero">
+                <div class="val-hero-lbl">AI Piyasa Değeri</div>
+                <div class="val-hero-num" id="sgdResultDisplay">350.000 TL</div>
+                <div class="val-hero-sub" id="sgdResultLabel">★ Olimpiyat Düzeyi</div>
+              </div>
+              <div class="card">
+                <div class="card-h2">📊 SGS Performans Skoru</div>
+                <div style="display:flex; justify-content:center; align-items:center; height:90px;">
+                  <div style="width:70px;height:70px; border-radius:50%; border:6px solid var(--pur); display:flex; align-items:center; justify-content:center; flex-direction:column;">
+                    <span style="font-family:'Bebas Neue'; font-size:24px; color:var(--pur-light);" id="sgdSgsBadge">85</span>
+                    <span style="font-size:8px; color:var(--gr);">SGS</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Parameter Sliders -->
+            <div class="card">
+              <div class="card-h2">🎛️ AI Değerleme Parametrelerini Simüle Edin</div>
+              
+              <!-- SGS Slider -->
+              <div class="slider-row">
+                <div class="slider-top">
+                  <span class="slider-lbl">SGS Skoru (AI Performans)</span>
+                  <span class="slider-val" style="color:var(--pur-light);" id="slideSgsVal">85</span>
+                </div>
+                <input type="range" id="slideSgs" min="0" max="100" value="85" style="background:linear-gradient(to right, var(--pur) 85%, var(--border) 85%);" oninput="simSgdVal()">
+              </div>
+
+              <!-- Age Slider -->
+              <div class="slider-row">
+                <div class="slider-top">
+                  <span class="slider-lbl">Yaş (Genç çarpanı yüksektir)</span>
+                  <span class="slider-val" style="color:var(--gold);" id="slideYasVal">11</span>
+                </div>
+                <input type="range" id="slideYas" min="5" max="35" value="11" style="background:linear-gradient(to right, var(--gold) 20%, var(--border) 20%);" oninput="simSgdVal()">
+              </div>
+
+              <!-- Medals Slider -->
+              <div class="slider-row">
+                <div class="slider-top">
+                  <span class="slider-lbl">Ulusal / Uluslararası Madalyalar</span>
+                  <span class="slider-val" style="color:var(--cyan);" id="slideMedalVal">6</span>
+                </div>
+                <input type="range" id="slideMedal" min="0" max="30" value="6" style="background:linear-gradient(to right, var(--cyan) 20%, var(--border) 20%);" oninput="simSgdVal()">
+              </div>
+
+              <!-- Media Slider -->
+              <div class="slider-row">
+                <div class="slider-top">
+                  <span class="slider-lbl">Medya Popülerlik Katsayısı</span>
+                  <span class="slider-val" style="color:var(--grn);" id="slideMediaVal">42K</span>
+                </div>
+                <input type="range" id="slideMedia" min="0" max="100" value="42" style="background:linear-gradient(to right, var(--grn) 42%, var(--border) 42%);" oninput="simSgdVal()">
+              </div>
+            </div>
+
+            <!-- Segment Tracker -->
+            <div class="card">
+              <div class="card-h2">💎 Değer Segment Tablosu</div>
+              <div id="segmentListContainer">
+                <div class="seg-row" id="seg0"><div class="seg-dot" style="background:var(--red);"></div><div class="seg-info"><div class="seg-title">Temel Seviye</div><div class="seg-range">0 - 100K TL</div></div><span class="seg-badge" style="background:rgba(239,68,68,0.1); color:var(--red);">Amatör</span></div>
+                <div class="seg-row" id="seg1"><div class="seg-dot" style="background:var(--gold);"></div><div class="seg-info"><div class="seg-title">Gelişen Seviye</div><div class="seg-range">100K - 250K TL</div></div><span class="seg-badge" style="background:rgba(245,166,35,0.1); color:var(--gold);">Milli</span></div>
+                <div class="seg-row" id="seg2" style="background:rgba(99,57,255,0.08); border-radius:10px;"><div class="seg-dot" style="background:var(--pur);"></div><div class="seg-info"><div class="seg-title" style="color:var(--pur-light);">Olimpiyat Seviyesi</div><div class="seg-range">250K - 500K TL</div></div><span class="seg-badge" style="background:rgba(99,57,255,0.2); color:var(--pur-light); border:1px solid var(--border-glow);">★ Aktif</span></div>
+                <div class="seg-row" id="seg3"><div class="seg-dot" style="background:var(--cyan);"></div><div class="seg-info"><div class="seg-title">Elit Yıldız Seviyesi</div><div class="seg-range">500K+ TL</div></div><span class="seg-badge" style="background:rgba(6,182,212,0.1); color:var(--cyan);">Yıldız</span></div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right Column: Sponsor list & Sponsor offers -->
+          <div class="col-stacked">
+            
+            <div class="card">
+              <div class="card-h2" style="display:flex; justify-content:space-between; align-items:center;">
+                <span>📈 SPONSORLUK DEĞERLERİ</span>
+                <span class="tb-location" style="background:rgba(0,200,140,0.15); border-color:var(--grn); color:var(--grn); padding:2px 8px; font-size:9.5px;">AI GÜNCEL</span>
+              </div>
+              <div id="bourseListContainer">
+                <!-- JS will populate live listings with changing prices -->
+              </div>
+            </div>
+
+            <!-- SPONSORSHIP OFFERS -->
+            <div class="card">
+              <div class="card-h2">📊 Gelen Sponsorluk Teklifleri</div>
+              <div style="font-size:10px; color:var(--gr); display:flex; justify-content:space-between; margin-bottom:6px;">
+                <span>SPONSOR MARKA</span><span>DURUM & BEDEL</span>
+              </div>
+              <div id="orderBookGrid">
+                <!-- Dynamically simulated Sponsor Offers -->
+              </div>
+            </div>
+
+            <div class="card" style="padding:14px;">
+              <button class="btn btn-primary" style="width:100%;" onclick="openOrderModal()">Sponsorluk Anlaşması Başlat</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ============================================
+           SC4: SPONSORLUK MARKETPLACE (BRAND DASHBOARD)
+           ============================================ -->
+      <div class="sc" id="P9">
+        <div class="dashboard-grid">
+          
+          <!-- Left Column: Search Marketplace & AI Suggestion -->
+          <div class="col-stacked">
+            
+            <!-- AI Brand Suggestion Match -->
+            <div class="card glow" style="background:linear-gradient(135deg, rgba(6,182,212,0.1), rgba(99,57,255,0.06)); border-color:rgba(6,182,212,0.35);">
+              <div class="comm-title" style="color:var(--cyan); display:flex; align-items:center; gap:8px;">
+                <span>🤖</span> AI Akıllı Sponsorluk Eşleştirme Motoru
+              </div>
+              <p style="font-size:12.5px; margin:8px 0 14px; color:var(--mu);">
+                Yazılım ve Teknoloji markası olan <strong>Yalçın Perik Yazılım</strong> için en uygun olimpik branş sporcusu AI tarafından Samsun bölgesinden <strong>%96 başarı eşleşmesi</strong> ile önerilmektedir.
+              </p>
+              <div class="athlete-item" style="cursor:default; background:rgba(255,255,255,0.02); margin-bottom:0;">
+                <div class="athlete-item-av" style="background:rgba(99,57,255,0.2); border-color:var(--pur-light); color:var(--pur-light);">ÖY</div>
+                <div class="athlete-item-info">
+                  <div class="athlete-item-name">Ömer Yılmaz (Önerilen)</div>
+                  <div class="athlete-item-meta">Karate · SGS: 85 · Samsun</div>
+                </div>
+                <button class="btn btn-gold" onclick="T('Sponsorluk Teklifi Gönderildi!')" style="padding:8px 14px; font-size:11px;">Teklif Gönder</button>
+              </div>
+            </div>
+
+            <!-- Search & Filters -->
+            <div class="card">
+              <div class="card-h2">🔍 Ulusal Sporcu Sponsorluk Pazaryeri</div>
+              <div style="display:flex; gap:8px; margin-bottom:14px;">
+                <input class="inp" id="searchMarketplace" placeholder="Branş veya sporcu ismi ile arayın..." oninput="searchSports(this.value)">
+                <select class="inp" id="marketplaceBranchSelect" style="max-width:165px;" onchange="filterBranch(this.value)">
+                  <option value="all">Tüm Branşlar (63)</option>
+                </select>
+              </div>
+
+              <!-- Athlete Grid Marketplace -->
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;" id="marketplaceGrid">
+                <!-- Generated by JS -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right Column: Brand stats & sponsored athletes -->
+          <div class="col-stacked">
+            
+            <div class="card">
+              <div class="card-h2">💼 Sponsorluk Portföyünüz</div>
+              <div style="display:flex; flex-direction:column; gap:10px; font-size:12.5px;">
+                <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:6px;">
+                  <span style="color:var(--gr);">Aktif Sponsorluk:</span><strong>1 Sporcu</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:6px;">
+                  <span style="color:var(--gr);">Aylık Bütçe:</span><strong>25.000 TL</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                  <span style="color:var(--gr);">Toplam Görünürlük:</span><span style="color:var(--cyan); font-weight:700;">12.4K Görüntüleme/ay</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-h2">📋 Yükümlülük Kontrol Paneli</div>
+              <p style="font-size:11.5px; color:var(--gr); line-height:1.5; margin-bottom:10px;">
+                Sponsored sporcunuz <strong>Ömer Yılmaz</strong> bu ay için taahhüt ettiği 2 videodan ilkini yüklemiş ve AI doğrulaması tamamlanmıştır.
+              </p>
+              <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:12px; padding:10px; display:flex; align-items:center; justify-content:space-between;">
+                <span style="font-size:11.5px; font-weight:600;">1. Video Durumu</span>
+                <span class="seg-badge" style="background:rgba(0, 200, 140, 0.12); color: var(--grn); font-size:8px;">✓ Onaylandı</span>
+              </div>
+              <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:12px; padding:10px; display:flex; align-items:center; justify-content:space-between; margin-top:6px;">
+                <span style="font-size:11.5px; font-weight:600; opacity:0.6;">2. Video Durumu</span>
+                <span class="seg-badge" style="background:rgba(255, 215, 0, 0.12); color: var(--gold); font-size:8px;">⏳ Yüklenmesi Bekleniyor</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ============================================
+           SC5: BELEDİYE & AKILLI ŞEHİR PORTALI (MUNICIPAL INTEGRATION)
+           ============================================ -->
+      <div class="sc" id="P12">
+        <div class="dashboard-grid">
+          
+          <!-- Left Column: Facilities Digitization & Budget Funds -->
+          <div class="col-stacked">
+            
+            <!-- Smart City Facility Digitalization -->
+            <div class="card">
+              <div class="card-h2">🏟️ Samsun Tesisleri Dijitalleşme & Doluluk Oranları</div>
+              <div class="facility-grid">
+                
+                <div class="facility-card">
+                  <div class="fac-top">
+                    <span class="fac-title">Atatürk Spor Salonu</span>
+                    <span class="fac-badge" style="background:rgba(0,200,140,0.15); color:var(--grn);">%84 Aktif</span>
+                  </div>
+                  <div class="fac-progress"><div class="fac-fill" style="width:84%; background:var(--grn);"></div></div>
+                  <div class="fac-meta">Karate & Taekwondo Dojoları</div>
+                </div>
+
+                <div class="facility-card">
+                  <div class="fac-top">
+                    <span class="fac-title">Belediye Atletizm Pisti</span>
+                    <span class="fac-badge" style="background:rgba(6,182,212,0.15); color:var(--cyan);">%62 Aktif</span>
+                  </div>
+                  <div class="fac-progress"><div class="fac-fill" style="width:62%; background:var(--cyan);"></div></div>
+                  <div class="fac-meta">Hız ve Engel Koşu Parkurları</div>
+                </div>
+
+                <div class="facility-card">
+                  <div class="fac-top">
+                    <span class="fac-title">Olimpik Kapalı Yüzme Havuzu</span>
+                    <span class="fac-badge" style="background:rgba(245,166,35,0.15); color:var(--gold);">%91 Dolu</span>
+                  </div>
+                  <div class="fac-progress"><div class="fac-fill" style="width:91%; background:var(--gold);"></div></div>
+                  <div class="fac-meta">Turnuva Hazırlık Seansı</div>
+                </div>
+
+                <div class="facility-card">
+                  <div class="fac-top">
+                    <span class="fac-title">Yerel Jimnastik Salonu</span>
+                    <span class="fac-badge" style="background:rgba(239,68,68,0.15); color:var(--red);">%34 Yoğun</span>
+                  </div>
+                  <div class="fac-progress"><div class="fac-fill" style="width:34%; background:var(--red);"></div></div>
+                  <div class="fac-meta">Altyapı Eğitim Programları</div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Municipal Funds allocation -->
+            <div class="card">
+              <div class="card-h2">💰 Samsun Belediyesi Sporcu Teşvik ve Gelişim Fonu</div>
+              <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:14px;">
+                <span style="font-family:'Bebas Neue'; font-size:42px; color:#fff;">1.850.000 TL</span>
+                <span style="font-size:11px; color:var(--grn); font-weight:700;">✓ Yıllık Bütçe Dağıtıldı</span>
+              </div>
+              <div style="font-size:12px; color:var(--mu); margin-bottom:14px; line-height:1.6;">
+                Belediye akıllı şehir fonları doğrudan sisteme kayıtlı olan 47 Samsunlu lisanslı sporcuya performans (SGS) ve AI piyasa değerleri oranında aylık olarak pay edilmektedir.
+              </div>
+              <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px;">
+                <div style="background:rgba(255,255,255,0.02); border-radius:10px; padding:10px; text-align:center;">
+                  <h4 style="font-family:'Bebas Neue'; font-size:18px; color:var(--pur-light);">₺450K</h4>
+                  <span style="font-size:8.5px; color:var(--gr);">Karate Branşı</span>
+                </div>
+                <div style="background:rgba(255,255,255,0.02); border-radius:10px; padding:10px; text-align:center;">
+                  <h4 style="font-family:'Bebas Neue'; font-size:18px; color:var(--cyan);">₺380K</h4>
+                  <span style="font-size:8.5px; color:var(--gr);">Jimnastik</span>
+                </div>
+                <div style="background:rgba(255,255,255,0.02); border-radius:10px; padding:10px; text-align:center;">
+                  <h4 style="font-family:'Bebas Neue'; font-size:18px; color:var(--gold);">₺520K</h4>
+                  <span style="font-size:8.5px; color:var(--gr);">Yüzme & Atletizm</span>
+                </div>
+                <div style="background:rgba(255,255,255,0.02); border-radius:10px; padding:10px; text-align:center;">
+                  <h4 style="font-family:'Bebas Neue'; font-size:18px; color:var(--grn);">₺500K</h4>
+                  <span style="font-size:8.5px; color:var(--gr);">Amatör Branşlar</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right Column: Rep Info & Turnuva Kayıt -->
+          <div class="col-stacked">
+            
+            <div class="card">
+              <div class="card-h2">🏙️ İl Temsilcisi Koordinasyon</div>
+              <div class="athlete-item" style="cursor: default; background: rgba(99, 57, 255, 0.04); border-color: var(--border-glow); margin-bottom: 0;">
+                <div class="athlete-item-av" style="background: rgba(99, 57, 255, 0.15); border-color: var(--pur-light); color: var(--pur-light);">MP</div>
+                <div class="athlete-item-info">
+                  <div class="athlete-item-name">Mehmet Perik</div>
+                  <div class="athlete-item-meta">Samsun İl Temsilcisi</div>
+                  <span class="seg-badge" style="background: rgba(6, 182, 212, 0.12); color: var(--cyan); font-size: 8px; margin-top: 4px;">%6 Hizmet Payı Yetkili</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-h2">🏆 Belediye Turnuva Organizasyonları</div>
+              <div style="font-size:12px; line-height:1.8; color:var(--mu); margin-bottom:12px;">
+                • **29 Mayıs:** Gençlik Karate Şampiyonası (Atatürk Spor Salonu)<br>
+                • **5 Haziran:** Yaz Kupası Engel Atlama Koşuları (Atletizm Pisti)<br>
+                • **12 Haziran:** Yıldızlar Yüzme Şenliği (Kapalı Havuz)
+              </div>
+              <button class="btn btn-gold" style="width:100%;" onclick="T('Samsun turnuva kayıtları açıldı!')">Turnuva Başvurularını Yönet</button>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ============================================
+           SC6: SPOR NETFLIX (MEDIA STREAMING MOD Modülü)
+           ============================================ -->
+      <div class="sc" id="P27">
+        <div class="dashboard-grid">
+          
+          <!-- Left Column: Highlights & Streaming Widget -->
+          <div class="col-stacked">
+            
+            <!-- Video Player Widget -->
+            <div class="card glow" style="padding:0; border-radius:20px; overflow:hidden;">
+              <div style="height:320px; background:#000; position:relative; display:flex; align-items:center; justify-content:center;">
+                <!-- Simulated Video Stream -->
+                <span style="font-size:72px; opacity:0.65; cursor:pointer;" onclick="T('Canlı yayın başlatılıyor...')">▶</span>
+                <div style="position:absolute; top:20px; left:20px; background:red; color:#fff; font-size:9.5px; font-weight:800; padding:4px 10px; border-radius:6px; animation:blink 1s infinite;">CANLI YAYIN</div>
+                <div style="position:absolute; bottom:20px; left:20px; font-size:14px; font-weight:700;">Samsun U14 Karate İl Şampiyonası Final Maçı</div>
+                <div style="position:absolute; bottom:20px; right:20px; font-size:11px; background:rgba(0,0,0,0.6); padding:2px 8px; border-radius:4px;">👁 4.2K İzleyici</div>
+              </div>
+            </div>
+
+            <!-- Video Archive Grid (Reels highlights) -->
+            <div class="card">
+              <div class="card-h2">📺 Öne Çıkan Turnuva Highlights</div>
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+                
+                <div class="media-card" onclick="T('Highlights videosu açılıyor...')">
+                  <div class="media-thumb" style="background-image:linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.7));">🏃<div class="media-duration">0:45</div></div>
+                  <div class="media-body">
+                    <div class="media-title">Ömer Yılmaz 800m Rekor Koşu Highlights</div>
+                    <div class="media-meta"><span>Atletizm</span><span>👁 5.4K</span></div>
+                  </div>
+                </div>
+
+                <div class="media-card" onclick="T('Highlights videosu açılıyor...')">
+                  <div class="media-thumb" style="background-image:linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.7));">🤸<div class="media-duration">1:12</div></div>
+                  <div class="media-body">
+                    <div class="media-title">Yusra Su Perik Jimnastik Denge Serisi</div>
+                    <div class="media-meta"><span>Jimnastik</span><span>👁 3.1K</span></div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right Column: Subscription & Popular Branches -->
+          <div class="col-stacked">
+            
+            <div class="card">
+              <div class="card-h2">👑 Y SPORTS PREMIUM</div>
+              <p style="font-size:12px; color:var(--mu); line-height:1.6; margin-bottom:14px;">
+                Tüm amatör ve olimpiyat turnuvalarını engelsiz, Full HD canlı yayın ve anlık analizlerle takip etmek için Premium üyeliğe yükseltin.
+              </p>
+              <button class="btn btn-gold" style="width:100%;" onclick="T('Abonelik işlemi simüle edildi!')">Y Sports Premium Üyesi Ol</button>
+            </div>
+
+            <div class="card">
+              <div class="card-h2">🔥 Popüler Yayın Branşları</div>
+              <div style="display:flex; flex-direction:column; gap:8px; font-size:12.5px;">
+                <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:6px;"><span>1. Karate (U18)</span><span style="color:var(--grn);">+42% izlenme</span></div>
+                <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:6px;"><span>2. Jimnastik</span><span style="color:var(--grn);">+28% izlenme</span></div>
+                <div style="display:flex; justify-content:space-between;"><span>3. Okçuluk</span><span style="color:var(--cyan);">+14% izlenme</span></div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ============================================
+           SC7: SPORCU PROFİLİ (P15 PROFILE PAGE)
+           ============================================ -->
+      <div class="sc" id="P15">
+        <div class="dashboard-grid">
+          
+          <!-- Left Column: Details form -->
+          <div class="col-stacked">
+            <div class="card glow">
+              <div class="card-h2">👤 Sporcu Bilgi Formu</div>
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div><label style="font-size:11px; color:var(--gr); display:block; margin-bottom:6px;">Ad</label><input class="inp" id="profAd" value="Ömer"></div>
+                <div><label style="font-size:11px; color:var(--gr); display:block; margin-bottom:6px;">Soyad</label><input class="inp" id="profSoyad" value="Yılmaz"></div>
+              </div>
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div><label style="font-size:11px; color:var(--gr); display:block; margin-bottom:6px;">Şehir</label><input class="inp" id="profSehir" value="Samsun"></div>
+                <div><label style="font-size:11px; color:var(--gr); display:block; margin-bottom:6px;">Branş</label><input class="inp" id="profBrans" value="Karate"></div>
+              </div>
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div><label style="font-size:11px; color:var(--gr); display:block; margin-bottom:6px;">Yaş</label><input class="inp" type="number" id="profYas" value="11"></div>
+                <div><label style="font-size:11px; color:var(--gr); display:block; margin-bottom:6px;">Lisans No</label><input class="inp" value="TR-55-K-9382" disabled></div>
+              </div>
+              <button class="btn btn-primary" onclick="saveProfile()">Profil Bilgilerini Güncelle</button>
+            </div>
+          </div>
+
+          <!-- Right Column: Avatar and Upload -->
+          <div class="col-stacked">
+            <div class="card" style="text-align:center;">
+              <div class="val-hero-lbl">PROFİL RESMİ</div>
+              <div style="width:120px; height:120px; border-radius:50%; background:linear-gradient(135deg, var(--blue), var(--pur)); font-size:52px; display:flex; align-items:center; justify-content:center; margin:16px auto; position:relative;" id="profileImageCircle">
+                🧑
+              </div>
+              <label class="btn btn-sec" style="margin-top:10px;">
+                Resim Değiştir
+                <input type="file" accept="image/*" style="display:none;" onchange="simProfileImage(event)">
+              </label>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div><!-- /screens -->
+
+    <!-- MOBILE BOTTOM NAVIGATION -->
+    <nav id="mob-nav">
+      <button class="mob-bn on" id="mBN0" onclick="mobG('P4', 0)"><span class="mob-bn-ic">🏠</span><span class="mob-bn-lbl">Ana Sayfa</span></button>
+      <button class="mob-bn" id="mBN1" onclick="mobG('P18', 1)"><span class="mob-bn-ic">🎬</span><span class="mob-bn-lbl">Medya</span></button>
+      <button class="mob-bn" id="mBN2" onclick="mobG('P6', 2)"><span class="mob-bn-ic">📊</span><span class="mob-bn-lbl">Sponsorluk</span></button>
+    </nav>
+
+  </main>
+</div>
+
+<!-- 1. SPONSORSHIP INITIATION MODAL -->
+<div class="modal-overlay" id="orderModal">
+  <div class="modal">
+    <div class="comm-title" style="margin-bottom:14px; text-align:center;">SPONSORLUK ANLAŞMASI BAŞLAT</div>
+    <div style="margin-bottom:14px;">
+      <label style="font-size:11px; color:var(--gr); display:block; margin-bottom:4px;">Desteklenecek Sporcu</label>
+      <select class="inp" id="modalAthleteSelect" onchange="modalUpdatePrice(this.value)">
+        <option value="Yalçın">Yalçın Perik (₺500K)</option>
+        <option value="Ömer" selected>Ömer Yılmaz (₺350K)</option>
+        <option value="Eyüp">Eyüp Perik (₺340K)</option>
+        <option value="Yusra">Yusra Perik (₺200K)</option>
+        <option value="Hanen">Hanene Perik (₺175K)</option>
+      </select>
+    </div>
+    <div style="margin-bottom:14px;">
+      <label style="font-size:11px; color:var(--gr); display:block; margin-bottom:4px;">Sponsorluk Oranı (Payı)</label>
+      <select class="inp" id="modalLotInp" onchange="modalUpdateTotal()">
+        <option value="100">%100 Tam Sponsorluk</option>
+        <option value="50">%50 Yarı Sponsorluk</option>
+        <option value="25">%25 Çeyrek Sponsorluk</option>
+        <option value="10">%10 Destekçi</option>
+      </select>
+    </div>
+    <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:12px; margin-bottom:16px;">
+      <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;">
+        <span style="color:var(--gr);">Sponsorluk Değeri (SGD):</span><strong id="modalBirimFiyat">350.000 TL</strong>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;">
+        <span style="color:var(--gr);">Toplam Destek Bedeli:</span><strong id="modalTotalSum">350.000 TL</strong>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700; border-top:1px solid var(--border); padding-top:6px;">
+        <span>Aylık Hak Ediş:</span><span style="color:var(--pur-light);" id="modalMonthlySum">25.000 TL/ay</span>
+      </div>
+    </div>
+    <button class="btn btn-primary" style="width:100%; background:linear-gradient(135deg, var(--blue), var(--pur));" onclick="executeOrder()">SPONSORLUK TEKLİFİ GÖNDER</button>
+    <button class="btn btn-sec" style="width:100%; margin-top:10px; padding:8px;" onclick="closeOrderModal()">İPTAL</button>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast"></div>
+
+<!-- ============================================
+     JAVASCRIPT CONTROLS
+     ============================================ -->
+<script>
+// 1. DATA MODELS & CONSTANTS
+const ATHLETES = [
+  { name: 'Yalçın Perik', code: 'YP', branch: '💻 Yazılım & Tasarım', city: 'Samsun', baseVal: 500000, price: 500, change: 8.4, sgs: 95, spark: [460,470,480,485,492,500], bg: 'linear-gradient(135deg, #1a4fff, #6339ff)', av: '💻' },
+  { name: 'Ömer Yılmaz', code: 'ÖY', branch: '🥋 Karate', city: 'Samsun', baseVal: 350000, price: 350, change: 12.4, sgs: 85, spark: [310,320,332,341,348,350], bg: 'linear-gradient(135deg, #c9a227, #ffd700)', av: '🥋' },
+  { name: 'Eyüp Perik', code: 'EP', branch: '🥊 Kick Boks', city: 'Samsun', baseVal: 340000, price: 340, change: 5.2, sgs: 76, spark: [320,325,328,334,336,340], bg: 'linear-gradient(135deg, #dc2626, #ef4444)', av: '🥊' },
+  { name: 'Yusra Perik', code: 'YP', branch: '🤸 Jimnastik', city: 'Samsun', baseVal: 200000, price: 200, change: -2.1, sgs: 68, spark: [210,208,205,203,201,200], bg: 'linear-gradient(135deg, #06b6d4, #00c88c)', av: '🤸' },
+  { name: 'Hanene Perik', code: 'HP', branch: '🥋 Karate', city: 'Karate', baseVal: 175000, price: 175, change: 15.3, sgs: 65, spark: [140,148,152,160,171,175], bg: 'linear-gradient(135deg, #a78bff, #6339ff)', av: '🥋' }
+];
+
+const PDF_STRINGS = {
+  s: "JVBERi0xLjQKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2Up...", // Simulated Base64
+  t: "JVBERi0xLjQKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2Up...",
+  sp: "JVBERi0xLjQKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2Up..."
+};
+
+// 2. STATE MANAGER
+let activeRole = 'sporcu';
+let currentScreen = 'P4';
+let historyStack = [];
+let uploadVideoCount = 1;
+
+// 3. TOAST WRAPPER
+let toastTimeout;
+function T(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+// 4. SCREEN ROUTER
+function G(id){
+  const current = document.querySelector('.sc.on');
+  if(current && current.id !== id) historyStack.push(current.id);
+  
+  document.querySelectorAll('.sc').forEach(s => s.classList.remove('on'));
+  const target = document.getElementById(id);
+  if(!target) { T('Ekran bulunamadı: ' + id); return; }
+  
+  target.classList.add('on');
+  currentScreen = id;
+
+  // Header Title mapping
+  let title = 'Smart City Dashboard';
+  if(id === 'P4') title = activeRole === 'sporcu' ? 'Sporcu Dashboard' : activeRole === 'sponsor' ? 'Sponsor Portföy' : 'Akıllı Şehir Paneli';
+  else if(id === 'P18') title = 'Akıllı Medya Merkezi';
+  else if(id === 'P6') title = 'Değerleme & Sponsorluk';
+  else if(id === 'P9') title = 'Sponsorluk Marketplace';
+  else if(id === 'P12') title = 'Belediye Entegrasyonu';
+  else if(id === 'P27') title = 'Spor Netflix';
+  else if(id === 'P15') title = 'Profil Ayarları';
+  
+  document.getElementById('topbarTitle').textContent = title;
+  
+  // Trigger sub-renderers
+  if(id==='P4') renderSgsGraph();
+  if(id==='P6') { renderSponsorList(); renderSponsorOffers(); }
+  if(id==='P9') renderMarketplace();
+}
+
+function B(){
+  if(historyStack.length) G(historyStack.pop());
+  else G('P4');
+}
+
+// Mobile bottom nav helper
+function mobG(id, idx){
+  document.querySelectorAll('.mob-bn').forEach(b => b.classList.remove('on'));
+  document.getElementById('mBN' + idx).classList.add('on');
+  G(id);
+}
+
+// 5. ROLE MANAGER
+function switchRole(role){
+  activeRole = role;
+  
+  // Set dropdown selector to value
+  document.getElementById('roleSelector').value = role;
+
+  // Sidebar Menu mapping
+  const menuContainer = document.getElementById('sidebarMenu');
+  const groupLabel = document.getElementById('menuGroupLabel');
+  
+  let menuHtml = '';
+  if(role === 'sporcu'){
+    groupLabel.textContent = 'SPORCU EKOSİSTEMİ';
+    menuHtml = `
+      <div class="sb-item active" onclick="G('P4')"><span class="sb-item-ic">🏠</span> Dashboard</div>
+      <div class="sb-item" onclick="G('P18')"><span class="sb-item-ic">🎬</span> Medya & Taahhüt</div>
+      <div class="sb-item" onclick="G('P6')"><span class="sb-item-ic">📈</span> Değerleme & Sponsorluk</div>
+      <div class="sb-item" onclick="G('P27')"><span class="sb-item-ic">📺</span> Spor Netflix</div>
+    `;
+    // Update profile footer
+    document.getElementById('sidebarProfileName').textContent = 'Ömer Yılmaz';
+    document.getElementById('sidebarProfileRole').textContent = 'Olimpiyat Karate';
+    document.getElementById('sidebarProfileAvatar').textContent = '🧑';
+    G('P4');
+  } else if(role === 'sponsor'){
+    groupLabel.textContent = 'SPONSORLUK EKONOMİSİ';
+    menuHtml = `
+      <div class="sb-item active" onclick="G('P9')"><span class="sb-item-ic">💼</span> Marketplace</div>
+      <div class="sb-item" onclick="G('P6')"><span class="sb-item-ic">📊</span> Değerleme & Sponsorluk</div>
+      <div class="sb-item" onclick="G('P27')"><span class="sb-item-ic">📺</span> Spor Netflix</div>
+    `;
+    // Update profile footer
+    document.getElementById('sidebarProfileName').textContent = 'Yalçın Perik';
+    document.getElementById('sidebarProfileRole').textContent = 'Perik Yazılım CEO';
+    document.getElementById('sidebarProfileAvatar').textContent = '💼';
+    G('P9');
+  } else if(role === 'belediye'){
+    groupLabel.textContent = 'AKILLI BELEDİYE';
+    menuHtml = `
+      <div class="sb-item active" onclick="G('P12')"><span class="sb-item-ic">🏛️</span> Belediye Dashboard</div>
+      <div class="sb-item" onclick="G('P6')"><span class="sb-item-ic">📈</span> Değerleme & Sponsorluk</div>
+      <div class="sb-item" onclick="G('P27')"><span class="sb-item-ic">📺</span> Spor Netflix</div>
+    `;
+    // Update profile footer
+    document.getElementById('sidebarProfileName').textContent = 'Mehmet Perik';
+    document.getElementById('sidebarProfileRole').textContent = 'Samsun Koordinatörü';
+    document.getElementById('sidebarProfileAvatar').textContent = '🏙️';
+    G('P12');
+  }
+  
+  menuContainer.innerHTML = menuHtml;
+  
+  // Highlight clicked menu item
+  document.querySelectorAll('.sb-item').forEach(item => {
+    item.addEventListener('click', function(){
+      document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+}
+
+// 6. RENDERERS & SIMULATORS
+
+// Live Ticker
+function renderTicker(){
+  const inner = document.getElementById('tickerInner');
+  let html = '';
+  ATHLETES.forEach(s => {
+    html += `
+      <span class="tick-item">
+        <span>★ ${s.name}</span>
+        <span style="font-family:'Bebas Neue'; font-size:13.5px; color: var(--gold);">${s.baseVal.toLocaleString('tr-TR')} TL</span>
+        <span style="color:var(--grn); font-size:10px; font-weight:700;">SGD AI ✓</span>
+      </span>
+    `;
+  });
+  // Double the content to make infinite loop smooth
+  inner.innerHTML = html + html;
+}
+
+// Live price fluctuator
+setInterval(() => {
+  ATHLETES.forEach(s => {
+    const changePct = (Math.random() * 1.5 - 0.7).toFixed(1);
+    s.baseVal = Math.round(s.baseVal * (1 + changePct / 100));
+    s.change = parseFloat((parseFloat(s.change) + parseFloat(changePct)).toFixed(1));
+    s.spark.shift();
+    s.spark.push(s.baseVal);
+  });
+  renderTicker();
+  if(currentScreen === 'P6') { renderSponsorList(); renderSponsorOffers(); }
+}, 4000);
+
+// SGS Graph Builder
+function renderSgsGraph(){
+  const container = document.getElementById('sgsGraph');
+  const values = [62, 68, 72, 75, 80, 85];
+  let html = '';
+  values.forEach((v, i) => {
+    const isLast = i === values.length - 1;
+    html += `
+      <div class="cbr-b" style="height:${v}%; background:${isLast ? 'linear-gradient(to top, var(--blue), var(--pur))' : 'rgba(255,255,255,0.06)'}; border:${isLast ? '1px solid var(--border-glow)' : 'none'}; position:relative;">
+        <span style="position:absolute; top:-18px; left:50%; transform:translateX(-50%); font-size:9.5px; font-weight:700; color:${isLast ? 'var(--pur-light)' : 'rgba(255,255,255,0.5)'};">${v}</span>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
+
+// Circular video taahhüt progress updater
+function updateCircularProgress(){
+  const ring = document.getElementById('circularProgress');
+  const text = document.getElementById('commProgressText');
+  const subText = document.getElementById('commSubText');
+  
+  if(uploadVideoCount === 0){
+    ring.setAttribute('stroke-dashoffset', '213.6'); // 0%
+    text.textContent = 'Aylık Video Yükleme: 0 / 2';
+    subText.innerHTML = 'Gecikme Cezası Risk Oranı: <span style="color:var(--red); font-weight:700;">%50</span>. Bu ay <strong>2 video</strong> yüklemeniz gerekmektedir. Kalan süre: 5 gün.';
+  } else if(uploadVideoCount === 1){
+    ring.setAttribute('stroke-dashoffset', '106.8'); // 50%
+    text.textContent = 'Aylık Video Yükleme: 1 / 2';
+    subText.innerHTML = 'Gecikme Cezası Risk Oranı: %0. Bu ay kalan 1 video için <strong>5 gününüz</strong> kalmıştır.';
+  } else {
+    ring.setAttribute('stroke-dashoffset', '0'); // 100%
+    text.textContent = 'Aylık Video Yükleme: 2 / 2 (TAMAMLANDI ✓)';
+    subText.innerHTML = '<span style="color:var(--grn); font-weight:700;">Tebrikler!</span> Bu ayki sponsorluk taahhüdünüzü başarıyla tamamladınız. Hak edişiniz ay başında aktarılacaktır.';
+  }
+}
+
+// AI Video analysis scanner simulation
+function simVideoScan(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  
+  const widget = document.getElementById('ai-scan-widget');
+  const bar = document.getElementById('scanFillBar');
+  const dSpan = document.getElementById('chkDuration');
+  const bSpan = document.getElementById('chkBrand');
+  const sSpan = document.getElementById('chkStatus');
+  
+  // Open scan widget & start animations
+  widget.style.display = 'block';
+  bar.style.width = '0%';
+  dSpan.innerHTML = '⚪ Süre Doğrulanıyor (Min 15 Saniye)...';
+  bSpan.innerHTML = '⚪ Sponsor Marka Varlığı Aranıyor...';
+  sSpan.innerHTML = '⚪ Analiz Sonu: Bekleniyor...';
+  
+  setTimeout(() => bar.style.width = '100%', 50);
+
+  // 1. Duration check
+  setTimeout(() => {
+    dSpan.innerHTML = '<span style="color:var(--grn);">✓</span> Süre Doğrulandı (35 Saniye)';
+  }, 1000);
+
+  // 2. Brand visibility check
+  setTimeout(() => {
+    bSpan.innerHTML = '<span style="color:var(--grn);">✓</span> Sponsor Markası (Yalçın Perik Yazılım) Tespit Edildi';
+  }, 2000);
+
+  // 3. Finalization
+  setTimeout(() => {
+    sSpan.innerHTML = '<span style="color:var(--grn); font-weight:700;">✓ Yapay Zeka Taahhüt Onayı: BAŞARILI</span>';
+    T('📹 Video başarıyla analiz edildi ve yüklendi! ✓');
+    
+    // Add to video grid
+    const grid = document.getElementById('videoGridContainer');
+    grid.innerHTML += `
+      <div class="media-card" onclick="T('Video oynatılıyor...')">
+        <div class="media-thumb" style="background: linear-gradient(135deg, var(--blue), var(--pur));">💪<div class="media-badge">AI ONAYLANDI ✓</div><div class="media-duration">0:35</div></div>
+        <div class="media-body">
+          <div class="media-title">Katılım Antrenmanı & Sponsor Teşekkür Seansı</div>
+          <div class="media-meta"><span>Bugün</span><span>👁 Canlı</span></div>
+        </div>
+      </div>
+    `;
+    
+    uploadVideoCount = 2;
+    updateCircularProgress();
+  }, 3000);
+}
+
+// Sponsor List View Builder
+function renderSponsorList(){
+  const container = document.getElementById('bourseListContainer');
+  let html = '';
+  ATHLETES.forEach((s, idx) => {
+    const isUp = s.change >= 0;
+    const maxSpark = Math.max(...s.spark);
+    const sparkHtml = s.spark.map(v => `<div class="spark-bar" style="height:${Math.round(v/maxSpark*100)}%; background:${isUp ? 'var(--grn)' : 'var(--red)'};"></div>`).join('');
+    
+    // Status text based on matching
+    const statusText = s.name.includes('Ömer') || s.name.includes('Yalçın') ? '✓ Sponsor Aktif' : '⏳ Sponsor Aranıyor';
+    const statusColor = statusText.includes('Aktif') ? 'var(--grn)' : 'var(--red)';
+
+    html += `
+      <div class="athlete-item" onclick="openOrderModalWithName('${s.name}')">
+        <div class="athlete-item-av" style="background:rgba(255,255,255,0.05); border-color:var(--border);">${s.av}</div>
+        <div class="athlete-item-info">
+          <div class="athlete-item-name">${s.name}</div>
+          <div class="athlete-item-meta">${s.branch} · ${s.city}</div>
+          <div class="athlete-item-badge" style="color:${statusColor}; font-weight:700;">${statusText}</div>
+        </div>
+        <div class="spark" style="margin-right:14px;">${sparkHtml}</div>
+        <div class="athlete-item-right">
+          <div class="athlete-item-price" style="color:var(--gold);">${s.baseVal.toLocaleString('tr-TR')} TL</div>
+          <div class="athlete-item-sgs">SGS: ${s.sgs}</div>
+        </div>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
+
+// Sponsor Offers Simulator
+function renderSponsorOffers(){
+  const container = document.getElementById('orderBookGrid');
+  if(!container) return;
+  
+  const offers = [
+    { brand: 'Yalçın Perik Yazılım', type: 'Ana Sponsor', val: '25.000 TL/ay', status: '✓ Aktif', color: 'var(--grn)' },
+    { brand: 'Samsun Gıda Dağıtım', type: 'Co-Sponsor (%50)', val: '12.000 TL/ay', status: '⏳ Yanıt Bekleniyor', color: 'var(--gold)' },
+    { brand: 'Turkcell Yıldızlar', type: 'Co-Sponsor (%25)', val: '6.250 TL/ay', status: '⏳ Değerlendiriliyor', color: 'var(--cyan)' }
+  ];
+  
+  let html = '';
+  offers.forEach(o => {
+    html += `
+      <div class="ob-row" style="padding: 6px 0; border-bottom: 1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+        <div style="z-index: 2;">
+          <div style="font-weight:700; color:#fff; font-size:12px;">${o.brand}</div>
+          <div style="font-size:10px; color:var(--gr); margin-top:2px;">${o.type}</div>
+        </div>
+        <div style="text-align:right; z-index: 2;">
+          <div style="font-weight:700; color:${o.color}; font-size:11px;">${o.status}</div>
+          <div style="font-size:12px; color:#fff; font-family:'Bebas Neue'; margin-top:2px; letter-spacing:0.5px;">${o.val}</div>
+        </div>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
+
+// SGD Valuation Slider Calculator
+function simSgdVal(){
+  const sgs = parseInt(document.getElementById('slideSgs').value);
+  const yas = parseInt(document.getElementById('slideYas').value);
+  const medal = parseInt(document.getElementById('slideMedal').value);
+  const media = parseInt(document.getElementById('slideMedia').value);
+  
+  document.getElementById('slideSgsVal').textContent = sgs;
+  document.getElementById('slideYasVal').textContent = yas;
+  document.getElementById('slideMedalVal').textContent = medal;
+  document.getElementById('slideMediaVal').textContent = media + 'K';
+  
+  // Calculate Base SGD
+  const yasMultiplier = yas <= 12 ? 1.8 : yas <= 18 ? 1.4 : 1.0;
+  const base = (sgs * 2000) + (medal * 5000) + (media * 1200);
+  const finalVal = Math.round(base * yasMultiplier / 5000) * 5000;
+  
+  // Update UI Elements
+  document.getElementById('sgdResultDisplay').textContent = finalVal.toLocaleString('tr-TR') + ' TL';
+  document.getElementById('sgdSgsBadge').textContent = sgs;
+  
+  let label = 'Amatör';
+  if(finalVal >= 500000) label = '★ Elit Yıldız Seviyesi';
+  else if(finalVal >= 250000) label = '★ Olimpiyat Düzeyi';
+  else if(finalVal >= 100000) label = '★ Gelişen Seviye';
+  else label = '★ Temel Seviye';
+  
+  document.getElementById('sgdResultLabel').textContent = label;
+  
+  // Color code range fill
+  updateSliderStyle('slideSgs', sgs, 100, 'var(--pur)');
+  updateSliderStyle('slideYas', yas - 5, 30, 'var(--gold)');
+  updateSliderStyle('slideMedal', medal, 30, 'var(--cyan)');
+  updateSliderStyle('slideMedia', media, 100, 'var(--grn)');
+  
+  // Update Highlight row in Segment List
+  const segRows = ['seg0', 'seg1', 'seg2', 'seg3'];
+  segRows.forEach(id => document.getElementById(id).style.background = '');
+  if(finalVal >= 500000) document.getElementById('seg3').style.background = 'rgba(6, 182, 212, 0.08)';
+  else if(finalVal >= 250000) document.getElementById('seg2').style.background = 'rgba(99, 57, 255, 0.08)';
+  else if(finalVal >= 100000) document.getElementById('seg1').style.background = 'rgba(245, 166, 35, 0.08)';
+  else document.getElementById('seg0').style.background = 'rgba(239, 68, 68, 0.08)';
+}
+
+function updateSliderStyle(id, val, max, color){
+  const pct = (val / max * 100).toFixed(1);
+  document.getElementById(id).style.background = `linear-gradient(to right, ${color} ${pct}%, var(--border) ${pct}%)`;
+}
+
+// Marketplace list
+function renderMarketplace(){
+  const container = document.getElementById('marketplaceGrid');
+  let html = '';
+  ATHLETES.forEach(s => {
+    html += `
+      <div class="facility-card" style="background:rgba(255,255,255,0.01);" onclick="openOrderModalWithName('${s.name}')">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <span style="font-weight:700; font-size:13px;">${s.name}</span>
+          <span class="seg-badge" style="background:rgba(99,57,255,0.12); color:var(--pur-light); font-size:8px;">SGS: ${s.sgs}</span>
+        </div>
+        <div style="font-size:10.5px; color:var(--gr); margin-top:2px;">${s.branch} · ${s.city}</div>
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:8px;">
+          <span style="font-size:10px; color:var(--mu);">Piyasa Değeri:</span>
+          <span style="font-family:'Bebas Neue'; font-size:18px; color:var(--gold);">${s.baseVal.toLocaleString('tr-TR')} TL</span>
+        </div>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
+
+// Search Marketplace branches filter
+function searchSports(val){
+  const container = document.getElementById('marketplaceGrid');
+  let html = '';
+  const filtered = ATHLETES.filter(s => s.name.toLowerCase().includes(val.toLowerCase()) || s.branch.toLowerCase().includes(val.toLowerCase()));
+  
+  if(filtered.length === 0){
+    container.innerHTML = `
+      <div style="grid-column: span 2; background:rgba(255,255,255,0.01); border:1px dashed var(--border); border-radius:16px; padding:28px; text-align:center; color:var(--mu); font-size:12.5px;">
+        <span style="font-size:36px; display:block; margin-bottom:8px;">💪</span>
+        Bu branşta henüz Samsun ilinden kayıtlı sponsor arayan yetenek bulunamadı.<br>
+        Samsun Belediyesi Teşvik Fonu desteğiyle yeni sporcu kaydetmek için Temsilci Paneli'ni kullanabilirsiniz.
+      </div>
+    `;
+    return;
+  }
+
+  filtered.forEach(s => {
+    html += `
+      <div class="facility-card" style="background:rgba(255,255,255,0.01);" onclick="openOrderModalWithName('${s.name}')">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <span style="font-weight:700; font-size:13px;">${s.name}</span>
+          <span class="seg-badge" style="background:rgba(99,57,255,0.12); color:var(--pur-light); font-size:8px;">SGS: ${s.sgs}</span>
+        </div>
+        <div style="font-size:10.5px; color:var(--gr); margin-top:2px;">${s.branch} · ${s.city}</div>
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:8px;">
+          <span style="font-size:10px; color:var(--mu);">Piyasa Değeri:</span>
+          <span style="font-family:'Bebas Neue'; font-size:18px; color:var(--gold);">${s.baseVal.toLocaleString('tr-TR')} TL</span>
+        </div>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
+
+function filterBranch(val){
+  if(val==='all') { renderMarketplace(); return; }
+  searchSports(val);
+}
+
+// Order Modal helpers
+function openOrderModal(){
+  document.getElementById('orderModal').classList.add('op');
+  modalUpdateTotal();
+}
+function openOrderModalWithName(name){
+  const select = document.getElementById('modalAthleteSelect');
+  for(let i=0; i<select.options.length; i++){
+    if(select.options[i].text.includes(name)){
+      select.selectedIndex = i;
+      break;
+    }
+  }
+  modalUpdatePrice(select.value);
+  openOrderModal();
+}
+function closeOrderModal(){
+  document.getElementById('orderModal').classList.remove('op');
+}
+function modalUpdatePrice(val){
+  let price = 350000;
+  if(val === 'Yalçın') price = 500000;
+  else if(val === 'Ömer') price = 350000;
+  else if(val === 'Eyüp') price = 340000;
+  else if(val === 'Yusra') price = 200000;
+  else if(val === 'Hanen') price = 175000;
+  document.getElementById('modalBirimFiyat').textContent = price.toLocaleString('tr-TR') + ' TL';
+  modalUpdateTotal();
+}
+function modalUpdateTotal(){
+  const pct = parseInt(document.getElementById('modalLotInp').value) || 100;
+  const selectVal = document.getElementById('modalAthleteSelect').value;
+  let price = 350000;
+  if(selectVal === 'Yalçın') price = 500000;
+  else if(selectVal === 'Ömer') price = 350000;
+  else if(selectVal === 'Eyüp') price = 340000;
+  else if(selectVal === 'Yusra') price = 200000;
+  else if(selectVal === 'Hanen') price = 175000;
+  
+  const sum = Math.round((pct / 100) * price);
+  document.getElementById('modalTotalSum').textContent = sum.toLocaleString('tr-TR') + ' TL';
+  const monthly = Math.round(sum / 14);
+  document.getElementById('modalMonthlySum').textContent = monthly.toLocaleString('tr-TR') + ' TL/ay';
+}
+function executeOrder(){
+  const pct = document.getElementById('modalLotInp').value;
+  const select = document.getElementById('modalAthleteSelect');
+  const name = select.options[select.selectedIndex].text.split('(')[0].trim();
+  const sumText = document.getElementById('modalTotalSum').textContent;
+  T(`✓ ${name} için %${pct} pay oranında sponsorluk anlaşması (${sumText}) başarıyla başlatıldı ve teklif gönderildi!`);
+  closeOrderModal();
+}
+
+// Reverse Geolocation Map clicker
+function openMaps(){
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(pos => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
+        .then(r => r.json())
+        .then(d => {
+          const city = d.address.city || d.address.town || d.address.state || 'Samsun';
+          document.getElementById('cityName').textContent = city;
+          T('📍 Konumunuz güncellendi: ' + city);
+        }).catch(() => {});
+    });
+  } else {
+    T('Konum izni alınamadı.');
+  }
+}
+
+// PDF downloader base64 simulator
+function G20PDF(){
+  T('📄 PDF Sözleşmesi Hazırlanıyor ve İndiriliyor...');
+  setTimeout(() => {
+    const link = document.createElement('a');
+    link.href = 'data:application/pdf;base64,' + PDF_STRINGS.s;
+    link.download = 'Y_SPORTS_Sporcu_Sponsorluk_Sozlesmesi.pdf';
+    link.click();
+    T('✓ Sözleşme başarıyla indirildi!');
+  }, 1000);
+}
+
+// Simulated profile details update
+function saveProfile(){
+  const ad = document.getElementById('profAd').value;
+  const soyad = document.getElementById('profSoyad').value;
+  const sehir = document.getElementById('profSehir').value;
+  const brans = document.getElementById('profBrans').value;
+  const yas = document.getElementById('profYas').value;
+  
+  const name = ad + ' ' + soyad;
+  document.getElementById('sidebarProfileName').textContent = name;
+  document.getElementById('sidebarProfileRole').textContent = 'Olimpiyat ' + brans;
+  document.getElementById('cityName').textContent = sehir;
+  
+  // Calculate value on home screen
+  const sgs = 85;
+  const yasMultiplier = yas <= 12 ? 1.8 : yas <= 18 ? 1.4 : 1.0;
+  const base = (sgs * 2000) + (6 * 5000) + (42 * 1200);
+  const finalVal = Math.round(base * yasMultiplier / 5000) * 5000;
+  document.getElementById('userValDisplay').textContent = finalVal.toLocaleString('tr-TR') + ' TL';
+
+  T('✓ Profil bilgileriniz başarıyla güncellendi!');
+}
+
+function simProfileImage(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const container = document.getElementById('profileImageCircle');
+    container.innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+    T('✓ Profil resmi güncellendi!');
+  };
+  reader.readAsDataURL(file);
+}
+
+// 7. INITIALIZER
+const TURKEY_SPORTS_BRANCHES = [
+  "Okçuluk", "Oryantiring", "Atletizm", "Badminton", "Boks", "Cimnastik", "Eskrim", "Golf", "Güreş", "Halter", 
+  "Judo", "Karate", "Kick Boks", "Muay Thai", "Masa Tenisi", "Tenis", "Triatlon", "Vücut Geliştirme", "Pentatlon", 
+  "Atıcılık", "Dağcılık", "Basketbol", "Voleybol", "Hentbol", "Ragbi", "Sutopu", "Hokey", "Buz Hokeyi", "Yüzme", 
+  "Sualtı", "Kürek", "Kano", "Yelken", "Otomobil", "Motorsiklet", "Kayak", "Buz Pateni", "Curling", 
+  "Geleneksel Okçuluk", "Atlı Sporlar", "Karakucak Güreşi", "Halk Oyunları", "Geleneksel Sporlar", "Taekwondo", 
+  "Wushu Kungfu", "Bedensel Engelliler", "Görme Engelliler", "İşitme Engelliler", "Özel Sporcular", "E-Spor", 
+  "Kaykay", "Hava Sporları", "İzcilik", "Dans", "Bocce Bowling", "Bilardo", "Binicilik", "Bisiklet", "Satranç", 
+  "Üniversite Sporları", "Herkes İçin Spor", "Briç", "Gelişen Branşlar"
+];
+
+function populateSportsDropdown(){
+  const select = document.getElementById('marketplaceBranchSelect');
+  if(!select) return;
+  
+  select.innerHTML = '<option value="all">Tüm Branşlar (63)</option>';
+  const sorted = [...TURKEY_SPORTS_BRANCHES].sort((a,b) => a.localeCompare(b, 'tr'));
+  
+  sorted.forEach(b => {
+    const opt = document.createElement('option');
+    opt.value = b;
+    opt.textContent = b;
+    select.appendChild(opt);
+  });
+}
+
+window.onload = () => {
+  switchRole('sporcu');
+  renderTicker();
+  updateCircularProgress();
+  populateSportsDropdown();
+  
+  // Connect Slider ranges custom style thumbs
+  const rangeSliders = ['slideSgs', 'slideYas', 'slideMedal', 'slideMedia'];
+  rangeSliders.forEach(id => {
+    const style = document.createElement('style');
+    style.textContent = `#${id}::-webkit-slider-thumb{background:#fff;width:16px;height:16px;border-radius:50%;border:2.5px solid var(--pur);box-shadow:0 0 10px rgba(99,57,255,0.4);}`;
+    document.head.appendChild(style);
+  });
+  
+  simSgdVal();
+};
+</script>
+</body>
+</html>

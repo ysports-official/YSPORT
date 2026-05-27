@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sporcu MarketCap AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Outfit',sans-serif;background:#050810;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:30px 0 60px;}
+
+.iphone-wrap{position:relative;width:393px;}
+.iphone-frame{position:relative;width:393px;height:852px;border-radius:55px;background:#1c1c1e;box-shadow:0 0 0 2px #3a3a3c,0 0 0 7px #1c1c1e,0 50px 120px rgba(0,0,0,0.95),inset 0 0 0 1px #2c2c2e;overflow:hidden;}
+.iphone-frame::before{content:'';position:absolute;left:-4px;top:115px;width:4px;height:34px;background:#2c2c2e;border-radius:2px 0 0 2px;box-shadow:0 52px 0 #2c2c2e,0 90px 0 #2c2c2e;}
+.iphone-frame::after{content:'';position:absolute;right:-4px;top:160px;width:4px;height:72px;background:#2c2c2e;border-radius:0 2px 2px 0;}
+
+.iphone-screen{position:absolute;inset:0;border-radius:55px;overflow:hidden;background:#080d1a;}
+.dynamic-island{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:124px;height:36px;background:#000;border-radius:20px;z-index:100;}
+
+.app{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;}
+
+.sb{height:58px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 10px;flex-shrink:0;background:#080d1a;}
+.sb-time{font-size:16px;font-weight:700;color:#fff;letter-spacing:-0.3px;}
+.sb-icons{display:flex;align-items:center;gap:5px;font-size:12px;color:#fff;}
+
+.screen{display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0;}
+.screen.active{display:flex;}
+
+.scrollable{flex:1;overflow-y:auto;min-height:0;}
+.scrollable::-webkit-scrollbar{display:none;}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;}
+.tb-av{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.tb-title{font-size:14px;font-weight:700;color:#fff;}
+.tb-sub{font-size:9px;color:rgba(255,255,255,0.35);margin-top:1px;}
+
+.step-bar{display:flex;align-items:center;padding:12px 18px 4px;flex-shrink:0;}
+.s-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;transition:all 0.3s;}
+.s-dot.done{background:#f5a623;color:#000;}
+.s-dot.cur{background:rgba(245,166,35,0.15);border:2px solid #f5a623;color:#f5a623;}
+.s-dot.idle{background:#0f1623;border:1.5px solid #1e2d4a;color:rgba(255,255,255,0.2);}
+.s-line{flex:1;height:2px;background:#1e2d4a;transition:background 0.3s;}
+.s-line.done{background:#f5a623;}
+
+.finput{width:100%;background:#0f1623;border:1.5px solid #1e2d4a;border-radius:12px;padding:11px 13px;color:#fff;font-size:13px;font-family:'Outfit',sans-serif;outline:none;-webkit-appearance:none;}
+.finput:focus{border-color:rgba(245,166,35,0.55);}
+.finput::placeholder{color:#2a4060;}
+select.finput{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23445577' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
+select.finput option{background:#0f1623;}
+.field{margin-bottom:11px;}
+.flbl{font-size:10px;color:rgba(255,255,255,0.4);font-weight:600;margin-bottom:5px;display:block;letter-spacing:0.4px;}
+
+.pill{padding:7px 13px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid #1e2d4a;color:rgba(255,255,255,0.35);background:transparent;font-family:'Outfit',sans-serif;white-space:nowrap;transition:all 0.15s;}
+.pill.on{background:rgba(245,166,35,0.14);border-color:rgba(245,166,35,0.45);color:#f5a623;}
+
+.medal-box{background:#0f1623;border:1.5px solid #1e2d4a;border-radius:13px;padding:11px 6px;text-align:center;}
+.m-btn{width:26px;height:26px;border-radius:50%;border:1.5px solid #1e2d4a;background:transparent;color:#fff;font-size:16px;cursor:pointer;font-family:'Outfit',sans-serif;line-height:1;display:inline-flex;align-items:center;justify-content:center;}
+.m-btn:active{background:#1e2d4a;}
+.medal-num{font-family:'Bebas Neue',sans-serif;font-size:26px;line-height:1;}
+
+.star{font-size:24px;cursor:pointer;opacity:0.2;transition:opacity 0.15s;}
+.star.on{opacity:1;}
+
+input[type=range]{-webkit-appearance:none;width:100%;height:5px;border-radius:3px;outline:none;cursor:pointer;background:linear-gradient(90deg,#f5a623 var(--v,10%),#1e2d4a var(--v,10%));}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#f5a623;border:2.5px solid #080d1a;box-shadow:0 0 10px rgba(245,166,35,0.4);}
+
+.bot{display:flex;gap:10px;padding:12px 18px 10px;border-top:1px solid rgba(255,255,255,0.06);flex-shrink:0;background:#080d1a;}
+.btn-back{flex:1;padding:13px;border-radius:13px;border:1.5px solid #1e2d4a;background:transparent;color:rgba(255,255,255,0.4);font-size:13px;font-weight:600;font-family:'Outfit',sans-serif;cursor:pointer;transition:all 0.15s;}
+.btn-next{flex:2;padding:13px;border-radius:13px;border:none;font-size:13px;font-weight:700;font-family:'Outfit',sans-serif;cursor:pointer;color:#000;background:linear-gradient(135deg,#f5a623,#f59e0b);transition:all 0.15s;}
+.btn-next:active{transform:scale(0.96);}
+.btn-back:active{transform:scale(0.96);}
+
+.home-bar{height:34px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#080d1a;}
+.home-bar div{width:130px;height:5px;border-radius:3px;background:rgba(255,255,255,0.18);}
+
+.value-ring{width:142px;height:142px;border-radius:50%;border:3px solid rgba(245,166,35,0.35);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto;background:radial-gradient(circle,rgba(245,166,35,0.08),transparent);position:relative;}
+.value-ring::before{content:'';position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(245,166,35,0.12);}
+.vr-num{font-family:'Bebas Neue',sans-serif;font-size:36px;color:#f5a623;line-height:1;letter-spacing:1px;}
+.vr-lbl{font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:1.2px;margin-top:3px;}
+
+.fr-row{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+.fr-lbl{font-size:10px;color:rgba(255,255,255,0.4);width:88px;flex-shrink:0;}
+.fr-track{flex:1;height:6px;background:#1e2d4a;border-radius:10px;overflow:hidden;}
+.fr-fill{height:100%;border-radius:10px;transition:width 0.9s ease;}
+.fr-val{font-size:10px;font-weight:700;width:26px;text-align:right;flex-shrink:0;}
+
+.cmp-row{display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid rgba(255,255,255,0.04);}
+.chg{font-size:9px;font-weight:600;padding:2px 6px;border-radius:8px;}
+.up{background:rgba(0,200,140,0.12);color:#00c88c;}
+.dn{background:rgba(239,68,68,0.1);color:#ef4444;}
+
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.6;transform:scale(1.1);}}
+.ai-ring{width:80px;height:80px;border-radius:50%;border:3px solid rgba(245,166,35,0.15);border-top:3px solid #f5a623;animation:spin 1s linear infinite;margin:0 auto 18px;}
+
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);font-size:12px;font-weight:600;padding:10px 22px;border-radius:26px;z-index:9999;pointer-events:none;white-space:nowrap;background:rgba(245,166,35,0.95);color:#000;transition:transform 0.3s cubic-bezier(.34,1.56,.64,1);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<div class="iphone-wrap">
+ <div class="iphone-frame">
+  <div class="dynamic-island"></div>
+  <div class="iphone-screen">
+   <div class="app">
+
+    <!-- STATUS BAR -->
+    <div class="sb">
+      <span class="sb-time">9:41</span>
+      <div class="sb-icons"><span>▲▲▲</span><span style="margin:0 2px;">WiFi</span><span>🔋</span></div>
+    </div>
+
+    <!-- ══ SC-FORM ══ -->
+    <div class="screen active" id="sc-form">
+      <div class="topbar">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="tb-av" style="background:linear-gradient(135deg,#f5a623,#f56a35);">💰</div>
+          <div><div class="tb-title">Piyasa Değeri AI</div><div class="tb-sub">⚡ Sporcu Değerleme Aracı</div></div>
+        </div>
+        <div style="background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.3);border-radius:100px;padding:5px 11px;display:flex;align-items:center;gap:5px;">
+          <span style="width:6px;height:6px;border-radius:50%;background:#00c88c;animation:pulse 2s infinite;display:block;"></span>
+          <span style="font-size:9px;color:#f5a623;font-weight:600;">AI</span>
+        </div>
+      </div>
+
+      <!-- STEP DOTS -->
+      <div class="step-bar">
+        <div class="s-dot cur" id="sd1">1</div>
+        <div class="s-line" id="sl1"></div>
+        <div class="s-dot idle" id="sd2">2</div>
+        <div class="s-line" id="sl2"></div>
+        <div class="s-dot idle" id="sd3">3</div>
+        <div class="s-line" id="sl3"></div>
+        <div class="s-dot idle" id="sd4">4</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:2px 15px 8px;flex-shrink:0;">
+        <span style="font-size:8px;color:rgba(255,255,255,0.2);width:26px;text-align:center;">Kişisel</span>
+        <span style="font-size:8px;color:rgba(255,255,255,0.2);width:26px;text-align:center;">Spor</span>
+        <span style="font-size:8px;color:rgba(255,255,255,0.2);width:26px;text-align:center;">Başarı</span>
+        <span style="font-size:8px;color:rgba(255,255,255,0.2);width:26px;text-align:center;">Medya</span>
+      </div>
+
+      <div class="scrollable" style="padding:0 18px 8px;" id="formBody">
+
+        <!-- STEP 1 -->
+        <div id="step1">
+          <div style="padding:6px 0 13px;"><div style="font-size:16px;font-weight:700;color:#fff;">Kişisel Bilgiler</div><div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px;">Sporcunun temel bilgilerini girin</div></div>
+          <div class="field"><label class="flbl">AD SOYAD</label><input class="finput" id="f_name" placeholder="Örn: Ömer Ediz Perik"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div class="field"><label class="flbl">YAŞ</label><input class="finput" id="f_age" type="number" placeholder="16" min="6" max="50"></div>
+            <div class="field"><label class="flbl">CİNSİYET</label><select class="finput" id="f_gender"><option value="">Seç</option><option>Erkek</option><option>Kadın</option></select></div>
+          </div>
+          <div class="field"><label class="flbl">ŞEHİR</label><select class="finput" id="f_city"><option value="">Şehir seçin</option><option>İstanbul</option><option>Ankara</option><option>İzmir</option><option>Bursa</option><option>Antalya</option><option>Samsun</option><option>Trabzon</option><option>Konya</option><option>Adana</option><option>Gaziantep</option><option>Diğer</option></select></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div class="field"><label class="flbl">BOY (cm)</label><input class="finput" id="f_height" type="number" placeholder="175"></div>
+            <div class="field"><label class="flbl">KİLO (kg)</label><input class="finput" id="f_weight" type="number" placeholder="70"></div>
+          </div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div id="step2" style="display:none;">
+          <div style="padding:6px 0 13px;"><div style="font-size:16px;font-weight:700;color:#fff;">Spor Profili</div><div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px;">Branş ve kariyer detayları</div></div>
+          <div class="field"><label class="flbl">SPOR DALI</label><select class="finput" id="f_sport"><option value="">Branş seçin</option><option>Karate</option><option>Taekwondo</option><option>Judo</option><option>Güreş</option><option>Boks</option><option>Atletizm</option><option>Yüzme</option><option>Basketbol</option><option>Voleybol</option><option>Futbol</option><option>Halter</option><option>Okçuluk</option><option>Tenis</option><option>Masa Tenisi</option><option>Badminton</option><option>Diğer</option></select></div>
+          <div class="field"><label class="flbl">KARİYER SÜRESİ</label><select class="finput" id="f_career"><option value="">Seç</option><option>1 yıldan az</option><option>1-3 yıl</option><option>3-5 yıl</option><option>5-10 yıl</option><option>10 yıldan fazla</option></select></div>
+          <div class="field"><label class="flbl">REKABET SEVİYESİ</label>
+            <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:5px;" id="levelG">
+              <button class="pill" onclick="setPill('levelG','İl',this)">İl</button>
+              <button class="pill" onclick="setPill('levelG','Bölge',this)">Bölge</button>
+              <button class="pill on" onclick="setPill('levelG','Türkiye',this)">Türkiye</button>
+              <button class="pill" onclick="setPill('levelG','Uluslararası',this)">Uluslar.</button>
+              <button class="pill" onclick="setPill('levelG','Olimpiyat',this)">Olimpiyat</button>
+            </div>
+          </div>
+          <div class="field"><label class="flbl">ANTRENÖR KALİTESİ</label>
+            <div style="display:flex;gap:10px;margin-top:6px;" id="coachS">
+              <span class="star on" onclick="setStar('coachS',1,this)">⭐</span>
+              <span class="star on" onclick="setStar('coachS',2,this)">⭐</span>
+              <span class="star on" onclick="setStar('coachS',3,this)">⭐</span>
+              <span class="star" onclick="setStar('coachS',4,this)">⭐</span>
+              <span class="star" onclick="setStar('coachS',5,this)">⭐</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div id="step3" style="display:none;">
+          <div style="padding:6px 0 13px;"><div style="font-size:16px;font-weight:700;color:#fff;">Başarılar & Ödüller</div><div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px;">Turnuva ve madalya performansı</div></div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+            <div class="medal-box" style="border-color:rgba(255,215,0,0.25);">
+              <div style="font-size:20px;margin-bottom:5px;">🥇</div>
+              <div style="font-size:9px;color:rgba(255,255,255,0.3);margin-bottom:8px;">Altın</div>
+              <div style="display:flex;align-items:center;justify-content:center;gap:6px;">
+                <button class="m-btn" onclick="adj('gold',-1)">−</button>
+                <span id="goldN" class="medal-num" style="color:#ffd700;">2</span>
+                <button class="m-btn" onclick="adj('gold',1)">+</button>
+              </div>
+            </div>
+            <div class="medal-box" style="border-color:rgba(192,192,192,0.2);">
+              <div style="font-size:20px;margin-bottom:5px;">🥈</div>
+              <div style="font-size:9px;color:rgba(255,255,255,0.3);margin-bottom:8px;">Gümüş</div>
+              <div style="display:flex;align-items:center;justify-content:center;gap:6px;">
+                <button class="m-btn" onclick="adj('silver',-1)">−</button>
+                <span id="silverN" class="medal-num" style="color:#c0c0c0;">3</span>
+                <button class="m-btn" onclick="adj('silver',1)">+</button>
+              </div>
+            </div>
+            <div class="medal-box" style="border-color:rgba(205,127,50,0.2);">
+              <div style="font-size:20px;margin-bottom:5px;">🥉</div>
+              <div style="font-size:9px;color:rgba(255,255,255,0.3);margin-bottom:8px;">Bronz</div>
+              <div style="display:flex;align-items:center;justify-content:center;gap:6px;">
+                <button class="m-btn" onclick="adj('bronze',-1)">−</button>
+                <span id="bronzeN" class="medal-num" style="color:#cd7f32;">1</span>
+                <button class="m-btn" onclick="adj('bronze',1)">+</button>
+              </div>
+            </div>
+          </div>
+          <div class="field"><label class="flbl">PERFORMANS TRENDİ</label>
+            <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:5px;" id="trendG">
+              <button class="pill" onclick="setPill('trendG','Düşüş',this)">📉 Düşüş</button>
+              <button class="pill on" onclick="setPill('trendG','Stabil',this)">📊 Stabil</button>
+              <button class="pill" onclick="setPill('trendG','Yükseliş',this)">📈 Yükseliş</button>
+              <button class="pill" onclick="setPill('trendG','Zirve',this)">🚀 Zirve</button>
+            </div>
+          </div>
+          <div class="field"><label class="flbl">SON 12 AY SAKATILIK</label>
+            <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:5px;" id="injG">
+              <button class="pill on" onclick="setPill('injG','Yok',this)">Yok</button>
+              <button class="pill" onclick="setPill('injG','Minör',this)">Minör</button>
+              <button class="pill" onclick="setPill('injG','Orta',this)">Orta</button>
+              <button class="pill" onclick="setPill('injG','Ağır',this)">Ağır</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4 -->
+        <div id="step4" style="display:none;">
+          <div style="padding:6px 0 13px;"><div style="font-size:16px;font-weight:700;color:#fff;">Medya & Sosyal</div><div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px;">Görünürlük ve sponsor çekiciliği</div></div>
+          <div class="field"><label class="flbl">INSTAGRAM TAKİPÇİ</label>
+            <select class="finput" id="f_ig"><option value="0">Hesap yok</option><option value="2500">1K–5K</option><option value="12000">5K–20K</option><option value="50000">20K–100K</option><option value="200000">100K–500K</option><option value="700000">500K+</option></select>
+          </div>
+          <div class="field"><label class="flbl">MEVCUT SPONSOR SAYISI</label>
+            <input type="range" id="sponsorR" min="0" max="10" value="1" style="--v:10%;margin:8px 0 4px;" oninput="updR(this)">
+            <div style="display:flex;justify-content:space-between;"><span style="font-size:9px;color:rgba(255,255,255,0.2);">0</span><span style="font-size:12px;font-weight:700;color:#f5a623;" id="sponsorLbl">1 Sponsor</span><span style="font-size:9px;color:rgba(255,255,255,0.2);">10+</span></div>
+          </div>
+          <div class="field"><label class="flbl">MEDYAYA ÇIKIŞ (son 1 yıl)</label>
+            <select class="finput" id="f_media"><option>Hiç</option><option>1-3 kez</option><option>4-10 kez</option><option selected>10-30 kez</option><option>30+ kez</option></select>
+          </div>
+          <div class="field"><label class="flbl">KİŞİSEL MARKA GÜCÜ</label>
+            <div style="display:flex;gap:10px;margin-top:6px;" id="brandS">
+              <span class="star on" onclick="setStar('brandS',1,this)">⭐</span>
+              <span class="star on" onclick="setStar('brandS',2,this)">⭐</span>
+              <span class="star" onclick="setStar('brandS',3,this)">⭐</span>
+              <span class="star" onclick="setStar('brandS',4,this)">⭐</span>
+              <span class="star" onclick="setStar('brandS',5,this)">⭐</span>
+            </div>
+          </div>
+          <div style="background:rgba(245,166,35,0.07);border:1px solid rgba(245,166,35,0.22);border-radius:13px;padding:13px;display:flex;gap:11px;align-items:flex-start;margin-top:6px;">
+            <span style="font-size:20px;">🤖</span>
+            <div><div style="font-size:11px;font-weight:700;color:#f5a623;margin-bottom:3px;">AI Değerleme Hazır</div><div style="font-size:10px;color:rgba(255,255,255,0.4);line-height:1.6;">Tüm veriler toplandı. "Değer Hesapla" butonuna basarak yapay zeka analizini başlatın.</div></div>
+          </div>
+          <div style="height:10px;"></div>
+        </div>
+
+      </div><!-- /scrollable -->
+
+      <div class="bot">
+        <button class="btn-back" id="btnBack" style="display:none;" onclick="prevStep()">‹ Geri</button>
+        <button class="btn-next" id="btnNext" onclick="nextStep()">Devam Et ›</button>
+      </div>
+      <div class="home-bar"><div></div></div>
+    </div>
+    <!-- /sc-form -->
+
+    <!-- ══ SC-LOAD ══ -->
+    <div class="screen" id="sc-load">
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 28px;overflow:hidden;">
+        <div class="ai-ring"></div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:#fff;text-align:center;margin-bottom:8px;">AI ANALİZ EDİYOR</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.4);text-align:center;margin-bottom:28px;line-height:1.6;" id="loadTxt">Veriler işleniyor...</div>
+        <div style="width:100%;display:flex;flex-direction:column;gap:9px;">
+          <div id="ls1" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:#0f1623;border-radius:12px;border:1px solid #1e2d4a;"><span id="li1" style="font-size:16px;">⏳</span><span style="font-size:11px;color:rgba(255,255,255,0.5);">Kariyer & madalya analizi</span></div>
+          <div id="ls2" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:#0f1623;border-radius:12px;border:1px solid #1e2d4a;opacity:0.35;"><span id="li2" style="font-size:16px;">⏳</span><span style="font-size:11px;color:rgba(255,255,255,0.5);">Yaş & piyasa faktörleri</span></div>
+          <div id="ls3" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:#0f1623;border-radius:12px;border:1px solid #1e2d4a;opacity:0.35;"><span id="li3" style="font-size:16px;">⏳</span><span style="font-size:11px;color:rgba(255,255,255,0.5);">Medya & sponsor potansiyeli</span></div>
+          <div id="ls4" style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:#0f1623;border-radius:12px;border:1px solid #1e2d4a;opacity:0.35;"><span id="li4" style="font-size:16px;">⏳</span><span style="font-size:11px;color:rgba(255,255,255,0.5);">Nihai değer hesaplanıyor</span></div>
+        </div>
+      </div>
+      <div class="home-bar"><div></div></div>
+    </div>
+
+    <!-- ══ SC-RESULT ══ -->
+    <div class="screen" id="sc-result">
+      <div class="topbar">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="tb-av" style="background:linear-gradient(135deg,#f5a623,#f56a35);">💰</div>
+          <div><div class="tb-title" id="rName">Sporcu Değeri</div><div class="tb-sub" id="rSport">—</div></div>
+        </div>
+        <button onclick="showToast('Paylaşım linki kopyalandı! 🔗')" style="background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.3);border-radius:9px;padding:7px 12px;color:#f5a623;font-size:10px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;">Paylaş ↗</button>
+      </div>
+      <div style="display:flex;gap:6px;padding:10px 18px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;overflow-x:auto;" id="resTabBar">
+        <button class="pill on" onclick="rTab('sonuc',this)">Sonuç</button>
+        <button class="pill" onclick="rTab('faktor',this)">Faktörler</button>
+        <button class="pill" onclick="rTab('cmp',this)">Karşılaştır</button>
+        <button class="pill" onclick="rTab('hist',this)">Geçmiş</button>
+      </div>
+
+      <div class="scrollable">
+
+        <div id="tab-sonuc" style="padding:18px 18px 10px;">
+          <div style="text-align:center;margin-bottom:18px;">
+            <div style="font-size:9px;color:rgba(255,255,255,0.22);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">YAPAY ZEKA DEĞER TAHMİNİ</div>
+            <div class="value-ring"><div class="vr-num" id="rVal">₺—</div><div class="vr-lbl">TAHMİNİ DEĞER</div></div>
+            <div style="display:flex;gap:8px;justify-content:center;margin-top:14px;">
+              <div style="background:rgba(0,200,140,0.1);border:1px solid rgba(0,200,140,0.2);border-radius:8px;padding:5px 12px;font-size:9px;color:#00c88c;font-weight:600;" id="rMin">—</div>
+              <div style="background:rgba(99,57,255,0.1);border:1px solid rgba(99,57,255,0.2);border-radius:8px;padding:5px 12px;font-size:9px;color:#a78bff;font-weight:600;" id="rMax">—</div>
+            </div>
+          </div>
+          <div style="background:#0f1623;border:1.5px solid #1e2d4a;border-radius:14px;padding:14px;margin-bottom:11px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;"><span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:0.8px;">SGS PUANI</span><span style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:#f5a623;" id="rSgs">—</span></div>
+            <div style="height:7px;background:#1e2d4a;border-radius:10px;overflow:hidden;"><div id="rSgsBar" style="height:100%;width:0%;background:linear-gradient(90deg,#f5a623,#00c88c);border-radius:10px;transition:width 1.1s ease;"></div></div>
+            <div style="display:flex;justify-content:space-between;margin-top:5px;"><span style="font-size:8px;color:rgba(255,255,255,0.2);">0</span><span style="font-size:9px;color:rgba(255,255,255,0.4);" id="rSgsLbl">—</span><span style="font-size:8px;color:rgba(255,255,255,0.2);">100</span></div>
+          </div>
+          <div style="background:rgba(99,57,255,0.07);border:1px solid rgba(99,57,255,0.2);border-radius:14px;padding:13px;margin-bottom:11px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span style="font-size:16px;">🤖</span><span style="font-size:10px;font-weight:700;color:#a78bff;letter-spacing:0.5px;">AI YORUM</span></div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.6);line-height:1.8;" id="rComment">—</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px;">
+            <div style="background:#0f1623;border:1px solid rgba(0,200,140,0.2);border-radius:13px;padding:11px;"><div style="font-size:9px;font-weight:700;color:#00c88c;margin-bottom:7px;">✅ GÜÇLÜ</div><div id="rStrong" style="font-size:9px;color:rgba(255,255,255,0.5);line-height:1.9;"></div></div>
+            <div style="background:#0f1623;border:1px solid rgba(239,68,68,0.2);border-radius:13px;padding:11px;"><div style="font-size:9px;font-weight:700;color:#ef4444;margin-bottom:7px;">⚠️ GELİŞTİR</div><div id="rWeak" style="font-size:9px;color:rgba(255,255,255,0.5);line-height:1.9;"></div></div>
+          </div>
+        </div>
+
+        <div id="tab-faktor" style="display:none;padding:16px 18px;">
+          <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;">DEĞER FAKTÖRLERİ</div>
+          <div id="factorList"></div>
+          <div style="background:rgba(245,166,35,0.07);border:1px solid rgba(245,166,35,0.2);border-radius:13px;padding:13px;margin-top:10px;">
+            <div style="font-size:9px;color:rgba(255,255,255,0.35);margin-bottom:5px;">📊 En Yüksek Katkı</div>
+            <div style="font-size:13px;font-weight:600;color:#f5a623;" id="topFact">—</div>
+          </div>
+        </div>
+
+        <div id="tab-cmp" style="display:none;">
+          <div style="padding:14px 18px 6px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:1px;text-transform:uppercase;">BENZER SPORCULAR</div>
+          <div id="cmpList"></div>
+        </div>
+
+        <div id="tab-hist" style="display:none;">
+          <div style="padding:14px 18px 6px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:1px;text-transform:uppercase;">DEĞER GEÇMİŞİ</div>
+          <div id="histList"></div>
+          <div style="padding:0 18px 18px;"><div style="background:#0f1623;border:1.5px solid #1e2d4a;border-radius:13px;padding:13px;"><div style="font-size:9px;color:rgba(255,255,255,0.3);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.6px;">12 Aylık Trend</div><div style="display:flex;align-items:flex-end;gap:3px;height:55px;" id="miniChart"></div></div></div>
+        </div>
+
+      </div>
+
+      <div class="bot">
+        <button class="btn-back" onclick="resetAll()">Yeni Analiz</button>
+        <button class="btn-next" onclick="showToast('Rapor PDF olarak kaydedildi! 📄')">📥 Raporu İndir</button>
+      </div>
+      <div class="home-bar"><div></div></div>
+    </div>
+
+   </div><!-- /app -->
+  </div><!-- /iphone-screen -->
+ </div><!-- /iphone-frame -->
+</div>
+
+<div class="toast" id="toastEl"></div>
+
+<script>
+// STATE
+var step=1, TOTAL=4;
+var medals={gold:2,silver:3,bronze:1};
+var selLevel='Türkiye', selTrend='Stabil', selInj='Yok';
+var coachR=3, brandR=2;
+
+// STEP RENDER
+function renderStep(){
+  for(var i=1;i<=TOTAL;i++){
+    document.getElementById('sd'+i).className='s-dot '+(i<step?'done':i===step?'cur':'idle');
+    if(i<TOTAL) document.getElementById('sl'+i).className='s-line'+(i<step?' done':'');
+    document.getElementById('step'+i).style.display=i===step?'block':'none';
+  }
+  var bb=document.getElementById('btnBack');
+  bb.style.display=step>1?'flex':'none';
+  document.getElementById('btnNext').textContent=step===TOTAL?'🤖 Değer Hesapla':'Devam Et ›';
+  document.getElementById('formBody').scrollTop=0;
+}
+
+function nextStep(){ if(step<TOTAL){step++;renderStep();}else{startAI();} }
+function prevStep(){ if(step>1){step--;renderStep();} }
+
+// PILLS
+function setPill(groupId, val, btn){
+  document.querySelectorAll('#'+groupId+' .pill').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  if(groupId==='levelG') selLevel=val;
+  else if(groupId==='trendG') selTrend=val;
+  else if(groupId==='injG') selInj=val;
+}
+
+// MEDALS
+function adj(type,delta){
+  medals[type]=Math.max(0,medals[type]+delta);
+  document.getElementById(type[0].toUpperCase()+type.slice(1).replace('Gold','gold').replace('Silver','silver').replace('Bronze','bronze')+'N').textContent=medals[type];
+  // direct map
+  var ids={gold:'goldN',silver:'silverN',bronze:'bronzeN'};
+  document.getElementById(ids[type]).textContent=medals[type];
+}
+
+// STARS
+function setStar(groupId,n){
+  if(groupId==='coachS') coachR=n; else brandR=n;
+  document.querySelectorAll('#'+groupId+' .star').forEach(function(s,i){s.classList.toggle('on',i<n);});
+}
+
+// RANGE
+function updR(input){
+  var pct=((input.value-input.min)/(input.max-input.min))*100;
+  input.style.setProperty('--v',pct+'%');
+  document.getElementById('sponsorLbl').textContent=input.value+' Sponsor';
+}
+
+// SCREENS
+function goScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+}
+
+// AI LOAD
+function startAI(){
+  goScreen('sc-load');
+  var msgs=['Kariyer & madalya verisi analiz ediliyor...','Yaş ve piyasa faktörleri işleniyor...','Medya ve sponsor potansiyeli hesaplanıyor...','Nihai değer belirleniyor...'];
+  for(var i=0;i<4;i++){
+    (function(idx){
+      setTimeout(function(){
+        document.getElementById('loadTxt').textContent=msgs[idx];
+        document.getElementById('li'+(idx+1)).textContent='✅';
+        document.getElementById('ls'+(idx+1)).style.opacity='1';
+        if(idx<3) document.getElementById('ls'+(idx+2)).style.opacity='0.7';
+      },idx*900);
+    })(i);
+  }
+  setTimeout(function(){buildResult();goScreen('sc-result');},4000);
+}
+
+// FORMAT
+function fmt(v){return v>=1000000?(v/1000000).toFixed(1)+'M':v>=1000?Math.round(v/1000)+'K':v;}
+
+// BUILD RESULT
+function buildResult(){
+  var name=document.getElementById('f_name').value||'Sporcu';
+  var age=parseInt(document.getElementById('f_age').value)||16;
+  var sport=document.getElementById('f_sport').value||'Karate';
+  var city=document.getElementById('f_city').value||'Samsun';
+  var ig=parseInt(document.getElementById('f_ig').value)||0;
+  var sponsors=parseInt(document.getElementById('sponsorR').value)||1;
+
+  var base=80000;
+  var lvlM={İl:1,Bölge:1.5,Türkiye:2.4,Uluslararası:4,Olimpiyat:7}[selLevel]||1;
+  base*=lvlM;
+  base+=medals.gold*28000+medals.silver*13000+medals.bronze*6000;
+  var ageFactor=age<18?0.65+age*0.025:age<28?1.25:age<35?1.0:0.7;
+  base*=ageFactor;
+  var trendM={Düşüş:0.7,Stabil:1.0,Yükseliş:1.35,Zirve:1.7}[selTrend]||1;
+  base*=trendM;
+  var injM={Yok:1.1,Minör:1.0,Orta:0.82,Ağır:0.6}[selInj]||1;
+  base*=injM;
+  if(ig>0) base+=Math.log10(ig)*18000;
+  base+=sponsors*20000+coachR*9000+brandR*14000;
+  base=Math.round(base/1000)*1000;
+  var minV=Math.round(base*0.72/1000)*1000;
+  var maxV=Math.round(base*1.65/1000)*1000;
+  var sgs=Math.min(99,Math.round(45+(base/12000)));
+
+  document.getElementById('rName').textContent=name;
+  document.getElementById('rSport').textContent=sport+' · '+city;
+  document.getElementById('rVal').textContent='₺'+fmt(base);
+  document.getElementById('rMin').textContent='Min: ₺'+fmt(minV);
+  document.getElementById('rMax').textContent='Max: ₺'+fmt(maxV);
+  document.getElementById('rSgs').textContent=sgs;
+  setTimeout(function(){document.getElementById('rSgsBar').style.width=sgs+'%';},150);
+  document.getElementById('rSgsLbl').textContent=sgs>=85?'Mükemmel Profil':sgs>=70?'Güçlü Profil':sgs>=55?'Orta Profil':'Gelişme Gerekiyor';
+  document.getElementById('rComment').textContent=name+', '+selLevel+' seviyesindeki performansı ve '+medals.gold+' altın madalyasıyla dikkat çekici bir piyasa değeri oluşturmuştur. '+(selTrend==='Yükseliş'||selTrend==='Zirve'?'Performans trendi yükselişte, sponsor talebi artmaktadır. ':'Kariyer seyri stabil bir seyir izlemektedir. ')+(ig>10000?'Sosyal medya varlığı değere önemli katkı sağlamaktadır.':'Sosyal medya güçlendirilirse değer %25-35 büyüme potansiyeline sahiptir.');
+
+  var factors=[
+    {l:'Kariyer & Başarı',v:Math.min(99,Math.round(lvlM*22+medals.gold*8+medals.silver*4+medals.bronze*2)),c:'#f5a623'},
+    {l:'Yaş & Potansiyel',v:Math.round(ageFactor*78),c:'#00c88c'},
+    {l:'Perf. Trendi',v:{Düşüş:28,Stabil:55,Yükseliş:78,Zirve:96}[selTrend]||55,c:'#a78bff'},
+    {l:'Sağlık Durumu',v:{Yok:92,Minör:70,Orta:48,Ağır:28}[selInj]||92,c:'#60a5fa'},
+    {l:'Medya & Sosyal',v:Math.min(95,Math.round(18+(ig>0?Math.log10(ig)*11:0)+brandR*9)),c:'#f472b6'},
+    {l:'Sponsor Gücü',v:Math.min(95,Math.round(28+sponsors*7)),c:'#34d399'},
+  ];
+  document.getElementById('factorList').innerHTML=factors.map(function(f){
+    return '<div class="fr-row"><span class="fr-lbl">'+f.l+'</span><div class="fr-track"><div class="fr-fill" style="width:'+f.v+'%;background:'+f.c+';"></div></div><span class="fr-val" style="color:'+f.c+';">'+f.v+'</span></div>';
+  }).join('');
+  var top=factors.reduce(function(a,b){return a.v>b.v?a:b;});
+  document.getElementById('topFact').textContent=top.l;
+
+  document.getElementById('rStrong').innerHTML=factors.filter(function(f){return f.v>=68;}).map(function(f){return '• '+f.l;}).join('<br>')||'• Dengeli profil';
+  document.getElementById('rWeak').innerHTML=factors.filter(function(f){return f.v<55;}).map(function(f){return '• '+f.l;}).join('<br>')||'• Belirgin zayıflık yok';
+
+  var peers=[
+    {n:'Ali Kaya',s:sport,c:'Ankara',v:Math.round(base*0.82/1000)*1000,chg:'+12%',av:'AK',clr:'#6339ff'},
+    {n:'Selin Demir',s:sport,c:'İstanbul',v:Math.round(base*1.18/1000)*1000,chg:'+28%',av:'SD',clr:'#00c88c'},
+    {n:'Burak Şen',s:sport,c:'İzmir',v:Math.round(base*0.68/1000)*1000,chg:'-4%',av:'BŞ',clr:'#f5a623'},
+    {n:'Ayşe Yıldız',s:sport,c:'Bursa',v:Math.round(base*1.32/1000)*1000,chg:'+41%',av:'AY',clr:'#a78bff'},
+  ];
+  var cmpHtml='<div class="cmp-row" style="background:rgba(245,166,35,0.06);border-left:3px solid #f5a623;"><div style="width:34px;height:34px;border-radius:50%;background:rgba(245,166,35,0.2);border:1.5px solid rgba(245,166,35,0.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#f5a623;flex-shrink:0;">SEN</div><div style="flex:1;padding-left:2px;"><div style="font-size:12px;font-weight:600;color:#fff;">'+name+'</div><div style="font-size:9px;color:rgba(255,255,255,0.35);">'+sport+' · '+city+'</div></div><div style="text-align:right;"><div style="font-family:Bebas Neue,sans-serif;font-size:16px;color:#f5a623;">₺'+fmt(base)+'</div><span class="chg up">SEN</span></div></div>';
+  peers.forEach(function(p){
+    cmpHtml+='<div class="cmp-row"><div style="width:34px;height:34px;border-radius:50%;background:'+p.clr+'22;border:1.5px solid '+p.clr+'44;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:'+p.clr+';flex-shrink:0;">'+p.av+'</div><div style="flex:1;padding-left:2px;"><div style="font-size:12px;font-weight:600;color:#fff;">'+p.n+'</div><div style="font-size:9px;color:rgba(255,255,255,0.35);">'+p.s+' · '+p.c+'</div></div><div style="text-align:right;"><div style="font-family:Bebas Neue,sans-serif;font-size:16px;color:#f5a623;">₺'+fmt(p.v)+'</div><span class="chg '+(p.chg.charAt(0)==='+' ?'up':'dn')+'">'+p.chg+'</span></div></div>';
+  });
+  document.getElementById('cmpList').innerHTML=cmpHtml;
+
+  var months=['Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara','Oca','Şub','Mar'];
+  var histVals=[];
+  for(var i=0;i<12;i++) histVals.push(Math.round((base*(0.55+i*0.04))/1000)*1000);
+  var histHtml='';
+  var last6=histVals.slice(-6);
+  last6.forEach(function(v,i){
+    var m=months[months.length-6+i];
+    var prev=histVals[histVals.length-7+i];
+    var pct=i>0?Math.round((v-prev)/prev*100):0;
+    histHtml+='<div style="display:flex;align-items:center;gap:8px;padding:9px 18px;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="font-size:9px;color:rgba(255,255,255,0.25);width:56px;">2025 '+m+'</span><span style="font-family:Bebas Neue,sans-serif;font-size:15px;color:#f5a623;flex:1;">₺'+fmt(v)+'</span>'+(i>0?'<span class="chg '+(pct>=0?'up':'dn')+'">'+(pct>=0?'+':'')+pct+'%</span>':'<span class="chg" style="background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.2);">—</span>')+'</div>';
+  });
+  document.getElementById('histList').innerHTML=histHtml;
+
+  var maxH=Math.max.apply(null,histVals);
+  document.getElementById('miniChart').innerHTML=histVals.map(function(v,i){
+    var h=Math.round((v/maxH)*50);
+    return '<div style="flex:1;height:'+h+'px;background:'+(i===histVals.length-1?'#f5a623':'rgba(245,166,35,0.28)')+';border-radius:3px 3px 1px 1px;"></div>';
+  }).join('');
+}
+
+// RESULT TABS
+function rTab(name,btn){
+  ['sonuc','faktor','cmp','hist'].forEach(function(t){document.getElementById('tab-'+t).style.display='none';});
+  document.getElementById('tab-'+name).style.display='block';
+  document.querySelectorAll('#resTabBar .pill').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+}
+
+// RESET
+function resetAll(){
+  step=1;medals={gold:2,silver:3,bronze:1};selLevel='Türkiye';selTrend='Stabil';selInj='Yok';coachR=3;brandR=2;
+  renderStep();goScreen('sc-form');
+  // reset medal displays
+  document.getElementById('goldN').textContent='2';
+  document.getElementById('silverN').textContent='3';
+  document.getElementById('bronzeN').textContent='1';
+}
+
+// TOAST
+var tt;
+function showToast(msg){
+  var el=document.getElementById('toastEl');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(tt);tt=setTimeout(function(){el.classList.remove('show');},2500);
+}
+
+// INIT
+renderStep();
+</script>
+</body>
+</html>

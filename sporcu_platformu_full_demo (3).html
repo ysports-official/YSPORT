@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sporcu Platformu — Tam Demo</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --navy:#07090f;--card:#161d2e;--card2:#111827;--border:#1e2d4a;--border2:#2a3a5a;
+  --blue:#1a4fff;--purple:#8b2fff;--gold:#c9a227;--gold2:#ffd700;
+  --green:#00b97a;--red:#e84545;--teal:#00c2d1;--orange:#e85d04;
+  --text:#fff;--muted:#8ba8d4;--dim:#4a6fa5;--gray:#6b82a8;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f1117;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:16px 8px 40px;}
+
+/* ── FRAME ── */
+.app-frame{width:100%;max-width:390px;}
+.frame-label{text-align:center;color:var(--dim);font-size:10px;letter-spacing:2px;margin-bottom:8px;font-weight:600;}
+.phone{background:#12151f;border-radius:52px;padding:10px;border:2px solid #252d45;width:100%;}
+.screen-wrap{background:var(--navy);border-radius:44px;overflow:hidden;height:780px;position:relative;}
+.notch{height:28px;display:flex;align-items:center;justify-content:center;background:var(--navy);}
+.notch-pill{width:90px;height:5px;background:#1e2d4a;border-radius:10px;}
+.statusbar{display:flex;justify-content:space-between;padding:2px 20px 5px;background:var(--navy);}
+.statusbar span{color:var(--muted);font-size:10px;font-weight:500;}
+
+/* ── SCREENS ── */
+.screen{display:none;flex-direction:column;height:calc(780px - 56px);}
+.screen.active{display:flex;}
+.scroll{flex:1;overflow-y:auto;scrollbar-width:none;}
+.scroll::-webkit-scrollbar{display:none;}
+
+/* ── TOP BARS ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px 10px;flex-shrink:0;}
+.tb-title{color:var(--text);font-size:16px;font-weight:700;}
+.back-btn{width:32px;height:32px;background:rgba(255,255,255,0.07);border-radius:50%;border:none;color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.tb-right{color:var(--muted);font-size:18px;cursor:pointer;}
+
+/* ── BOTTOM NAV ── */
+.bnav{display:flex;background:#0d1117;border-top:1px solid var(--border);flex-shrink:0;}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px 12px;cursor:pointer;border:none;background:none;transition:all .15s;}
+.bni-icon{font-size:20px;}
+.bni-lbl{font-size:9px;color:var(--dim);font-weight:600;}
+.bni.on .bni-lbl{color:#7c6fff;}
+.bni.on .bni-icon{filter:drop-shadow(0 0 5px rgba(124,111,255,.7));}
+
+/* ── COMMON ── */
+.tag{display:inline-block;border-radius:20px;padding:3px 12px;font-size:10px;font-weight:700;margin-bottom:8px;}
+.tag-blue{background:rgba(74,63,255,.15);border:1px solid rgba(74,63,255,.3);color:#a78bfa;}
+.tag-gold{background:rgba(201,162,39,.15);border:1px solid rgba(201,162,39,.3);color:var(--gold2);}
+.tag-green{background:rgba(0,185,122,.15);border:1px solid rgba(0,185,122,.3);color:#4ade80;}
+.tag-red{background:rgba(232,69,69,.12);border:1px solid rgba(232,69,69,.3);color:#f87171;}
+.tag-teal{background:rgba(0,194,209,.12);border:1px solid rgba(0,194,209,.3);color:var(--teal);}
+.tag-orange{background:rgba(232,93,4,.15);border:1px solid rgba(232,93,4,.3);color:#fb923c;}
+
+.sh{font-size:20px;font-weight:800;color:var(--text);line-height:1.3;margin-bottom:6px;}
+.sp{color:var(--muted);font-size:12px;line-height:1.6;margin-bottom:14px;}
+.card{background:var(--card);border-radius:16px;border:1px solid var(--border);margin-bottom:10px;cursor:pointer;transition:transform .12s;}
+.card:active{transform:scale(.97);}
+.card2{background:var(--card2);border-radius:16px;border:1px solid var(--border);margin-bottom:10px;}
+.btn-p{background:linear-gradient(135deg,var(--blue),var(--purple));border:none;border-radius:12px;padding:13px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;width:100%;margin-bottom:8px;transition:opacity .15s;}
+.btn-p:active{opacity:.85;}
+.btn-s{background:rgba(255,255,255,.06);border:1px solid var(--border2);border-radius:12px;padding:12px;color:var(--text);font-size:13px;font-weight:600;cursor:pointer;width:100%;margin-bottom:8px;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#f59e0b);border:none;border-radius:12px;padding:13px;color:#1a1000;font-size:13px;font-weight:700;cursor:pointer;width:100%;margin-bottom:8px;}
+.btn-red{background:linear-gradient(135deg,#dc2626,var(--red));border:none;border-radius:12px;padding:13px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;width:100%;margin-bottom:8px;}
+.btn-green{background:linear-gradient(135deg,#059669,var(--green));border:none;border-radius:12px;padding:13px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;width:100%;margin-bottom:8px;}
+
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #111827;}
+.info-row:last-child{border-bottom:none;}
+.ir-label{color:var(--muted);font-size:12px;}
+.ir-val{color:var(--text);font-size:12px;font-weight:600;text-align:right;max-width:55%;}
+
+.sec-hdr{display:flex;justify-content:space-between;align-items:center;margin:14px 0 8px;}
+.sec-title{color:var(--text);font-size:14px;font-weight:700;}
+.sec-link{color:#7c6fff;font-size:12px;cursor:pointer;}
+
+.inp{width:100%;background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:11px 14px;color:var(--text);font-size:13px;outline:none;transition:border-color .15s;margin-bottom:10px;}
+.inp:focus{border-color:var(--blue);}
+select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236b82a8' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+.inp-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.field label{display:block;color:var(--muted);font-size:11px;font-weight:600;margin-bottom:5px;}
+
+/* ── AVATAR ── */
+.av{border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.av-sq{border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* ── STATS ── */
+.stats-row{display:grid;gap:8px;}
+.stat-card{background:var(--card2);border-radius:12px;padding:12px;border:1px solid var(--border);text-align:center;}
+.stat-val{font-size:20px;font-weight:800;color:var(--text);}
+.stat-lbl{color:var(--gray);font-size:10px;margin-top:3px;}
+
+/* ── SGS CIRCLE ── */
+.sgs-circle{width:100px;height:100px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 10px;border:5px solid var(--blue);}
+.sgs-val{font-size:36px;font-weight:800;line-height:1;color:var(--text);}
+.sgs-lbl{color:var(--muted);font-size:10px;margin-top:2px;}
+
+/* ── FACTOR BARS ── */
+.factor-row{margin-bottom:9px;}
+.frow-top{display:flex;justify-content:space-between;margin-bottom:3px;}
+.frow-name{color:#c8d8ff;font-size:11px;font-weight:600;}
+.frow-score{font-size:11px;font-weight:700;}
+.fbar{height:5px;background:#1e2d4a;border-radius:5px;overflow:hidden;}
+.fbar-fill{height:100%;border-radius:5px;transition:width 1s ease;}
+
+/* ── CHAMP SCROLL ── */
+.champ-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
+.champ-scroll::-webkit-scrollbar{display:none;}
+.champ-card{flex-shrink:0;width:130px;background:var(--card2);border-radius:14px;overflow:hidden;border:1px solid var(--border);cursor:pointer;}
+.champ-card:active{opacity:.85;}
+.ct-top{height:64px;display:flex;align-items:center;justify-content:center;position:relative;}
+.ct-gold{background:linear-gradient(135deg,#3a2800,#7a5500);}
+.ct-silver{background:linear-gradient(135deg,#1a2030,#3a4060);}
+.ct-bronze{background:linear-gradient(135deg,#2a1800,#5a3010);}
+.medal-sm{position:absolute;top:5px;right:7px;font-size:14px;}
+.cbody{padding:8px 9px 10px;}
+.cname{color:var(--text);font-size:11px;font-weight:700;}
+.cbranch{color:var(--muted);font-size:9px;margin-top:2px;}
+.cach{color:#c8d8ff;font-size:9px;margin-top:4px;line-height:1.4;}
+
+/* ── SPORTS GRID ── */
+.sports-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.sg-item{background:var(--card);border-radius:14px;padding:11px 8px;text-align:center;border:1px solid var(--border);cursor:pointer;transition:all .15s;}
+.sg-item:active{transform:scale(.95);}
+.sg-icon{font-size:22px;margin-bottom:5px;}
+.sg-name{color:#c8d8ff;font-size:10px;font-weight:600;}
+.cat-lbl{color:var(--gray);font-size:10px;font-weight:700;letter-spacing:1px;margin:12px 0 6px;padding-left:2px;}
+
+/* ── SETTINGS ── */
+.s-row{display:flex;align-items:center;gap:12px;padding:13px 14px;cursor:pointer;transition:background .15s;border-bottom:1px solid #111827;}
+.s-row:last-child{border-bottom:none;}
+.s-row:active{background:#1d2640;}
+.s-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.s-info{flex:1;}
+.s-title{color:var(--text);font-size:13px;font-weight:600;}
+.s-sub{color:var(--gray);font-size:10px;margin-top:2px;}
+.s-arrow{color:#3a4a6a;font-size:16px;}
+.toggle{width:44px;height:24px;background:#1e2d4a;border-radius:12px;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;}
+.toggle.on{background:#4a3fff;}
+.toggle-dot{width:20px;height:20px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:left .2s;}
+.toggle.on .toggle-dot{left:22px;}
+
+/* ── POLICY ── */
+.policy-sec{margin-bottom:14px;}
+.ps-title{color:var(--text);font-size:13px;font-weight:700;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;}
+.ps-body{color:#a8b8d8;font-size:11px;line-height:1.8;}
+.ps-list{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.ps-list li{display:flex;align-items:flex-start;gap:8px;color:#a8b8d8;font-size:11px;line-height:1.6;}
+.ps-list li::before{content:'•';color:#7c6fff;flex-shrink:0;}
+.rights-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+.right-item{background:var(--card);border-radius:12px;padding:10px;border:1px solid var(--border);}
+
+/* ── HERO ── */
+.hero{padding:22px 16px 18px;background:linear-gradient(180deg,#0a0d20,var(--navy));}
+.hero-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(74,63,255,.15);border:1px solid rgba(74,63,255,.3);border-radius:20px;padding:4px 12px;color:#a78bfa;font-size:10px;font-weight:600;margin-bottom:12px;}
+.hero h1{font-size:24px;font-weight:800;line-height:1.2;margin-bottom:10px;color:var(--text);}
+.hero h1 em{font-style:normal;background:linear-gradient(135deg,#4a8fff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{color:var(--muted);font-size:12px;line-height:1.6;margin-bottom:16px;}
+
+/* ── STEP TABS ── */
+.step-tabs{display:flex;background:var(--card2);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;flex-shrink:0;}
+.step-tabs::-webkit-scrollbar{display:none;}
+.step-tab{flex-shrink:0;padding:10px 14px;font-size:11px;font-weight:600;color:var(--dim);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;}
+.step-tab.active{color:#7c6fff;border-bottom-color:#7c6fff;}
+.step-tab.done{color:#4ade80;}
+
+/* ── LOADING ── */
+.loading-wrap{padding:40px 20px;text-align:center;}
+.ai-spinner{width:60px;height:60px;border:4px solid var(--border);border-top:4px solid #7c6fff;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.ls-item{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:11px;color:var(--gray);}
+.ls-item.done-l{color:#4ade80;}
+.ls-item.active-l{color:#a78bfa;}
+.ls-dot{width:8px;height:8px;border-radius:50%;background:#1e2d4a;flex-shrink:0;}
+.ls-item.done-l .ls-dot{background:#4ade80;}
+.ls-item.active-l .ls-dot{background:#a78bfa;animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+/* ── MODAL ── */
+.modal-bg{display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);z-index:200;align-items:flex-end;justify-content:center;}
+.modal-bg.show{display:flex;}
+.modal-box{background:#111827;border-radius:24px 24px 0 0;padding:20px;width:100%;border-top:1px solid var(--border2);}
+.modal-box h3{color:var(--text);font-size:16px;font-weight:700;text-align:center;margin-bottom:6px;}
+.modal-box p{color:var(--muted);font-size:12px;text-align:center;line-height:1.6;margin-bottom:16px;}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(80px);background:rgba(74,63,255,.95);color:#fff;font-size:12px;padding:9px 20px;border-radius:20px;transition:transform .25s;z-index:9999;pointer-events:none;white-space:nowrap;}
+#toast.show{transform:translateX(-50%) translateY(0);}
+
+/* slider */
+input[type=range]{width:100%;height:6px;border-radius:6px;background:var(--border);outline:none;-webkit-appearance:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#4a3fff,var(--purple));cursor:pointer;border:2px solid #fff;}
+.slider-wrap{background:var(--card);border-radius:14px;padding:13px;border:1px solid var(--border2);margin-bottom:10px;}
+.slider-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.slider-lbl{color:#c8d8ff;font-size:12px;font-weight:600;}
+.slider-v{font-size:15px;font-weight:800;color:#7c6fff;}
+.smarks{display:flex;justify-content:space-between;margin-top:4px;}
+.smarks span{color:var(--dim);font-size:9px;}
+
+/* dropdown nav */
+.nav-selector{padding:8px 16px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;border-bottom:1px solid var(--border);}
+.nav-selector::-webkit-scrollbar{display:none;}
+.nav-chip{flex-shrink:0;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--border2);color:var(--muted);background:var(--card);transition:all .15s;}
+.nav-chip.active{background:linear-gradient(135deg,var(--blue),var(--purple));border-color:#7c6fff;color:#fff;}
+</style>
+</head>
+<body>
+
+<div class="app-frame">
+<div class="frame-label">📱 SPORCU PLATFORMU — TAM DEMO v3.0</div>
+<div class="phone">
+<div class="screen-wrap">
+  <div class="notch"><div class="notch-pill"></div></div>
+  <div class="statusbar"><span>9:41</span><span>5G 🔋</span></div>
+
+  <!-- ══════════════════════════════════════════
+       S1: ANA SAYFA / LANDING
+  ══════════════════════════════════════════ -->
+  <div class="screen active" id="pg1">
+    <div class="scroll">
+      <div class="hero">
+        <div class="hero-badge">🇹🇷 Türkiye'nin İlk Sporcu Sponsorluk Platformu</div>
+        <h1>Sponsorluk Artık<br><em>Doğrudan</em><br>Sporcuya Geliyor</h1>
+        <p class="hero-sub">64 spor dalında AI destekli sporcu–sponsor buluşması. Yalçın Perik Yazılım, Mehmet Perik (Samsun) ve Hanene Perik Karate Federasyonu ile güçlü ekosistem.</p>
+        <button class="btn-p" onclick="pg('pg3')">🏃 Sporcu Girişi →</button>
+        <button class="btn-gold" onclick="pg('pg9')">💼 Sponsor Girişi →</button>
+        <button class="btn-s" onclick="pg('pg12')">🏙️ İl Temsilcisi · 🏛️ Federasyon Girişi →</button>
+      </div>
+      <!-- stats -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);background:var(--card2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:12px 6px;">
+        <div class="stat-card" style="background:transparent;border:none;"><div class="stat-val" id="sn1">0</div><div class="stat-lbl">Sporcu</div></div>
+        <div class="stat-card" style="background:transparent;border:none;"><div class="stat-val" id="sn2">0</div><div class="stat-lbl">Marka</div></div>
+        <div class="stat-card" style="background:transparent;border:none;"><div class="stat-val">64</div><div class="stat-lbl">Spor Dalı</div></div>
+        <div class="stat-card" style="background:transparent;border:none;"><div class="stat-val" id="sn3">0</div><div class="stat-lbl">İl</div></div>
+      </div>
+      <!-- who cards -->
+      <div style="padding:14px 16px 8px;">
+        <div class="tag tag-blue">Kimler İçin?</div>
+        <div class="sh">Herkes İçin Platform</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 16px;">
+        <div class="card" style="background:linear-gradient(135deg,#0f1e5a,#1a3580);border-color:#2040a0;padding:14px;" onclick="pg('pg3')">
+          <div style="font-size:24px;margin-bottom:8px;">🏃</div>
+          <div style="color:#fff;font-size:12px;font-weight:700;margin-bottom:3px;">Sporcular</div>
+          <div style="color:var(--muted);font-size:10px;line-height:1.4;">Profil kur, sponsor bul, gelir kazan.</div>
+          <div class="tag tag-blue" style="margin-top:7px;margin-bottom:0;">Ücretsiz</div>
+        </div>
+        <div class="card" style="background:linear-gradient(135deg,#3a2800,#6a4800);border-color:#8a6000;padding:14px;" onclick="pg('pg9')">
+          <div style="font-size:24px;margin-bottom:8px;">💼</div>
+          <div style="color:#fff;font-size:12px;font-weight:700;margin-bottom:3px;">Sponsorlar</div>
+          <div style="color:var(--muted);font-size:10px;line-height:1.4;">AI ile doğru sporcuyu bul.</div>
+          <div class="tag tag-gold" style="margin-top:7px;margin-bottom:0;">AI Eşleşme</div>
+        </div>
+        <div class="card" style="background:linear-gradient(135deg,#2a1060,#4a2090);border-color:#6a30c0;padding:14px;" onclick="pg('pg12')">
+          <div style="font-size:24px;margin-bottom:8px;">🏙️</div>
+          <div style="color:#fff;font-size:12px;font-weight:700;margin-bottom:3px;">İl Temsilcisi</div>
+          <div style="color:var(--muted);font-size:10px;line-height:1.4;">Mehmet Perik · Samsun</div>
+          <div class="tag" style="background:rgba(124,58,237,.25);color:#c084fc;border:1px solid rgba(124,58,237,.3);margin-top:7px;margin-bottom:0;">%6 Hizmet</div>
+        </div>
+        <div class="card" style="background:linear-gradient(135deg,#0a2a1a,#0f4a2a);border-color:#1a7a4a;padding:14px;" onclick="pg('pg14')">
+          <div style="font-size:24px;margin-bottom:8px;">🏛️</div>
+          <div style="color:#fff;font-size:12px;font-weight:700;margin-bottom:3px;">Federasyon</div>
+          <div style="color:var(--muted);font-size:10px;line-height:1.4;">Hanene Perik · Karate</div>
+          <div class="tag tag-green" style="margin-top:7px;margin-bottom:0;">%6 Hizmet</div>
+        </div>
+      </div>
+      <!-- champions scroll -->
+      <div style="padding:0 16px 16px;">
+        <div class="sec-hdr"><span class="sec-title">🏅 Şampiyonlar</span><span class="sec-link" onclick="pg('pg7')">Tümü ›</span></div>
+        <div class="champ-scroll">
+          <div class="champ-card" onclick="pg('pg7')"><div class="ct-top ct-gold"><div class="av" style="width:40px;height:40px;background:linear-gradient(135deg,#c9a227,#ffd700);font-size:18px;">🧑</div><div class="medal-sm">🥇</div></div><div class="cbody"><div class="cname">Ömer Yılmaz</div><div class="cbranch">🏃 Atletizm</div><div class="cach">TR Rekoru · ₺50K</div></div></div>
+          <div class="champ-card" onclick="pg('pg7')"><div class="ct-top ct-gold"><div class="av" style="width:40px;height:40px;background:linear-gradient(135deg,#0891b2,#06b6d4);font-size:18px;">👩</div><div class="medal-sm">🥇</div></div><div class="cbody"><div class="cname">Zeynep Kaya</div><div class="cbranch">🏊 Yüzme</div><div class="cach">Paris 2024 · ₺50K</div></div></div>
+          <div class="champ-card" onclick="pg('pg7')"><div class="ct-top ct-silver"><div class="av" style="width:40px;height:40px;background:linear-gradient(135deg,#708090,#c0c0c0);font-size:18px;">🧑</div><div class="medal-sm">🥈</div></div><div class="cbody"><div class="cname">Burak Doğan</div><div class="cbranch">🤼 Güreş</div><div class="cach">Dünya · ₺25K</div></div></div>
+          <div class="champ-card" onclick="pg('pg7')"><div class="ct-top ct-bronze"><div class="av" style="width:40px;height:40px;background:linear-gradient(135deg,#8b4513,#cd7f32);font-size:18px;">👩</div><div class="medal-sm">🥉</div></div><div class="cbody"><div class="cname">Ayşe Demir</div><div class="cbranch">🏹 Okçuluk</div><div class="cach">Avrupa · ₺7K</div></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="bnav">
+      <button class="bni on" onclick="pg('pg1')"><span class="bni-icon">🏠</span><span class="bni-lbl">Ana Sayfa</span></button>
+      <button class="bni" onclick="pg('pg6')"><span class="bni-icon">💰</span><span class="bni-lbl">Piyasa</span></button>
+      <button class="bni" onclick="pg('pg7')"><span class="bni-icon">🏅</span><span class="bni-lbl">Sporcular</span></button>
+      <button class="bni" onclick="pg('pg8')"><span class="bni-icon">⚽</span><span class="bni-lbl">Sporlar</span></button>
+      <button class="bni" onclick="pg('pg16')"><span class="bni-icon">⚙️</span><span class="bni-lbl">Ayarlar</span></button>
+    </div>
+  </div>
+
+  <!-- ══ S2: GİRİŞ SEÇ ══ -->
+  <div class="screen" id="pg2">
+    <div class="topbar"><button class="back-btn" onclick="back()">‹</button><div class="tb-title">Giriş Yap</div></div>
+    <div class="scroll" style="padding:16px;">
+      <div style="text-align:center;padding:20px 0 24px;">
+        <div style="font-size:52px;margin-bottom:12px;">🏆</div>
+        <div style="color:#fff;font-size:22px;font-weight:800;margin-bottom:6px;">Sporcu Platformu</div>
+        <div style="color:var(--muted);font-size:13px;">Türkiye'nin ulusal sporcu ekosistemi</div>
+      </div>
+      <button class="btn-p" onclick="pg('pg3')">🏃 Sporcu Girişi</button>
+      <button class="btn-gold" onclick="pg('pg9')">💼 Sponsor Girişi</button>
+      <button class="btn-s" style="background:rgba(124,58,237,.15);border-color:rgba(124,58,237,.4);color:#c084fc;" onclick="pg('pg12')">🏙️ İl Temsilcisi Girişi</button>
+      <button class="btn-s" style="background:rgba(0,185,122,.1);border-color:rgba(0,185,122,.3);color:#4ade80;" onclick="pg('pg14')">🏛️ Federasyon Girişi</button>
+      <div style="text-align:center;color:var(--dim);font-size:11px;margin-top:12px;">Hesabın yok mu? <span style="color:#7c6fff;cursor:pointer;" onclick="pg('pg3')">Kaydol</span></div>
+    </div>
+  </div>
+
+  <!-- ══ S3: SPORCU GİRİŞ ══ -->
+  <div class="screen" id="pg3">
+    <div class="topbar"><button class="back-btn" onclick="pg('pg1')">‹</button><div class="tb-title">Sporcu Girişi</div></div>
+    <div class="scroll" style="padding:16px;">
+      <div style="text-align:center;padding:20px 0 20px;"><div style="font-size:48px;margin-bottom:10px;">🏃</div><div style="color:#fff;font-size:20px;font-weight:800;margin-bottom:4px;">Sporcu Hesabı</div><div style="color:var(--muted);font-size:12px;">Hesabınıza giriş yapın</div></div>
+      <button class="btn-s" style="display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;color:#1a1a2e;font-weight:700;" onclick="pg('pg4')">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Google ile Giriş Yap
+      </button>
+      <div style="display:flex;align-items:center;gap:10px;color:var(--dim);font-size:11px;margin:10px 0;"><div style="flex:1;height:1px;background:var(--border);"></div>veya<div style="flex:1;height:1px;background:var(--border);"></div></div>
+      <div style="position:relative;margin-bottom:10px;"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:16px;">🇹🇷</span><input class="inp" style="padding-left:40px;margin-bottom:0;" placeholder="5XX XXX XX XX" type="tel"></div>
+      <button class="btn-p" onclick="pg('pg4')">Doğrulama Kodu Gönder</button>
+      <div style="text-align:center;color:var(--dim);font-size:12px;margin-top:8px;">Hesabın yok mu? <span style="color:#7c6fff;cursor:pointer;" onclick="pg('pg5')">Kayıt ol</span></div>
+    </div>
+  </div>
+
+  <!-- ══ S4: SPORCU DASHBOARD ══ -->
+  <div class="screen" id="pg4">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 18px 6px;flex-shrink:0;">
+      <div><div style="color:#fff;font-size:18px;font-weight:800;">Merhaba, Ömer! 👋</div><div style="color:var(--muted);font-size:12px;margin-top:2px;">Profesyonel Atlet</div></div>
+      <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;" onclick="pg('pg15')">🧑</div>
+    </div>
+    <div class="scroll" style="padding:0 16px 16px;">
+      <!-- profile card -->
+      <div class="card2" style="padding:14px;display:flex;gap:12px;align-items:center;margin-bottom:12px;" onclick="pg('pg15')">
+        <div style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">🧑</div>
+        <div style="flex:1;">
+          <div style="color:#fff;font-size:15px;font-weight:700;">Ömer Yılmaz</div>
+          <div style="color:var(--muted);font-size:11px;margin-top:2px;">22 Yaş · Samsun · ⭐ Atletizm</div>
+          <div style="display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;">
+            <span class="tag tag-gold" style="margin:0;">🥇 TR Rekoru</span>
+            <span class="tag tag-blue" style="margin:0;">SGS: 85</span>
+          </div>
+        </div>
+        <div style="color:var(--dim);font-size:18px;">›</div>
+      </div>
+      <!-- stats -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;">
+        <div class="stat-card"><div class="stat-val" style="color:#4ade80;">₺50K</div><div class="stat-lbl">Piyasa Değeri</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:#a78bfa;">85</div><div class="stat-lbl">SGS Skoru</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--gold2);">2</div><div class="stat-lbl">Aktif Sponsor</div></div>
+      </div>
+      <!-- günlük performans -->
+      <div class="sec-hdr"><span class="sec-title">GÜNLÜK PERFORMANS</span><span class="sec-link" onclick="pg('pg17')">Detay ›</span></div>
+      <div class="card2" style="padding:14px;margin-bottom:12px;">
+        <div style="color:var(--muted);font-size:11px;margin-bottom:4px;">Bugünkü Aktivite</div>
+        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:10px;">
+          <span style="color:#fff;font-size:36px;font-weight:800;">5.2 km</span>
+          <span class="tag tag-green" style="margin:0;">+12%</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
+          <div style="background:#0f1724;border-radius:10px;padding:8px;text-align:center;"><div style="color:#fff;font-size:15px;font-weight:700;">45 dk</div><div style="color:var(--gray);font-size:9px;margin-top:2px;">Süre</div></div>
+          <div style="background:#0f1724;border-radius:10px;padding:8px;text-align:center;"><div style="color:#fff;font-size:15px;font-weight:700;">432</div><div style="color:var(--gray);font-size:9px;margin-top:2px;">Kalori</div></div>
+          <div style="background:#0f1724;border-radius:10px;padding:8px;text-align:center;"><div style="color:#fff;font-size:15px;font-weight:700;">6'30"</div><div style="color:var(--gray);font-size:9px;margin-top:2px;">Tempo</div></div>
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:3px;height:50px;margin-top:10px;" id="homeChart"></div>
+      </div>
+      <!-- aktif sponsorluk -->
+      <div class="sec-hdr"><span class="sec-title">AKTİF SPONSORLAR</span><span class="sec-link" onclick="pg('pg10')">Tümü ›</span></div>
+      <div class="card" style="padding:12px;" onclick="pg('pg10')">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="av-sq" style="width:42px;height:42px;background:linear-gradient(135deg,var(--blue),#6040ff);font-size:18px;">💻</div>
+          <div style="flex:1;"><div style="color:#fff;font-size:13px;font-weight:700;">Yalçın Perik Yazılım</div><div style="color:var(--muted);font-size:11px;margin-top:2px;">Ana Sponsor · ₺50.000/ay</div></div>
+          <span class="tag tag-green" style="margin:0;">Aktif</span>
+        </div>
+      </div>
+      <!-- hızlı linkler -->
+      <div class="sec-hdr"><span class="sec-title">HIZLI ERİŞİM</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+        <button class="btn-s" style="margin:0;padding:10px;font-size:11px;" onclick="pg('pg18')">🎬 Medya Merkezi</button>
+        <button class="btn-s" style="margin:0;padding:10px;font-size:11px;" onclick="pg('pg6')">💰 Piyasa Değerim</button>
+        <button class="btn-s" style="margin:0;padding:10px;font-size:11px;" onclick="pg('pg19')">🤖 AI Analiz</button>
+        <button class="btn-s" style="margin:0;padding:10px;font-size:11px;" onclick="pg('pg20')">📄 Sözleşmem</button>
+      </div>
+    </div>
+    <div class="bnav">
+      <button class="bni on"><span class="bni-icon">🏠</span><span class="bni-lbl">Ana Sayfa</span></button>
+      <button class="bni" onclick="pg('pg17')"><span class="bni-icon">📊</span><span class="bni-lbl">Performans</span></button>
+      <button class="bni" onclick="pg('pg19')"><span class="bni-icon">🤖</span><span class="bni-lbl">Analiz</span></button>
+      <button class="bni" onclick="pg('pg18')"><span class="bni-icon">🎬</span><span class="bni-lbl">Medya</span></button>
+      <button class="bni" onclick="pg('pg15')"><span class="bni-icon">👤</span><span class="bni-lbl">Profil</span></button>
+    </div>
+  </div>
+
+  <!-- ══ S5: SPORCU KAYIT ══ -->
+  <div class="screen" id="pg5">
+    <div class="topbar"><button class="back-btn" onclick="pg('pg3')">‹</button><div class="tb-title">Sporcu Kaydı</div><span style="background:rgba(74,63,255,.2);border:1px solid rgba(74,63,255,.3);border-radius:20px;padding:3px 10px;color:#a78bfa;font-size:10px;font-weight:700;" id="regStep">1/4</span></div>
+    <div class="step-tabs" id="regTabs">
+      <div class="step-tab active" id="rt1">1 · Kişisel</div>
+      <div class="step-tab" id="rt2">2 · Spor</div>
+      <div class="step-tab" id="rt3">3 · Tercihler</div>
+      <div class="step-tab" id="rt4">4 · Belgeler</div>
+    </div>
+    <div class="scroll" style="padding:16px;" id="regContent">
+      <div class="field"><label>Ad *</label><input class="inp" placeholder="Adınız"></div>
+      <div class="field"><label>Soyad *</label><input class="inp" placeholder="Soyadınız"></div>
+      <div class="inp-row">
+        <div class="field"><label>Doğum Yılı *</label><input class="inp" type="number" placeholder="2000"></div>
+        <div class="field"><label>Cinsiyet</label><select class="inp"><option>Erkek</option><option>Kadın</option></select></div>
+      </div>
+      <div class="field"><label>TC Kimlik No *</label><input class="inp" placeholder="12345678901" maxlength="11"></div>
+      <div class="field"><label>Şehir *</label><select class="inp"><option>Samsun</option><option>İstanbul</option><option>Ankara</option><option>İzmir</option><option>Diğer</option></select></div>
+      <div class="field"><label>Telefon *</label><input class="inp" placeholder="05XX XXX XX XX" type="tel"></div>
+      <div class="field"><label>E-posta *</label><input class="inp" placeholder="sporcu@email.com" type="email"></div>
+      <button class="btn-p" onclick="regNext()">Devam Et →</button>
+    </div>
+  </div>
+
+  <!-- ══ S6: PİYASA DEĞERİ ══ -->
+  <div class="screen" id="pg6">
+    <div class="topbar"><button class="back-btn" onclick="back()">‹</button><div class="tb-title">💰 Piyasa Değeri</div></div>
+    <div class="scroll" style="padding:16px;">
+      <div class="tag tag-gold">AI Hesaplayıcı</div>
+      <div class="sh">Sporcu Piyasa Değeri</div>
+      <div class="sp">Transfermarkt + FIFA + Stanford ML modeli ile hesaplanır.</div>
+      <div class="card2" style="padding:14px;margin-bottom:12px;">
+        <div style="color:var(--gold2);font-size:13px;font-weight:700;margin-bottom:12px;">🎯 Sporcu Seviyeni Seç</div>
+        <div id="calcOpts">
+          <div style="display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all .15s;" onclick="calcLevel(this,7000)" class="calc-opt">
+            <div style="width:16px;height:16px;border-radius:50%;border:2px solid #3a4a6a;flex-shrink:0;transition:all .15s;" class="cdot"></div>
+            <div style="flex:1;"><div style="color:#fff;font-size:12px;font-weight:700;">🎯 Amatör Sporcu</div><div style="color:var(--gray);font-size:10px;margin-top:2px;">Yerel / bölge düzeyi</div></div>
+            <div style="color:#4ade80;font-size:14px;font-weight:800;">₺7.000</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:12px;margin-bottom:8px;cursor:pointer;" onclick="calcLevel(this,25000)" class="calc-opt">
+            <div style="width:16px;height:16px;border-radius:50%;border:2px solid #3a4a6a;flex-shrink:0;" class="cdot"></div>
+            <div style="flex:1;"><div style="color:#fff;font-size:12px;font-weight:700;">🥇 Milli Sporcu</div><div style="color:var(--gray);font-size:10px;margin-top:2px;">Türkiye milli takımı</div></div>
+            <div style="color:#4ade80;font-size:14px;font-weight:800;">₺25.000</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:12px;cursor:pointer;" onclick="calcLevel(this,50000)" class="calc-opt">
+            <div style="width:16px;height:16px;border-radius:50%;border:2px solid #3a4a6a;flex-shrink:0;" class="cdot"></div>
+            <div style="flex:1;"><div style="color:#fff;font-size:12px;font-weight:700;">🏅 Olimpiyat Sporcusu</div><div style="color:var(--gray);font-size:10px;margin-top:2px;">Olimpiyat / Dünya</div></div>
+            <div style="color:#4ade80;font-size:14px;font-weight:800;">₺50.000</div>
+          </div>
+        </div>
+        <div id="calcResult" style="display:none;margin-top:14px;">
+          <div style="background:#0f1724;border-radius:14px;padding:14px;border:1px solid #2a4a2a;">
+            <div style="color:var(--gray);font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:10px;">AYLIK DAĞILIM</div>
+            <div class="info-row"><span class="ir-label">Piyasa Değeri</span><span class="ir-val" style="color:#fff" id="cr-base">-</span></div>
+            <div class="info-row"><span class="ir-label">Platform (%25 + KDV)</span><span class="ir-val" style="color:#a78bfa" id="cr-plat">-</span></div>
+            <div class="info-row"><span class="ir-label">Mehmet Perik — Samsun (%6)</span><span class="ir-val" style="color:#c084fc" id="cr-tem">-</span></div>
+            <div class="info-row"><span class="ir-label">Hanene Perik — Karate Fed. (%6)</span><span class="ir-val" style="color:var(--teal)" id="cr-fed">-</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0 0;border-top:2px solid var(--gold2);margin-top:6px;">
+              <span style="color:#fff;font-size:13px;font-weight:700;">Sporcuya Net</span>
+              <span style="color:var(--gold2);font-size:20px;font-weight:800;" id="cr-net">-</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- comparison -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+        <div class="stat-card"><div class="stat-val" style="color:var(--muted);font-size:14px;">₺7K</div><div class="stat-lbl">Amatör Min</div></div>
+        <div class="stat-card" style="border-color:#7c6fff;background:#0f1530;"><div class="stat-val" style="color:#a78bfa;font-size:14px;" id="myVal">—</div><div class="stat-lbl">Senin Değerin</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--gold2);font-size:14px;">₺50K+</div><div class="stat-lbl">Olimpiyat</div></div>
+      </div>
+      <button class="btn-p" onclick="pg('pg6ai')">🤖 Detaylı AI Analiz →</button>
+    </div>
+    <div class="bnav">
+      <button class="bni" onclick="pg('pg1')"><span class="bni-icon">🏠</span><span class="bni-lbl">Ana Sayfa</span></button>
+      <button class="bni on"><span class="bni-icon">💰</span><span class="bni-lbl">Piyasa</span></button>
+      <button class="bni" onclick="pg('pg7')"><span class="bni-icon">🏅</span><span class="bni-lbl">Sporcular</span></button>
+      <button class="bni" onclick="pg('pg8')"><span class="bni-icon">⚽</span><span class="bni-lbl">Sporlar</span></button>
+      <button class="bni" onclick="pg('pg16')"><span class="bni-icon">⚙️</span><span class="bni-lbl">Ayarlar</span></button>
+    </div>
+  </div>
+
+  <!-- ══ S6AI: AI DETAYLI DEĞERLEMESİ ══ -->
+  <div class="screen" id="pg6ai">
+    <div class="topbar"><button class="back-btn" onclick="pg('pg6')">‹</button><div class="tb-title">🤖 AI Değerleme</div></div>
+    <div class="scroll" style="padding:16px;">
+      <div style="background:linear-gradient(135deg,#0f1530,#1a0a40);border-radius:18px;padding:18px;text-align:center;margin-bottom:14px;border:1px solid var(--border2);">
+        <div style="color:var(--muted);font-size:10px;font-weight:600;letter-spacing:1px;margin-bottom:8px;">SGS SKORU</div>
+        <div class="sgs-circle" id="aiSgsCircle"><div class="sgs-val" id="aiSgsVal">85</div><div class="sgs-lbl">/100</div></div>
+        <div class="tag tag-gold" style="margin-bottom:10px;">⭐ Üst Düzey Sporcu</div>
+        <div style="color:#fff;font-size:28px;font-weight:800;margin-bottom:4px;">₺50.000</div>
+        <div style="color:var(--muted);font-size:11px;">Aylık Piyasa Değeri</div>
+        <div class="tag tag-green" style="margin-top:8px;margin-bottom:0;">↑ +15% Piyasa Ortalamasına Göre</div>
+      </div>
+      <div class="card2" style="padding:14px;margin-bottom:12px;">
+        <div style="color:#fff;font-size:13px;font-weight:700;margin-bottom:12px;">🔬 7 Faktör Analizi <span style="color:var(--gray);font-size:9px;font-weight:400;">Transfermarkt + FIFA</span></div>
+        <div id="aiFBars"></div>
+      </div>
+      <div class="card2" style="padding:14px;margin-bottom:12px;">
+        <div style="color:#fff;font-size:13px;font-weight:700;margin-bottom:10px;">📋 AI Öneri</div>
+        <div style="color:#a8b8d8;font-size:11px;line-height:1.7;">SGS skorunuz <strong style="color:#a78bfa">85/100</strong> ile üst düzey kategorisinde. En güçlü yönünüz <strong style="color:#fff">Başarı & Seviye</strong> (%92). Piyasa değerinizi artırmak için <strong style="color:var(--gold2)">Medya & Görünürlük</strong> alanını geliştirmeniz öneriliyor. Yıllık sponsorluk potansiyeliniz: <strong style="color:#4ade80">₺600.000</strong></div>
+      </div>
+      <button class="btn-p" onclick="pg('pg5')">📝 Kayıt Ol & Değerini Belirle</button>
+    </div>
+  </div>
+
+  <!-- ══ S7: ŞAMPIYONLAR ══ -->
+  <div class="screen" id="pg7">
+    <div class="topbar"><button class="back-btn" onclick="back()">‹</button><div class="tb-title">🏅 Şampiyonlar</div><span style="font-size:16px;cursor:pointer;" onclick="t('Filtre açılıyor...')">🔍</span></div>
+    <div class="scroll" style="padding:0 16px 16px;">
+      <!-- filter chips -->
+      <div style="display:flex;gap:6px;overflow-x:auto;padding:10px 0;scrollbar-width:none;">
+        <div class="nav-chip active">Tümü</div>
+        <div class="nav-chip" onclick="t('Altın filtresi')">🥇 Altın</div>
+        <div class="nav-chip" onclick="t('Gümüş filtresi')">🥈 Gümüş</div>
+        <div class="nav-chip" onclick="t('Bronz filtresi')">🥉 Bronz</div>
+        <div class="nav-chip" onclick="t('Atletizm filtresi')">Atletizm</div>
+        <div class="nav-chip" onclick="t('Yüzme filtresi')">Yüzme</div>
+      </div>
+      <div class="sec-hdr"><span class="sec-title">⭐ Öne Çıkanlar</span></div>
+      <div class="champ-scroll" style="margin-bottom:16px;">
+        <div class="champ-card" onclick="t('Ömer Yılmaz profili')"><div class="ct-top ct-gold"><div class="av" style="width:40px;height:40px;background:linear-gradient(135deg,#c9a227,#ffd700);font-size:18px;">🧑</div><div class="medal-sm">🥇</div></div><div class="cbody"><div class="cname">Ömer Yılmaz</div><div class="cbranch">🏃 Atletizm</div><div class="cach">TR Rekoru · ₺50K/ay</div></div></div>
+        <div class="champ-card" onclick="t('Zeynep Kaya profili')"><div class="ct-top ct-gold"><div class="av" style="width:40px;height:40px;background:linear-gradient(135deg,#0891b2,#06b6d4);font-size:18px;">👩</div><div class="medal-sm">🥇</div></div><div class="cbody"><div class="cname">Zeynep Kaya</div><div class="cbranch">🏊 Yüzme</div><div class="cach">Paris 2024 · ₺50K/ay</div></div></div>
+        <div class="champ-card" onclick="t('Burak Doğan profili')"><div class="ct-top ct-silver"><div class="av" style="width:40px;height:40px;background:linear-gradient(135deg,#708090,#c0c0c0);font-size:18px;">🧑</div><div class="medal-sm">🥈</div></div><div class="cbody"><div class="cname">Burak Doğan</div><div class="cbranch">🤼 Güreş</div><div class="cach">Dünya Gümüşü · ₺25K</div></div></div>
+        <div class="champ-card" onclick="t('Ayşe Demir profili')"><div class="ct-top ct-bronze"><div class="av" style="width:40px;height:40px;background:linear-gradient(135deg,#8b4513,#cd7f32);font-size:18px;">👩</div><div class="medal-sm">🥉</div></div><div class="cbody"><div class="cname">Ayşe Demir</div><div class="cbranch">🏹 Okçuluk</div><div class="cach">Avrupa Bronzu · ₺7K</div></div></div>
+      </div>
+      <!-- list -->
+      <div class="sec-hdr"><span class="sec-title">📋 Tüm Sporcular</span><span style="color:var(--muted);font-size:11px;">182 sporcu</span></div>
+      <div id="sporcuList"></div>
+    </div>
+    <div class="bnav">
+      <button class="bni" onclick="pg('pg1')"><span class="bni-icon">🏠</span><span class="bni-lbl">Ana Sayfa</span></button>
+      <button class="bni" onclick="pg('pg6')"><span class="bni-icon">💰</span><span class="bni-lbl">Piyasa</span></button>
+      <button class="bni on"><span class="bni-icon">🏅</span><span class="bni-lbl">Sporcular</span></button>
+      <button class="bni" onclick="pg('pg8')"><span class="bni-icon">⚽</span><span class="bni-lbl">Sporlar</span></button>
+      <button class="bni" onclick="pg('pg16')"><span class="bni-icon">⚙️</span><span class="bni-lbl">Ayarlar</span></button>
+    </div>
+  </div>
+
+  <!-- ══ S8: SPOR DALLARI ══ -->
+  <div class="screen" id="pg8">
+    <div class="topbar"><button class="back-btn" onclick="back()">‹</button><div class="tb-title">⚽ Spor Dalları</div><span style="background:rgba(74,63,255,.2);border:1px solid rgba(74,63,255,.3);border-radius:20px;padding:3px 10px;color:#a78bfa;font-size:10px;font-weight:700;">64 Dal</span></div>
+    <div class="scroll" style="padding:0 16px 16px;">
+      <input class="inp" style="margin-top:10px;" placeholder="🔍  Spor dalı ara..." oninput="filterSports(this.value)">
+      <div id="sportsContainer"></div>
+    </div>
+    <div class="bnav">
+      <button class="bni" onclick="pg('pg1')"><span class="bni-icon">🏠</span><span class="bni-lbl">Ana Sayfa</span></button>
+      <button class="bni" onclick="pg('pg6')"><span class="bni-icon">💰</span><span class="bni-lbl">Piyasa</span></button>
+      <button class="bni" onclick="pg('pg7')"><span class="bni-icon">🏅</span><span class="bni-lbl">Sporcular</span></button>
+      <button class="bni on"><span class="bni-icon">⚽</span><span class="bni-lbl">Sporlar</span></button>
+      <button class="bni" onclick="pg('pg16')"><span class="bni-icon">⚙️</span><span class="bni-lbl">Ayarlar</span></button>
+    </div>
+  </div>
+
+  <!-- ══ S9: SPONSOR GİRİŞ ══ -->
+  <div class="screen" id="pg9">
+    <div class="topbar"><button class="back-btn" onclick="pg('pg1')">‹</button><div class="tb-title">Sponsor Girişi</div></div>
+    <div class="scroll" style="padding:16px;">
+      <div style="text-align:center;padding:20px 0 20px;"><div style="font-size:48px;margin-bottom:10px;">💼</div><div style="color:#fff;font-size:20px;font-weight:800;margin-bottom:4px;">Sponsor Hesabı</div><div style="color:var(--muted);font-size:12px;">Sponsor panelinize giriş yapın</div></div>
+      <button class="btn-s" style="display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;color:#1a1a2e;font-weight:700;margin-bottom:10px;" onclick="pg('pg10')">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Google ile Giriş Yap
+      </button>
+      <div style="display:flex;align-items:center;gap:10px;color:var(--dim);font-size:11px;margin:8px 0;"><div style="flex:1;height:1px;background:var(--border);"></div>veya<div style="flex:1;height:1px;background:var(--border);"></div></div>
+      <div style="position:relative;margin-bottom:10px;"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:16px;">🇹🇷</span><input class="inp" style="padding-left:40px;margin-bottom:0;" placeholder="5XX XXX XX XX" type="tel"></div>
+      <button class="btn-gold" onclick="pg('pg10')">Doğrulama Kodu Gönder</button>
+      <div style="text-align:center;color:var(--dim);font-size:12px;margin-top:8px;">Sponsor hesabın yok mu? <span style="color:var(--gold2);cursor:pointer;" onclick="t('Sponsor kayıt formu açılıyor...')">Kayıt ol</span></div>
+    </div>
+  </div>
+
+  <!-- ══ S10: SPONSOR DASHBOARD ══ -->
+  <div class="screen" id="pg10">
+    <div style="padding:14px 18px 6px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+      <div><div style="color:#fff;font-size:18px;font-weight:800;">Hoş Geldiniz 👋</div><div style="color:var(--muted);font-size:12px;margin-top:2px;">Yalçın Perik · Perik Yazılım</div></div>
+      <div style="width:40px;height:40px;background:linear-gradient(135deg,var(--blue),#6040ff);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;">💻</div>
+    </div>
+    <div class="scroll" style="padding:0 16px 16px;">
+      <!-- stats -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+        <div class="stat-card"><div class="stat-val" style="color:#4ade80;">12</div><div class="stat-lbl">Sporcu</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--gold2);font-size:16px;">₺2.5M</div><div class="stat-lbl">Toplam</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:#a78bfa;">%24</div><div class="stat-lbl">Ortalama ↑</div></div>
+      </div>
+      <!-- sporcu listesi -->
+      <div class="sec-hdr"><span class="sec-title">SPORCULARIM</span><span class="sec-link" onclick="pg('pg11')">Tümünü Gör ›</span></div>
+      <div id="sponsorSporcuList"></div>
+      <!-- etik panel -->
+      <div class="card2" style="padding:14px;margin-bottom:12px;">
+        <div style="color:#fff;font-size:13px;font-weight:700;margin-bottom:10px;">⚖️ Etik & Uyum Durumu</div>
+        <div class="info-row"><span class="ir-label">Etik Beyanname</span><span class="ir-val" style="color:#4ade80;">✓ İmzalandı</span></div>
+        <div class="info-row"><span class="ir-label">Hakaret/Küfür Yasağı</span><span class="ir-val" style="color:#4ade80;">✓ Kabul</span></div>
+        <div class="info-row"><span class="ir-label">Sözleşme Durumu</span><span class="ir-val" style="color:#4ade80;">✓ Aktif</span></div>
+        <div class="info-row"><span class="ir-label">İl Temsilcisi</span><span class="ir-val">Mehmet Perik</span></div>
+      </div>
+      <button class="btn-gold" onclick="pg('pg11')">📋 Sporcularımı Yönet →</button>
+      <button class="btn-s" onclick="pg('pg7')">🔍 Yeni Sporcu Keşfet</button>
+    </div>
+    <div class="bnav">
+      <button class="bni on"><span class="bni-icon">🏠</span><span class="bni-lbl">Ana Sayfa</span></button>
+      <button class="bni" onclick="pg('pg11')"><span class="bni-icon">🏃</span><span class="bni-lbl">Sporcular</span></button>
+      <button class="bni" onclick="t('Finans raporu')"><span class="bni-icon">💰</span><span class="bni-lbl">Finans</span></button>
+      <button class="bni" onclick="t('Medya merkezi')"><span class="bni-icon">🎬</span><span class="bni-lbl">Medya</span></button>
+      <button class="bni" onclick="pg('pg16')"><span class="bni-icon">⚙️</span><span class="bni-lbl">Ayarlar</span></button>
+    </div>
+  </div>
+
+  <!-- ══ S11: SPONSOR — SPORCULARIM ══ -->
+  <div class="screen" id="pg11">
+    <div class="topbar"><button class="back-btn" onclick="pg('pg10')">‹</button><div class="tb-title">Sporcularım</div><span style="background:rgba(201,162,39,.15);border:1px solid rgba(201,162,39,.3);border-radius:20px;padding:3px 10px;color:var(--gold2);font-size:10px;font-weight:700;">12 Sporcu</span></div>
+    <div class="scroll" style="padding:0 16px 16px;">
+      <div style="display:flex;gap:6px;overflow-x:auto;padding:10px 0;scrollbar-width:none;">
+        <div class="nav-chip active">Tümü (12)</div>
+        <div class="nav-chip" onclick="t('Atletizm filtre')">Atletizm (3)</div>
+        <div class="nav-chip" onclick="t('Yüzme filtre')">Yüzme (2)</div>
+        <div class="nav-chip" onclick="t('Basketbol filtre')">Basketbol (2)</div>
+      </div>
+      <div id="sponsorSporcuDetay"></div>
+    </div>
+  </div>
+
+  <!-- ══ S12: İL TEMSİLCİSİ GİRİŞ ══ -->
+  <div class="screen" id="pg12">
+    <div class="topbar"><button class="back-btn" onclick="pg('pg1')">‹</button><div class="tb-title">Temsilci / Federasyon</div></div>
+    <div class="scroll" style="padding:16px;">
+      <div style="text-align:center;padding:20px 0 20px;"><div style="font-size:48px;margin-bottom:10px;">🏙️</div><div style="color:#fff;font-size:20px;font-weight:800;margin-bottom:4px;">Hoş Geldiniz</div><div style="color:var(--muted);font-size:12px;">Hesabınızı seçin</div></div>
+      <div class="card" style="padding:14px;margin-bottom:10px;" onclick="pg('pg13')">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#2a1060,#4a2090);display:flex;align-items:center;justify-content:center;font-size:20px;">🏙️</div>
+          <div><div style="color:#fff;font-size:14px;font-weight:700;">İl Temsilcisi Girişi</div><div style="color:var(--muted);font-size:11px;margin-top:2px;">Mehmet Perik · Samsun</div></div>
+          <span style="margin-left:auto;color:var(--dim);font-size:18px;">›</span>
+        </div>
+      </div>
+      <div class="card" style="padding:14px;" onclick="pg('pg14')">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#0a2a1a,#0f4a2a);display:flex;align-items:center;justify-content:center;font-size:20px;">🏛️</div>
+          <div><div style="color:#fff;font-size:14px;font-weight:700;">Federasyon Girişi</div><div style="color:var(--muted);font-size:11px;margin-top:2px;">Hanene Perik · Karate Fed.</div></div>
+          <span style="margin-left:auto;color:var(--dim);font-size:18px;">›</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;color:var(--dim);font-size:11px;margin:14px 0;"><div style="flex:1;height:1px;background:var(--border);"></div>veya telefon ile<div style="flex:1;height:1px;background:var(--border);"></div></div>
+      <div style="position:relative;margin-bottom:10px;"><span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:16px;">🇹🇷</span><input class="inp" style="padding-left:40px;margin-bottom:0;" placeholder="5XX XXX XX XX" type="tel"></div>
+      <button class="btn-s" style="background:rgba(124,58,237,.15);border-color:rgba(124,58,237,.4);color:#c084fc;" onclick="pg('pg13')">Doğrulama Kodu Gönder</button>
+    </div>
+  </div>
+
+  <!-- ══ S13: İL TEMSİLCİSİ DASHBOARD ══ -->
+  <div class="screen" id="pg13">
+    <div style="padding:14px 18px 6px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+      <div><div style="color:#fff;font-size:18px;font-weight:800;">Hoş Geldiniz 👋</div><div style="color:var(--muted);font-size:12px;margin-top:2px;">Mehmet Perik · Samsun İl Temsilcisi</div></div>
+      <div style="width:40px;height:40px;background:linear-gradient(135deg,#2a1060,#4a2090);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;">🏙️</div>
+    </div>
+    <div class="scroll" style="padding:0 16px 16px;">
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;">
+        <div class="stat-card"><div class="stat-val" style="color:#4ade80;">23</div><div class="stat-lbl">Kayıtlı Sporcu</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--gold2);">8</div><div class="stat-lbl">Aktif Anlaşma</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:#a78bfa;font-size:16px;">₺42K</div><div class="stat-lbl">Aylık Kazanç</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--teal);">%6</div><div class="stat-lbl">Hizmet Bedeli</div></div>
+      </div>
+      <div class="sec-hdr"><span class="sec-title">SAMSUN SPORCULARIM</span><span class="sec-link" onclick="t('Tüm liste')">Tümü ›</span></div>
+      <div class="card" style="padding:12px;margin-bottom:8px;" onclick="t('Ömer Yılmaz detayı')">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#c9a227,#ffd700);display:flex;align-items:center;justify-content:center;font-size:20px;">🧑</div>
+          <div style="flex:1;"><div style="color:#fff;font-size:13px;font-weight:700;">Ömer Yılmaz</div><div style="color:var(--muted);font-size:11px;margin-top:2px;">🏃 Atletizm · SGS: 85</div><div style="color:#4ade80;font-size:10px;font-weight:700;margin-top:3px;">Piyasa: ₺50.000 · Sponsor: Yalçın Perik</div></div>
+          <div style="background:rgba(74,63,255,.2);border-radius:8px;padding:5px 10px;text-align:center;"><div style="color:#a78bfa;font-size:13px;font-weight:800;">85</div><div style="color:var(--gray);font-size:9px;">SGS</div></div>
+        </div>
+      </div>
+      <div class="card" style="padding:12px;margin-bottom:8px;" onclick="t('Fatma Kılıç detayı')">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a855f7);display:flex;align-items:center;justify-content:center;font-size:20px;">👩</div>
+          <div style="flex:1;"><div style="color:#fff;font-size:13px;font-weight:700;">Fatma Kılıç</div><div style="color:var(--muted);font-size:11px;margin-top:2px;">🏹 Okçuluk · SGS: 72</div><div style="color:#4ade80;font-size:10px;font-weight:700;margin-top:3px;">Piyasa: ₺7.000 · Amatör</div></div>
+          <div style="background:rgba(74,63,255,.2);border-radius:8px;padding:5px 10px;text-align:center;"><div style="color:#a78bfa;font-size:13px;font-weight:800;">72</div><div style="color:var(--gray);font-size:9px;">SGS</div></div>
+        </div>
+      </div>
+      <div class="sec-hdr" style="margin-top:4px;"><span class="sec-title">AKTİF SPONSORLAR</span></div>
+      <div class="card2" style="padding:12px;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--blue),#6040ff);display:flex;align-items:center;justify-content:center;font-size:18px;">💻</div>
+          <div><div style="color:#fff;font-size:13px;font-weight:700;">Yalçın Perik Yazılım</div><div style="color:var(--muted);font-size:11px;margin-top:2px;">Ana Sponsor · 12 Sporcu</div></div>
+          <span class="tag tag-green" style="margin:0 0 0 auto;">Aktif</span>
+        </div>
+      </div>
+      <div class="sec-hdr"><span class="sec-title">AYLIK KOMİSYON</span></div>
+      <div class="card2" style="padding:14px;margin-bottom:12px;">
+        <div class="info-row"><span class="ir-label">Toplam Sponsorluk Hacmi</span><span class="ir-val" style="color:#fff;">₺700.000</span></div>
+        <div class="info-row"><span class="ir-label">Hizmet Bedelim (%6)</span><span class="ir-val" style="color:#a78bfa;">₺42.000</span></div>
+        <div class="info-row"><span class="ir-label">Ödeme Tarihi</span><span class="ir-val">Her ay son iş günü</span></div>
+        <div class="info-row"><span class="ir-label">IBAN</span><span class="ir-val" style="color:#4ade80;">✓ Kayıtlı</span></div>
+      </div>
+      <button class="btn-s" style="background:rgba(124,58,237,.15);border-color:rgba(124,58,237,.4);color:#c084fc;" onclick="pg('pg21')">📄 İl Temsilcisi Sözleşmem</button>
+      <button class="btn-s" onclick="pg('pg5')">➕ Yeni Sporcu Kaydet</button>
+    </div>
+  </div>
+
+  <!-- ══ S14: FEDERASYON DASHBOARD ══ -->
+  <div class="screen" id="pg14">
+    <div style="padding:14px 18px 6px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+      <div><div style="color:#fff;font-size:18px;font-weight:800;">Karate Federasyonu 🥋</div><div style="color:var(--muted);font-size:12px;margin-top:2px;">Hanene Perik · Yönetici</div></div>
+      <div style="width:40px;height:40px;background:linear-gradient(135deg,#0a2a1a,#0f4a2a);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;">🥋</div>
+    </div>
+    <div class="scroll" style="padding:0 16px 16px;">
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;">
+        <div class="stat-card"><div class="stat-val" style="color:#4ade80;">47</div><div class="stat-lbl">Lisanslı Sporcu</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--gold2);">12</div><div class="stat-lbl">Aktif Sponsorluk</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:#a78bfa;font-size:16px;">₺18K</div><div class="stat-lbl">Aylık Hizmet</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--teal);">%6</div><div class="stat-lbl">Hizmet Bedeli</div></div>
+      </div>
+      <div class="sec-hdr"><span class="sec-title">KARATE SPORCULARI</span><span class="sec-link" onclick="t('Tüm karateciler')">Tümü ›</span></div>
+      <div class="card" style="padding:12px;margin-bottom:8px;" onclick="t('Ahmet Kaya profili')">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#1a4fff,#6040ff);display:flex;align-items:center;justify-content:center;font-size:20px;">🧑</div>
+          <div style="flex:1;"><div style="color:#fff;font-size:13px;font-weight:700;">Ahmet Kaya</div><div style="color:var(--muted);font-size:11px;margin-top:2px;">🥋 Karate Kumite · SGS: 78</div><div style="color:#4ade80;font-size:10px;font-weight:700;margin-top:3px;">Piyasa: ₺25.000 · Milli Sporcu</div></div>
+          <div style="background:rgba(74,63,255,.2);border-radius:8px;padding:5px 10px;text-align:center;"><div style="color:#a78bfa;font-size:13px;font-weight:800;">78</div><div style="color:var(--gray);font-size:9px;">SGS</div></div>
+        </div>
+      </div>
+      <div class="card" style="padding:12px;margin-bottom:12px;" onclick="t('Elif Şahin profili')">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#059669,#10b981);display:flex;align-items:center;justify-content:center;font-size:20px;">👩</div>
+          <div style="flex:1;"><div style="color:#fff;font-size:13px;font-weight:700;">Elif Şahin</div><div style="color:var(--muted);font-size:11px;margin-top:2px;">🥋 Karate Kata · SGS: 82</div><div style="color:#4ade80;font-size:10px;font-weight:700;margin-top:3px;">Piyasa: ₺25.000 · Milli Sporcu</div></div>
+          <div style="background:rgba(74,63,255,.2);border-radius:8px;padding:5px 10px;text-align:center;"><div style="color:#a78bfa;font-size:13px;font-weight:800;">82</div><div style="color:var(--gray);font-size:9px;">SGS</div></div>
+        </div>
+      </div>
+      <div class="sec-hdr"><span class="sec-title">FEDERASYON GELİRİ</span></div>
+      <div class="card2" style="padding:14px;margin-bottom:12px;">
+        <div class="info-row"><span class="ir-label">Toplam Sponsorluk Hacmi</span><span class="ir-val">₺300.000</span></div>
+        <div class="info-row"><span class="ir-label">Federasyon Payı (%6)</span><span class="ir-val" style="color:var(--teal);">₺18.000</span></div>
+        <div class="info-row"><span class="ir-label">İl Temsilcisi</span><span class="ir-val">Mehmet Perik</span></div>
+      </div>
+      <button class="btn-green" onclick="pg('pg5')">➕ Yeni Sporcu Ekle</button>
+      <button class="btn-s" onclick="t('Lisans yönetim sistemi açılıyor...')">📋 Lisans Yönetimi</button>
+    </div>
+  </div>
+
+  <!-- ══ S15: SPORCU PROFİL ══ -->
+  <div class="screen" id="pg15">
+    <div class="topbar"><button class="back-btn" onclick="pg('pg4')">‹</button><div class="tb-title">Profil</div><span style="font-size:16px;cursor:pointer;" onclick="t('Profil düzenleniyor...')">✏️</span></div>
+    <div class="scroll">
+      <div style="display:flex;flex-direction:column;align-items:center;padding:20px;gap:6px;border-bottom:1px solid var(--border);">
+        <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:4px;">🧑</div>
+        <div style="color:#fff;font-size:20px;font-weight:800;">Ömer Yılmaz</div>
+        <div style="color:var(--muted);font-size:12px;">🏃 Atletizm · Samsun · 22 yaş · 8 yıl kariyer</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:4px;">
+          <span class="tag tag-gold" style="margin:0;">🥇 TR Rekoru</span>
+          <span class="tag tag-blue" style="margin:0;">SGS: 85</span>
+          <span class="tag tag-green" style="margin:0;">✓ Doğrulandı</span>
+        </div>
+      </div>
+      <div style="padding:14px 16px;">
+        <div class="sec-hdr"><span class="sec-title">BAŞARILAR</span></div>
+        <div class="card2" style="padding:4px 14px;">
+          <div class="info-row"><span class="ir-label">🥇 Türkiye 800m Şampiyonası</span><span class="ir-val">2024</span></div>
+          <div class="info-row"><span class="ir-label">🏟 Salon Türkiye Rekoru</span><span class="ir-val">1:44.87</span></div>
+          <div class="info-row"><span class="ir-label">🥈 Balkan Şampiyonası</span><span class="ir-val">2023</span></div>
+          <div class="info-row"><span class="ir-label">🥇 Türkiye U23</span><span class="ir-val">2022</span></div>
+        </div>
+        <div class="sec-hdr" style="margin-top:14px;"><span class="sec-title">KARİYER BİLGİLERİ</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+          <div class="stat-card"><div style="color:var(--muted);font-size:10px;margin-bottom:3px;">Branş</div><div style="color:#fff;font-size:13px;font-weight:700;">Atletizm · 800m</div></div>
+          <div class="stat-card"><div style="color:var(--muted);font-size:10px;margin-bottom:3px;">Kulüp</div><div style="color:#fff;font-size:13px;font-weight:700;">Samsun Atletik</div></div>
+          <div class="stat-card"><div style="color:var(--muted);font-size:10px;margin-bottom:3px;">Antrenör</div><div style="color:#fff;font-size:13px;font-weight:700;">Ahmet Kılınçman</div></div>
+          <div class="stat-card"><div style="color:var(--muted);font-size:10px;margin-bottom:3px;">Boy / Kilo</div><div style="color:#fff;font-size:13px;font-weight:700;">1.76m / 67kg</div></div>
+        </div>
+        <button class="btn-s" onclick="pg('pg20')">📄 Sözleşmemi Gör</button>
+      </div>
+    </div>
+    <div class="bnav">
+      <button class="bni" onclick="pg('pg4')"><span class="bni-icon">🏠</span><span class="bni-lbl">Ana Sayfa</span></button>
+      <button class="bni" onclick="pg('pg17')"><span class="bni-icon">📊</span><span class="bni-lbl">Performans</span></button>
+      <button class="bni" onclick="pg('pg19')"><span class="bni-icon">🤖</span><span class="bni-lbl">Analiz</span></button>
+      <button class="bni" onclick="pg('pg18')"><span class="bni-icon">🎬</span><span class="bni-lbl">Medya</span></button>
+      <button class="bni on"><span class="bni-icon">👤</span><span class="bni-lbl">Profil</span></button>
+    </div>
+  </div>
+
+  <!-- ══ S16: AYARLAR ══ -->
+  <div class="screen" id="pg16">
+    <div class="topbar"><div class="tb-title">⚙️ Ayarlar</div><span style="font-size:16px;cursor:pointer;" onclick="t('Profil düzenleniyor...')">✏️</span></div>
+    <div class="scroll">
+      <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--card);border-radius:16px;margin:10px 16px;border:1px solid var(--border);cursor:pointer;" onclick="pg('pg15')">
+        <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:22px;">🧑</div>
+        <div style="flex:1;"><div style="color:#fff;font-size:14px;font-weight:700;">Ömer Yılmaz</div><div style="color:var(--muted);font-size:11px;margin-top:2px;">omer.yilmaz@sporcu.com</div><div class="tag tag-green" style="margin-top:5px;margin-bottom:0;">✓ Doğrulanmış Hesap</div></div>
+        <span style="color:var(--dim);font-size:18px;">›</span>
+      </div>
+      <div style="padding:0 16px;">
+        <div style="color:var(--gray);font-size:10px;font-weight:700;letter-spacing:1.5px;padding:12px 0 6px;">HESAP</div>
+        <div class="card2" style="padding:0;overflow:hidden;margin-bottom:6px;">
+          <div class="s-row" onclick="t('Profil düzenleniyor...')"><div class="s-icon" style="background:rgba(74,63,255,.2);">👤</div><div class="s-info"><div class="s-title">Profil Bilgilerini Düzenle</div><div class="s-sub">Ad, branş, kulüp</div></div><span class="s-arrow">›</span></div>
+          <div class="s-row" onclick="t('Şifre değiştirme...')"><div class="s-icon" style="background:rgba(74,63,255,.2);">🔐</div><div class="s-info"><div class="s-title">Şifre & Güvenlik</div><div class="s-sub">Şifre, 2FA</div></div><span class="s-arrow">›</span></div>
+          <div class="s-row"><div class="s-icon" style="background:rgba(201,162,39,.2);">🔔</div><div class="s-info"><div class="s-title">Bildirimler</div><div class="s-sub">Sponsor, eşleşme bildirimleri</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-dot"></div></div></div>
+        </div>
+        <div style="color:var(--gray);font-size:10px;font-weight:700;letter-spacing:1.5px;padding:10px 0 6px;">GİZLİLİK & HUKUKİ</div>
+        <div class="card2" style="padding:0;overflow:hidden;margin-bottom:6px;">
+          <div class="s-row" onclick="pg('pg22')"><div class="s-icon" style="background:rgba(5,150,105,.2);">🔒</div><div class="s-info"><div class="s-title">Gizlilik Politikası</div><div class="s-sub">KVKK & GDPR uyumlu</div></div><span class="tag tag-green" style="margin:0 6px 0 0;font-size:9px;">KVKK</span><span class="s-arrow">›</span></div>
+          <div class="s-row" onclick="pg('pg23')"><div class="s-icon" style="background:rgba(74,63,255,.2);">📋</div><div class="s-info"><div class="s-title">Kullanım Koşulları</div><div class="s-sub">Platform kuralları</div></div><span class="s-arrow">›</span></div>
+          <div class="s-row" onclick="pg('pg20')"><div class="s-icon" style="background:rgba(201,162,39,.2);">📄</div><div class="s-info"><div class="s-title">Sporcu Sözleşmem</div><div class="s-sub">Aktif sözleşme detayları</div></div><span class="s-arrow">›</span></div>
+        </div>
+        <div style="color:var(--gray);font-size:10px;font-weight:700;letter-spacing:1.5px;padding:10px 0 6px;">TEHLİKELİ BÖLGE</div>
+        <div class="card2" style="padding:0;overflow:hidden;margin-bottom:6px;">
+          <div class="s-row" onclick="t('Oturumdan çıkıldı!')"><div class="s-icon" style="background:rgba(100,100,120,.2);">🚪</div><div class="s-info"><div class="s-title">Oturumu Kapat</div></div><span class="s-arrow">›</span></div>
+          <div class="s-row" onclick="pg('pg24')"><div class="s-icon" style="background:rgba(220,38,38,.2);">🗑️</div><div class="s-info"><div class="s-title" style="color:#f87171;">Hesabımı Sil</div><div class="s-sub">Tüm veriler kalıcı silinir</div></div><span class="s-arrow" style="color:#f87171;">›</span></div>
+        </div>
+        <div style="text-align:center;padding:14px;color:#2a3a5a;font-size:10px;">Sporcu Platformu v3.0 · © 2025</div>
+      </div>
+    </div>
+    <div class="bnav">
+      <button class="bni" onclick="pg('pg1')"><span class="bni-icon">🏠</span><span class="bni-lbl">Ana Sayfa</span></button>
+      <button class="bni" onclick="pg('pg6')"><span class="bni-icon">💰</span><span class="bni-lbl">Piyasa</span></button>
+      <button class="bni" onclick="pg('pg7')"><span class="bni-icon">🏅</span><span class="bni-lbl">Sporcular</span></button>
+      <button class="bni" onclick="pg('pg8')"><span class="bni-icon">⚽</span><span class="bni-lbl">Sporlar</span></button>
+      <button class="bni on"><span class="bni-icon">⚙️</span><span class="bni-lbl">Ayarlar</span></button>
+    </div>
+  </div>
+
+  <!-- ══ S17: PERFORMANS ══ -->
+  <div class="screen" id="pg17">
+    <div class="topbar"><button class="back-btn" onclick="pg('pg4')">‹</button><div class="tb-title">📊 Performans</div></div>
+    <div class="scroll" style="padding:16px;">
+      <div class="card2" style="padding:12px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
+        <div style="font-size:24px;">⌚</div>
+        <div><div style="color:#fff;font-size:13px;font-weight:700;">Garmin Forerunner 245</div><div style="color:#4ade80;font-size:11px;margin-top:2px;">✓ Bağlandı</div></div>
+      </div>
+      <div class="tag tag-green">Haftalık Aktivite</div>
+      <div style="color:#fff;font-size:32px;font-weight:800;margin-bottom:4px;">32.5 km</div>
+      <div style="display:flex;align-items:flex-end;gap:3px;height:60px;margin:12px 0;" id="perfChart"></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+        <div class="stat-card"><div class="stat-val">5</div><div class="stat-lbl">Antrenman</div></div>
+        <div class="stat-card"><div class="stat-val">4.2 sa</div><div class="stat-lbl">Süre</div></div>
+        <div class="stat-card"><div class="stat-val">2680</div><div class="stat-lbl">Kalori</div></div>
+      </div>
+      <div class="sec-hdr"><span class="sec-title">SON AKTİVİTELER</span></div>
+      <div class="card2" style="padding:4px 14px;">
+        <div class="info-row"><span class="ir-label">Sabah Koşusu</span><span class="ir-val">7.2km · 45dk · Bugün</span></div>
+        <div class="info-row"><span class="ir-label">Tempo Antrenmanı</span><span class="ir-val">10.5km · 62dk · Dün</span></div>
+        <div class="info-row"><span class="ir-label">Interval Çalışması</span><span class="ir-val">8.0km · 38dk · 2g önce</span></div>
+      </div>
+    </div>
+    <div class="bnav">
+      <button class="bni" onclick="pg('pg4')"><span class="bni-icon">🏠</span><span class="bni-lbl">Ana Sayfa</span></button>
+      <button class="bni on"><span class="bni-icon">📊</span><span class="bni-lbl">Performans</span></button>
+      <button class="bni" onclick="pg('pg19')"><span class="bni-icon">🤖</span><span class="bni-lbl">Analiz</span></button>
+      <button class="bni" onclick="pg('pg18')"><span class="bni-icon">🎬</span><span class="bni-lbl">Medya</span></button>
+      <button class="bni" onclick="pg('pg15')"><span class="bni-icon">👤</span><span class="bni-lbl">Profil</span></button>
+    </div>
+  </div>
+
+  <!-- ══ S18: MEDYA MERKEZİ ══ -->
+  <div class="screen" id="pg18">
+    <div class="topbar"><button class="back-btn" onclick="pg('pg4')">‹</button><div class="tb-title">🎬 Medya Merkezi</div></div>
+    <div class="scroll" style="padding:16px;">
+      <button class="btn-p" onclick="t('Video yükleme başlatılıyor...')">+ Yeni Video Yükle</button>
+      <div style="color:var(--muted);font-size:11px;text-align:center;margin-bottom:14px;">Aylık en az <strong style="color:#a78bfa">2 video</strong> yükümlülüğünüz var</div>
+      <div class="card" style="overflow:hidden;padding:0;margin-bottom:10px;" onclick="t('Video oynatılıyor...')">
+        <div style="height:110px;background:linear-gradient(135deg,#1a2440,#0d1117);display:flex;align-items:center;justify-content:center;font-size:36px;position:relative;">🏃<div style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.75);color:#fff;font-size:10px;padding:2px 7px;border-radius:6px;font-weight:700;">2:34</div><div style="position:absolute;top:8px;left:8px;background:rgba(74,222,128,.9);border-radius:6px;padding:2px 8px;font-size:9px;font-weight:700;color:#fff;">SPONSORED</div></div>
+        <div style="padding:10px 12px;"><div style="color:#fff;font-size:12px;font-weight:700;">800m Antrenman – Hız Çalışması</div><div style="display:flex;gap:8px;margin-top:4px;"><span style="color:var(--muted);font-size:10px;">15 Haz 2025</span><span style="color:var(--muted);font-size:10px;">👁 1.2K</span><span style="color:var(--muted);font-size:10px;">❤️ 3.4K</span></div></div>
+      </div>
+      <div class="card" style="overflow:hidden;padding:0;margin-bottom:10px;" onclick="t('Video oynatılıyor...')">
+        <div style="height:110px;background:linear-gradient(135deg,#1a3040,#0d1117);display:flex;align-items:center;justify-content:center;font-size:36px;position:relative;">🎙<div style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.75);color:#fff;font-size:10px;padding:2px 7px;border-radius:6px;font-weight:700;">3:15</div></div>
+        <div style="padding:10px 12px;"><div style="color:#fff;font-size:12px;font-weight:700;">Şampiyona Sonrası Röportaj</div><div style="display:flex;gap:8px;margin-top:4px;"><span style="color:var(--muted);font-size:10px;">10 Haz 2025</span><span style="color:var(--muted);font-size:10px;">👁 3.4K</span></div></div>
+      </div>
+    </div>
+    <div class="bnav">
+      <button class="bni" onclick="pg('pg4')"><span class="bni-icon">🏠</span><span class="bni-lbl">Ana Sayfa</span></button>
+      <button class="bni" onclick="pg('pg17')"><span class="bni-icon">📊</span><span class="bni-lbl">Performans</span></button>
+      <button class="bni" onclick="pg('pg19')"><span class="bni-icon">🤖</span><span class="bni-lbl">Analiz</span></button>
+      <button class="bni on"><span class="bni-icon">🎬</span><span class="bni-lbl">Medya</span></button>
+      <button class="bni" onclick="pg('pg15')"><span class="bni-icon">👤</span><span class="bni-lbl">Profil</span></button>
+    </div>
+  </div>
+
+  <!-- ══ S19: AI ANALİZ ══ -->
+  <div class="screen" id="pg19">
+    <div class="topbar"><button class="back-btn" onclick="pg('pg4')">‹</button><div class="tb-title">🤖 AI Performans Analizi</div></div>
+    <div class="scroll" style="padding:16px;">
+      <div style="background:linear-gradient(135deg,#0f1530,#1a0a40);border-radius:18px;padding:16px;text-align:center;margin-bottom:14px;border:1px solid var(--border2);">
+        <div style="color:var(--muted);font-size:10px;font-weight:600;letter-spacing:1px;margin-bottom:8px;">SGS SKORU</div>
+        <div class="sgs-circle"><div class="sgs-val" style="color:var(--gold2);">85</div><div class="sgs-lbl">/100</div></div>
+        <div class="tag tag-gold" style="margin-bottom:8px;">⭐ Çok İyi</div>
+        <div style="color:#4ade80;font-size:12px;">↑ +5 bu hafta</div>
+      </div>
+      <div class="card2" style="padding:14px;margin-bottom:12px;">
+        <div style="color:#fff;font-size:13px;font-weight:700;margin-bottom:12px;">GELİŞİM GRAFİĞİ</div>
+        <div style="display:flex;align-items:flex-end;gap:3px;height:70px;" id="aiChartBars"></div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;"><span style="color:var(--dim);font-size:9px;">Oca</span><span style="color:var(--dim);font-size:9px;">Şub</span><span style="color:var(--dim);font-size:9px;">Mar</span><span style="color:var(--dim);font-size:9px;">Nis</span><span style="color:var(--dim);font-size:9px;">May</span><span style="color:var(--dim);font-size:9px;">Haz</span></div>
+      </div>
+      <div class="card2" style="padding:4px 14px;margin-bottom:12px;">
+        <div class="info-row" style="cursor:pointer;" onclick="t('Güçlü yön detayı')"><div style="display:flex;align-items:center;gap:8px;"><div style="width:10px;height:10px;border-radius:50%;background:#4ade80;flex-shrink:0;"></div><span style="color:#c8d8ff;font-size:12px;font-weight:600;">Güçlü Yön</span></div><span style="color:var(--dim);font-size:12px;">Hız çok iyi ›</span></div>
+        <div class="info-row" style="cursor:pointer;" onclick="t('Gelişim alanı detayı')"><div style="display:flex;align-items:center;gap:8px;"><div style="width:10px;height:10px;border-radius:50%;background:#60a5fa;flex-shrink:0;"></div><span style="color:#c8d8ff;font-size:12px;font-weight:600;">Gelişim Alanı</span></div><span style="color:var(--dim);font-size:12px;">Hız antrenmanı ›</span></div>
+        <div class="info-row" style="cursor:pointer;" onclick="t('Risk detayı')"><div style="display:flex;align-items:center;gap:8px;"><div style="width:10px;height:10px;border-radius:50%;background:#fbbf24;flex-shrink:0;"></div><span style="color:#c8d8ff;font-size:12px;font-weight:600;">Risk Uyarısı</span></div><span style="color:var(--dim);font-size:12px;">Dinlenme azaldı ›</span></div>
+      </div>
+    </div>
+    <div class="bnav">
+      <button class="bni" onclick="pg('pg4')"><span class="bni-icon">🏠</span><span class="bni-lbl">Ana Sayfa</span></button>
+      <button class="bni" onclick="pg('pg17')"><span class="bni-icon">📊</span><span class="bni-lbl">Performans</span></button>
+      <button class="bni on"><span class="bni-icon">🤖</span><span class="bni-lbl">Analiz</span></button>
+      <button class="bni" onclick="pg('pg18')"><span class="bni-icon">🎬</span><span class="bni-lbl">Medya</span></button>
+      <button class="bni" onclick="pg('pg15')"><span class="bni-icon">👤</span><span class="bni-lbl">Profil</span></button>
+    </div>
+  </div>
+
+  <!-- ══ S20: SPORCU SÖZLEŞMESİ ══ -->
+  <div class="screen" id="pg20">
+    <div class="topbar"><button class="back-btn" onclick="back()">‹</button><div class="tb-title">📄 Sporcu Sözleşmesi</div></div>
+    <div class="scroll" style="padding:16px;">
+      <div style="background:linear-gradient(135deg,#0a0d20,#111827);border-radius:16px;padding:16px;margin-bottom:14px;border:1px solid var(--border);">
+        <div style="font-size:28px;margin-bottom:8px;">📄</div>
+        <div style="color:#fff;font-size:15px;font-weight:800;margin-bottom:3px;">Sporcu Katılım ve Sponsorluk Sözleşmesi</div>
+        <div style="color:var(--muted);font-size:10px;margin-bottom:8px;">Düzenlenme: 26.03.2026 · 1 Yıllık Anlaşma · Gizlidir</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;"><span class="tag tag-green" style="margin:0;">✓ İmzalandı</span><span class="tag tag-blue" style="margin:0;">Aktif</span></div>
+      </div>
+      <div class="card2" style="padding:4px 14px;margin-bottom:12px;">
+        <div class="info-row"><span class="ir-label">Platform / Sponsor</span><span class="ir-val">Yalçın Perik Yazılım</span></div>
+        <div class="info-row"><span class="ir-label">Sporcu</span><span class="ir-val">Ömer Yılmaz</span></div>
+        <div class="info-row"><span class="ir-label">Başlangıç</span><span class="ir-val">26.03.2026</span></div>
+        <div class="info-row"><span class="ir-label">Bitiş</span><span class="ir-val">26.03.2027</span></div>
+        <div class="info-row"><span class="ir-label">İl Temsilcisi</span><span class="ir-val">Mehmet Perik</span></div>
+        <div class="info-row"><span class="ir-label">Federasyon</span><span class="ir-val">Hanene Perik</span></div>
+      </div>
+      <div class="card2" style="padding:14px;margin-bottom:12px;">
+        <div style="color:#fff;font-size:13px;font-weight:700;margin-bottom:10px;">📋 Temel Yükümlülükler</div>
+        <div style="color:#a8b8d8;font-size:11px;line-height:1.8;">• Aylık minimum <strong style="color:#a78bfa">2 video</strong> içerik yayınlama<br>• Ayda en az <strong style="color:#a78bfa">3 sosyal medya</strong> paylaşımı<br>• Küfür/hakaret yasağı — tam uyum zorunlu<br>• Sponsor ürününü görünür biçimde kullanma<br>• Platform dışı sponsorluğu yazılı bildirme<br>• Yılda en az <strong style="color:#a78bfa">2 etkinliğe</strong> katılım</div>
+      </div>
+      <div class="card2" style="padding:14px;margin-bottom:12px;">
+        <div style="color:#fff;font-size:13px;font-weight:700;margin-bottom:10px;">⚠️ Yaptırım Seviyeleri</div>
+        <div class="info-row"><span class="ir-label">1. Düzey</span><span class="ir-val" style="color:#fbbf24;">Yazılı Uyarı</span></div>
+        <div class="info-row"><span class="ir-label">2. Düzey</span><span class="ir-val" style="color:#fb923c;">İdari Para Cezası</span></div>
+        <div class="info-row"><span class="ir-label">3. Düzey</span><span class="ir-val" style="color:#f87171;">Profil Askıya Alma</span></div>
+        <div class="info-row"><span class="ir-label">4. Düzey</span><span class="ir-val" style="color:#ef4444;">Derhal Fesih</span></div>
+      </div>
+      <button class="btn-s" onclick="t('Sözleşme PDF olarak indiriliyor...')">⬇️ PDF İndir</button>
+    </div>
+  </div>
+
+  <!-- ══ S21: İL TEMSİLCİSİ SÖZLEŞMESİ ══ -->
+  <div class="screen" id="pg21">
+    <div class="topbar"><button class="back-btn" onclick="pg('pg13')">‹</button><div class="tb-title">📄 Temsilci Sözleşmesi</div></div>
+    <div class="scroll" style="padding:16px;">
+      <div style="background:linear-gradient(135deg,#1a0a40,#2a1060);border-radius:16px;padding:16px;margin-bottom:14px;border:1px solid #3a2070;">
+        <div style="font-size:28px;margin-bottom:8px;">🏙️</div>
+        <div style="color:#fff;font-size:15px;font-weight:800;margin-bottom:3px;">İl Temsilcisi Sponsorluk Sözleşmesi</div>
+        <div style="color:var(--muted);font-size:10px;margin-bottom:8px;">Versiyon 1.0 · 2025 · Gizlidir</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;"><span class="tag" style="background:rgba(124,58,237,.25);color:#c084fc;border:1px solid rgba(124,58,237,.3);margin:0;">✓ İmzalandı</span><span class="tag tag-blue" style="margin:0;">Aktif</span></div>
+      </div>
+      <div class="card2" style="padding:4px 14px;margin-bottom:12px;">
+        <div class="info-row"><span class="ir-label">Platform</span><span class="ir-val">Sporcu Platformu</span></div>
+        <div class="info-row"><span class="ir-label">Temsilci</span><span class="ir-val">Mehmet Perik</span></div>
+        <div class="info-row"><span class="ir-label">Temsil İli</span><span class="ir-val">Samsun</span></div>
+        <div class="info-row"><span class="ir-label">Hizmet Bedeli</span><span class="ir-val" style="color:#a78bfa;">%6</span></div>
+        <div class="info-row"><span class="ir-label">Süre</span><span class="ir-val">1 yıl — yenilenebilir</span></div>
+      </div>
+      <div class="card2" style="padding:14px;margin-bottom:12px;">
+        <div style="color:#fff;font-size:13px;font-weight:700;margin-bottom:10px;">📋 Temel Yükümlülükler</div>
+        <div style="color:#a8b8d8;font-size:11px;line-height:1.8;">• İlde sporcuları platforma kaydetme<br>• Sponsor–sporcu eşleşmesini yönetme<br>• Yılda 4 tanıtım etkinliği düzenleme<br>• Aylık faaliyet raporu sunma<br>• Etik kurallara tam uyum<br>• Çıkar çatışmasını bildirme yükümlülüğü</div>
+      </div>
+      <div class="card2" style="padding:14px;margin-bottom:12px;">
+        <div style="color:#fff;font-size:13px;font-weight:700;margin-bottom:10px;">🌍 Dünya Referansları</div>
+        <div style="color:#a8b8d8;font-size:11px;line-height:1.8;">• <strong style="color:#a78bfa">Nike/LeBron Modeli:</strong> Sporcu değeri büyüdükçe yeniden fiyatlandırma<br>• <strong style="color:#a78bfa">Red Bull Programı:</strong> Temsilci sadece misyon taşır<br>• <strong style="color:#a78bfa">NBA Bölge Modeli:</strong> Bölgesel yetkili sistemi</div>
+      </div>
+      <button class="btn-s" onclick="t('Sözleşme PDF olarak indiriliyor...')">⬇️ PDF İndir</button>
+    </div>
+  </div>
+
+  <!-- ══ S22: GİZLİLİK POLİTİKASI ══ -->
+  <div class="screen" id="pg22">
+    <div class="topbar"><button class="back-btn" onclick="pg('pg16')">‹</button><div class="tb-title">🔒 Gizlilik Politikası</div></div>
+    <div class="scroll" style="padding:16px;">
+      <div style="background:linear-gradient(135deg,#0a0d20,#111827);border-radius:16px;padding:14px;margin-bottom:14px;border:1px solid var(--border);">
+        <div style="font-size:28px;margin-bottom:6px;">🔒</div>
+        <div style="color:#fff;font-size:15px;font-weight:800;margin-bottom:2px;">Gizlilik Politikası</div>
+        <div style="color:var(--muted);font-size:10px;margin-bottom:8px;">Son güncelleme: 1 Ocak 2025 · v2.0</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;"><span class="tag tag-green" style="margin:0;">✓ KVKK</span><span class="tag tag-blue" style="margin:0;">✓ GDPR</span><span class="tag tag-gold" style="margin:0;">✓ FIFA Standartları</span></div>
+      </div>
+      <div class="policy-sec"><div class="ps-title">👋 1. Genel Bilgi</div><div class="ps-body">6698 sayılı KVKK ve AB GDPR Madde 12–14 kapsamında hazırlanmıştır. Platformu kullanan tüm kullanıcılar bu politikayı kabul etmiş sayılır.</div></div>
+      <div class="policy-sec"><div class="ps-title">📋 2. Topladığımız Veriler</div><ul class="ps-list"><li>Kimlik Verisi: Ad, soyad, TC kimlik no</li><li>Spor Verisi: Branş, kariyer, SGS skoru</li><li>Biyometrik Veri: Yalnızca açık onay ile</li><li>Mali Veri: IBAN (şifreli saklanır)</li></ul></div>
+      <div class="policy-sec"><div class="ps-title">⚖️ 3. KVKK & GDPR Haklarınız</div><div class="rights-grid"><div class="right-item"><div style="font-size:16px;margin-bottom:4px;">👁️</div><div style="color:#fff;font-size:11px;font-weight:700;">Erişim</div><div style="color:var(--muted);font-size:9px;margin-top:2px;">GDPR Md.15</div></div><div class="right-item"><div style="font-size:16px;margin-bottom:4px;">🗑️</div><div style="color:#fff;font-size:11px;font-weight:700;">Silme</div><div style="color:var(--muted);font-size:9px;margin-top:2px;">GDPR Md.17</div></div><div class="right-item"><div style="font-size:16px;margin-bottom:4px;">📦</div><div style="color:#fff;font-size:11px;font-weight:700;">Taşınabilirlik</div><div style="color:var(--muted);font-size:9px;margin-top:2px;">GDPR Md.20</div></div><div class="right-item"><div style="font-size:16px;margin-bottom:4px;">🚫</div><div style="color:#fff;font-size:11px;font-weight:700;">İtiraz</div><div style="color:var(--muted);font-size:9px;margin-top:2px;">GDPR Md.21</div></div></div></div>
+      <div class="policy-sec"><div class="ps-title">📞 4. İletişim</div><div class="ps-body">kvkk@sporcuplatformu.com.tr<br>Yanıt süresi: En fazla 30 gün</div></div>
+    </div>
+  </div>
+
+  <!-- ══ S23: KULLANIM KOŞULLARI ══ -->
+  <div class="screen" id="pg23">
+    <div class="topbar"><button class="back-btn" onclick="pg('pg16')">‹</button><div class="tb-title">📋 Kullanım Koşulları</div></div>
+    <div class="scroll" style="padding:16px;">
+      <div style="background:linear-gradient(135deg,#0a0d20,#111827);border-radius:16px;padding:14px;margin-bottom:14px;border:1px solid var(--border);">
+        <div style="font-size:28px;margin-bottom:6px;">📋</div>
+        <div style="color:#fff;font-size:15px;font-weight:800;margin-bottom:2px;">Kullanım Koşulları</div>
+        <div style="color:var(--muted);font-size:10px;margin-bottom:8px;">Son güncelleme: 1 Ocak 2025 · v2.0</div>
+        <div style="display:flex;gap:5px;"><span class="tag tag-green" style="margin:0;">Türk Hukuku</span><span class="tag tag-blue" style="margin:0;">Sporcu Odaklı</span></div>
+      </div>
+      <div class="policy-sec"><div class="ps-title">🏃 1. Sporcu Hakları</div><ul class="ps-list"><li>Platforma ücretsiz kayıt ve profil oluşturma</li><li>SGS skoruna itiraz etme hakkı</li><li>Sponsorluk teklifini reddetme — baskı altında değildir</li><li>İstediği zaman platformdan ayrılma</li></ul></div>
+      <div class="policy-sec"><div class="ps-title">💼 2. Sponsor Yükümlülükleri</div><ul class="ps-list"><li>Ödemeyi zamanında yapma</li><li>Sporcuya hakaret ve küfür yasağı</li><li>Alkol, tütün, kumar markası olamaz</li><li>Hizmet bedelini (%25 + KDV) ödeme</li></ul></div>
+      <div class="policy-sec"><div class="ps-title">💰 3. Hizmet Bedeli</div><ul class="ps-list"><li>Platform: %25 + KDV</li><li>İl Temsilcisi: %6</li><li>Federasyon: %6</li><li>Sporcu net payı: ~%63</li></ul></div>
+      <div class="policy-sec"><div class="ps-title">⚖️ 4. Uyuşmazlık</div><div class="ps-body">Önce arabuluculuk, ardından ISTAC Tahkim. Yetkili mahkeme: Samsun.</div></div>
+    </div>
+  </div>
+
+  <!-- ══ S24: HESABI SİL ══ -->
+  <div class="screen" id="pg24">
+    <div class="topbar"><button class="back-btn" onclick="pg('pg16')">‹</button><div class="tb-title" style="color:#f87171;">Hesabı Sil</div></div>
+    <div class="scroll" style="padding:16px;">
+      <div style="text-align:center;padding:24px 0 20px;">
+        <div style="font-size:52px;margin-bottom:12px;">⚠️</div>
+        <div style="color:#f87171;font-size:20px;font-weight:800;margin-bottom:8px;">Hesabı Silmek İstediğinize Emin Misiniz?</div>
+        <div style="color:var(--muted);font-size:12px;line-height:1.7;">Bu işlem geri alınamaz. Tüm verileriniz, SGS skorunuz ve sponsorluk geçmişiniz <strong style="color:#f87171;">kalıcı olarak silinecektir.</strong></div>
+      </div>
+      <div style="background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.25);border-radius:14px;padding:14px;margin-bottom:14px;">
+        <div style="color:#f87171;font-size:12px;font-weight:700;margin-bottom:8px;">🚫 Silinecek Veriler</div>
+        <div style="color:#f87171;font-size:11px;line-height:1.8;">🗑️ Sporcu profili ve kişisel bilgiler<br>🗑️ SGS skoru ve performans geçmişi<br>🗑️ Tüm videolar ve medya dosyaları<br>🗑️ Aktif ve geçmiş sponsorluk anlaşmaları<br>⚠️ Aktif sözleşmeler ihlal oluşturabilir</div>
+      </div>
+      <div style="background:rgba(74,63,255,.08);border:1px solid rgba(74,63,255,.2);border-radius:12px;padding:12px;margin-bottom:14px;display:flex;gap:8px;"><span style="font-size:14px;">💡</span><p style="color:#a78bfa;font-size:11px;line-height:1.6;">Silmek yerine <strong>hesabı dondurabilirsiniz</strong>. Verileriniz korunur, profil gizlenir.</p></div>
+      <button class="btn-s" onclick="t('Hesap donduruldu! 30 gün sonra aktif olur.')">❄️ Hesabı Dondur (Önerilir)</button>
+      <div style="margin-bottom:10px;"><div style="color:var(--muted);font-size:11px;margin-bottom:6px;">Onaylamak için "SİL" yazın:</div><input class="inp" id="delConf" placeholder="SİL yazın..." oninput="chkDel()"><button class="btn-red" id="delBtn" style="opacity:.4;cursor:not-allowed;" onclick="doDelete()">🗑️ Hesabımı Kalıcı Olarak Sil</button></div>
+    </div>
+    <!-- delete modal -->
+    <div class="modal-bg" id="delModal">
+      <div class="modal-box">
+        <h3>Son Onay</h3>
+        <p>Hesabınız 30 gün içinde kalıcı silinecek. Bu sürede destek@sporcuplatformu.com.tr adresine yazarak iptal edebilirsiniz.</p>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="btn-red" style="margin:0;" onclick="confirmDel()">Evet, Hesabımı Sil</button>
+          <button class="btn-s" style="margin:0;" onclick="document.getElementById('delModal').classList.remove('show')">Vazgeç</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /screen-wrap -->
+</div><!-- /phone -->
+
+<!-- PAGE NAV -->
+<div style="margin-top:12px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;">
+  <button onclick="pg('pg1')" style="background:#161d2e;border:1px solid #2a3a5a;color:#8ba8d4;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:10px;">🏠 Ana</button>
+  <button onclick="pg('pg3')" style="background:#161d2e;border:1px solid #2a3a5a;color:#8ba8d4;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:10px;">🏃 Sporcu Giriş</button>
+  <button onclick="pg('pg4')" style="background:#161d2e;border:1px solid #2a3a5a;color:#8ba8d4;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:10px;">📊 Sporcu Dash</button>
+  <button onclick="pg('pg5')" style="background:#161d2e;border:1px solid #2a3a5a;color:#8ba8d4;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:10px;">📝 Sporcu Kayıt</button>
+  <button onclick="pg('pg6')" style="background:#161d2e;border:1px solid #2a3a5a;color:#8ba8d4;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:10px;">💰 Piyasa</button>
+  <button onclick="pg('pg9')" style="background:#161d2e;border:1px solid #2a3a5a;color:#8ba8d4;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:10px;">💼 Sponsor Giriş</button>
+  <button onclick="pg('pg10')" style="background:#161d2e;border:1px solid #2a3a5a;color:#8ba8d4;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:10px;">🏢 Sponsor Dash</button>
+  <button onclick="pg('pg12')" style="background:#161d2e;border:1px solid #2a3a5a;color:#8ba8d4;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:10px;">🏙️ Temsilci Giriş</button>
+  <button onclick="pg('pg13')" style="background:#161d2e;border:1px solid #2a3a5a;color:#8ba8d4;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:10px;">🏙️ Temsilci Dash</button>
+  <button onclick="pg('pg14')" style="background:#161d2e;border:1px solid #2a3a5a;color:#8ba8d4;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:10px;">🏛️ Federasyon Dash</button>
+  <button onclick="pg('pg8')" style="background:#161d2e;border:1px solid #2a3a5a;color:#8ba8d4;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:10px;">⚽ 64 Spor Dalı</button>
+  <button onclick="pg('pg7')" style="background:#161d2e;border:1px solid #2a3a5a;color:#8ba8d4;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:10px;">🏅 Şampiyonlar</button>
+  <button onclick="pg('pg16')" style="background:#161d2e;border:1px solid #2a3a5a;color:#8ba8d4;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:10px;">⚙️ Ayarlar</button>
+  <button onclick="pg('pg20')" style="background:#161d2e;border:1px solid #2a3a5a;color:#8ba8d4;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:10px;">📄 Sözleşme</button>
+</div>
+</div><!-- /app-frame -->
+
+<div id="toast"></div>
+
+<script>
+// ── NAVIGATION ──
+const history=[];
+function pg(id){
+  const cur=document.querySelector('.screen.active');
+  if(cur&&cur.id!==id) history.push(cur.id);
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(id);
+  if(el){el.classList.add('active');el.querySelector&&el.querySelector('.scroll')&&(el.querySelector('.scroll').scrollTop=0);}
+  buildDynamic();
+}
+function back(){if(history.length>0)pg(history.pop());else pg('pg1');}
+
+// ── CHARTS ──
+function buildChart(id,data,color='linear-gradient(to top,#4a3fff,#8b6fff)',h=50){
+  const el=document.getElementById(id);if(!el)return;
+  const max=Math.max(...data);
+  el.innerHTML=data.map(v=>`<div style="flex:1;background:${color};border-radius:3px 3px 0 0;height:${Math.round((v/max)*h)}px;min-height:4px;"></div>`).join('');
+}
+function buildAiChart(){
+  const el=document.getElementById('aiChartBars');if(!el)return;
+  const d=[62,68,72,75,80,85];const max=100;
+  el.innerHTML=d.map(v=>`<div style="flex:1;background:linear-gradient(to top,#4a3fff,#a78bfa);border-radius:3px 3px 0 0;height:${Math.round((v/max)*70)}px;"></div>`).join('');
+}
+function buildAIFactors(){
+  const el=document.getElementById('aiFBars');if(!el)return;
+  const factors=[{l:'Başarı & Seviye',s:92,c:'#fbbf24',w:'%28'},{l:'Medya & Görünürlük',s:71,c:'#c084fc',w:'%18'},{l:'Fiziksel & Teknik',s:85,c:'#22d3ee',w:'%14'},{l:'Performans Trendi',s:80,c:'#4ade80',w:'%12'},{l:'Kulüp & Lisans',s:90,c:'#fb923c',w:'%10'},{l:'Yaş Dönemi',s:95,c:'#60a5fa',w:'%10'},{l:'Sağlık & Sakatlık',s:100,c:'#f87171',w:'%8'}];
+  el.innerHTML=factors.map(f=>`<div class="factor-row"><div class="frow-top"><span class="frow-name">${f.l} <span style="color:var(--dim);font-size:9px;">${f.w}</span></span><span class="frow-score" style="color:${f.c}">${f.s}</span></div><div class="fbar"><div class="fbar-fill" style="width:${f.s}%;background:${f.c}"></div></div></div>`).join('');
+}
+
+// ── SPORCU LIST ──
+function buildSporcuList(){
+  const el=document.getElementById('sporcuList');if(!el)return;
+  const sp=[{n:'Ömer Yılmaz',b:'🏃 Atletizm',c:'Samsun',sgs:85,p:'₺50K',m:'🥇',bg:'linear-gradient(135deg,#c9a227,#ffd700)'},{n:'Zeynep Kaya',b:'🏊 Yüzme',c:'İstanbul',sgs:92,p:'₺50K',m:'🥇',bg:'linear-gradient(135deg,#0891b2,#06b6d4)'},{n:'Burak Doğan',b:'🤼 Güreş',c:'Ankara',sgs:78,p:'₺25K',m:'🥈',bg:'linear-gradient(135deg,#708090,#c0c0c0)'},{n:'Mert Arslan',b:'🥊 Boks',c:'Bursa',sgs:71,p:'₺25K',m:'🥇',bg:'linear-gradient(135deg,#dc2626,#ef4444)'},{n:'Ayşe Demir',b:'🏹 Okçuluk',c:'İzmir',sgs:65,p:'₺7K',m:'🥉',bg:'linear-gradient(135deg,#8b4513,#cd7f32)'}];
+  el.innerHTML=sp.map(s=>`<div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border-radius:14px;margin-bottom:8px;cursor:pointer;border:1px solid var(--border);" onclick="t('${s.n} profili açılıyor...')"><div style="width:46px;height:46px;border-radius:50%;background:${s.bg};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🧑</div><div style="flex:1;"><div style="color:#fff;font-size:13px;font-weight:700;">${s.n}</div><div style="color:var(--muted);font-size:11px;margin-top:2px;">${s.b} · ${s.c}</div><div style="color:#4ade80;font-size:10px;font-weight:700;margin-top:3px;">Piyasa: ${s.p}/ay ${s.m}</div></div><div style="background:rgba(74,63,255,.2);border-radius:8px;padding:5px 9px;text-align:center;"><div style="color:#a78bfa;font-size:13px;font-weight:800;">${s.sgs}</div><div style="color:var(--gray);font-size:9px;">SGS</div></div></div>`).join('');
+}
+
+// ── SPONSOR SPORCU ──
+function buildSponsorSporcu(){
+  const el=document.getElementById('sponsorSporcuList');if(!el)return;
+  const sp=[{n:'Ömer Yılmaz',b:'🏃 Atletizm',sgs:85,pay:'₺50.000/ay',tr:'+12'},{n:'Zeynep Kaya',b:'🏊 Yüzme',sgs:92,pay:'₺35.000/ay',tr:'+9'},{n:'Ali Demir',b:'🏀 Basketbol',sgs:80,pay:'₺40.000/ay',tr:'+15'}];
+  el.innerHTML=sp.map(s=>`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #1a2440;cursor:pointer;" onclick="pg('pg11')"><div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🧑</div><div style="flex:1;"><div style="color:#fff;font-size:12px;font-weight:700;">${s.n}</div><div style="color:var(--muted);font-size:10px;margin-top:2px;">${s.b}</div></div><div style="background:rgba(74,63,255,.2);border-radius:7px;padding:4px 8px;margin-right:8px;"><div style="color:#a78bfa;font-size:12px;font-weight:800;">${s.sgs}</div></div><div style="text-align:right;"><div style="color:#4ade80;font-size:11px;font-weight:700;">${s.pay}</div><div style="color:#4ade80;font-size:9px;">↑ ${s.tr} gelişim</div></div></div>`).join('');
+}
+function buildSponsorDetay(){
+  const el=document.getElementById('sponsorSporcuDetay');if(!el)return;
+  const sp=[{n:'Ömer Yılmaz',b:'🏃 Atletizm · 22 yaş · Samsun',sgs:85,pay:'₺56.000',con:'6 ay kaldı'},{n:'Zeynep Kaya',b:'🏊 Yüzme · 20 yaş · İstanbul',sgs:78,pay:'₺40.000',con:'8 ay kaldı'},{n:'Ali Demir',b:'🏀 Basketbol · 24 yaş · Ankara',sgs:82,pay:'₺48.000',con:'10 ay kaldı'}];
+  el.innerHTML=sp.map(s=>`<div style="background:var(--card);border-radius:16px;padding:14px;margin-bottom:10px;border:1px solid var(--border);"><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🧑</div><div style="flex:1;"><div style="color:#fff;font-size:14px;font-weight:700;">${s.n}</div><div style="color:var(--muted);font-size:11px;margin-top:2px;">${s.b}</div></div><div style="background:rgba(74,63,255,.2);border-radius:10px;padding:6px 10px;text-align:center;"><div style="color:#a78bfa;font-size:14px;font-weight:800;">${s.sgs}</div><div style="color:var(--gray);font-size:9px;">SGS</div></div></div><div style="display:flex;justify-content:space-between;align-items:center;"><div><div style="color:var(--muted);font-size:10px;">Aylık ödeme</div><div style="color:#4ade80;font-size:16px;font-weight:800;">${s.pay}</div><div style="color:var(--muted);font-size:10px;margin-top:2px;">Sözleşme: ${s.con}</div></div><button style="background:linear-gradient(135deg,var(--blue),var(--purple));border:none;border-radius:10px;padding:8px 14px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;" onclick="t('${s.n} detay sayfası')">Detaylar</button></div></div>`).join('');
+}
+
+// ── SPOR DALLARI ──
+const SPORTS=[{cat:'🏅 Bireysel',items:[{e:'🏹',n:'Okçuluk'},{e:'🏃',n:'Atletizm'},{e:'🏸',n:'Badminton'},{e:'🥊',n:'Boks'},{e:'🤸',n:'Cimnastik'},{e:'⚔️',n:'Eskrim'},{e:'⛳',n:'Golf'},{e:'🤼',n:'Güreş'},{e:'🏋️',n:'Halter'},{e:'🥋',n:'Judo'},{e:'🥋',n:'Karate'},{e:'🦵',n:'Kick Boks'},{e:'🧘',n:'Muay Thai'},{e:'🏓',n:'Masa Tenisi'},{e:'🎾',n:'Tenis'},{e:'🚴',n:'Triatlon'},{e:'🏊',n:'Yüzme'},{e:'🎯',n:'Pentatlon'},{e:'💪',n:'Fitness'},{e:'🧭',n:'Oryantiring'}]},{cat:'👥 Takım',items:[{e:'⚽',n:'Futbol'},{e:'🏀',n:'Basketbol'},{e:'🏐',n:'Voleybol'},{e:'🤾',n:'Hentbol'},{e:'🏉',n:'Ragbi'},{e:'🤽',n:'Sutopu'},{e:'🏒',n:'Buz Hokeyi'}]},{cat:'🚗 Motor',items:[{e:'🏎️',n:'Otomobil'},{e:'🏍️',n:'Motorsiklet'}]},{cat:'❄️ Kış',items:[{e:'⛷️',n:'Kayak'},{e:'⛸️',n:'Buz Pateni'},{e:'🥌',n:'Curling'},{e:'🏒',n:'Buz Hokeyi'}]},{cat:'🌊 Su',items:[{e:'🏊',n:'Yüzme'},{e:'🤿',n:'Su Altı'},{e:'🤽',n:'Sutopu'},{e:'🚣',n:'Kürek'},{e:'🛶',n:'Kano'},{e:'⛵',n:'Yelken'}]},{cat:'🏹 Geleneksel',items:[{e:'🏹',n:'Türk Okçuluk'},{e:'🐎',n:'Atlı Spor'},{e:'🤼',n:'Geleneksel Güreş'},{e:'💃',n:'Halk Oyunları'},{e:'🎽',n:'Geleneksel'}]},{cat:'♿ Engelli',items:[{e:'♿',n:'Bedensel'},{e:'👁️',n:'Görme Engelli'},{e:'👂',n:'İşitme'},{e:'⭐',n:'Özel Sporcular'}]},{cat:'🎯 Diğer',items:[{e:'🎮',n:'E-Spor'},{e:'🛹',n:'Kaykay'},{e:'🪂',n:'Hava'},{e:'🧭',n:'İzcilik'},{e:'💃',n:'Dans'},{e:'🎳',n:'Bowling'},{e:'🎯',n:'Dart'},{e:'🎱',n:'Bilardo'},{e:'🧗',n:'Dağcılık'},{e:'🔫',n:'Atıcılık'},{e:'🏇',n:'Binicilik'},{e:'🚵',n:'Bisiklet'},{e:'♟️',n:'Satranç'},{e:'🎓',n:'Üniversite'},{e:'🤝',n:'Herkes İçin'},{e:'🃏',n:'Briç'}]}];
+function renderSports(q=''){
+  const c=document.getElementById('sportsContainer');if(!c)return;
+  let html='';
+  SPORTS.forEach(cat=>{
+    const f=q?cat.items.filter(s=>s.n.toLowerCase().includes(q.toLowerCase())):cat.items;
+    if(!f.length)return;
+    html+=`<div class="cat-lbl">${cat.cat} (${f.length})</div><div class="sports-grid">`;
+    f.forEach(s=>{html+=`<div class="sg-item" onclick="t('${s.n} ✓')"><div class="sg-icon">${s.e}</div><div class="sg-name">${s.n}</div></div>`;});
+    html+=`</div>`;
+  });
+  if(!html)html=`<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">Sonuç bulunamadı 🔍</div>`;
+  c.innerHTML=html;
+}
+function filterSports(q){renderSports(q);}
+
+// ── CALC ──
+function calcLevel(el,base){
+  document.querySelectorAll('.calc-opt').forEach(o=>{o.style.borderColor='var(--border2)';o.style.background='var(--card)';o.querySelector('.cdot').style.background='';o.querySelector('.cdot').style.borderColor='#3a4a6a';});
+  el.style.borderColor=var_gold;el.style.background='rgba(201,162,39,.08)';
+  el.querySelector('.cdot').style.background='var(--gold2)';el.querySelector('.cdot').style.borderColor='var(--gold2)';
+  const plat=Math.round(base*.25);const kdv=Math.round(plat*.20);const tem=Math.round(base*.06);const fed=Math.round(base*.06);const net=base-plat-kdv-tem-fed;
+  const f=v=>'₺'+v.toLocaleString('tr-TR');
+  document.getElementById('cr-base').textContent=f(base);document.getElementById('cr-plat').textContent=f(plat)+' (+'+f(kdv)+' KDV)';document.getElementById('cr-tem').textContent=f(tem);document.getElementById('cr-fed').textContent=f(fed);document.getElementById('cr-net').textContent=f(net);
+  document.getElementById('calcResult').style.display='block';
+  document.getElementById('myVal').textContent=f(base);
+  t('Hesaplandı! Net: '+f(net));
+}
+const var_gold='rgba(201,162,39,.6)';
+
+// ── DELETE ──
+function chkDel(){
+  const v=document.getElementById('delConf').value.trim().toUpperCase();
+  const ok=v==='SİL'||v==='SIL';
+  const btn=document.getElementById('delBtn');
+  btn.style.opacity=ok?'1':'0.4';btn.style.cursor=ok?'pointer':'not-allowed';
+}
+function doDelete(){
+  const v=document.getElementById('delConf').value.trim().toUpperCase();
+  if(v==='SİL'||v==='SIL')document.getElementById('delModal').classList.add('show');
+  else t('Lütfen "SİL" yazın');
+}
+function confirmDel(){document.getElementById('delModal').classList.remove('show');pg('pg1');t('Hesap silme talebi alındı. 30 gün içinde işleme alınacak.');}
+
+// ── REG STEPS ──
+let regStep=1;
+function regNext(){
+  regStep++;if(regStep>4)regStep=4;
+  document.getElementById('regStep').textContent=regStep+'/4';
+  for(let i=1;i<=4;i++){const tab=document.getElementById('rt'+i);if(tab){tab.classList.remove('active','done');if(i===regStep)tab.classList.add('active');if(i<regStep)tab.classList.add('done');}}
+  const content=document.getElementById('regContent');
+  if(regStep===2)content.innerHTML=`<div class="field"><label>Spor Dalı *</label><select class="inp"><option>Atletizm</option><option>Yüzme</option><option>Güreş</option><option>Boks</option><option>Futbol</option><option>Basketbol</option><option>Karate</option><option>Diğer</option></select></div><div class="field"><label>Kariyer Yılı *</label><input class="inp" type="number" placeholder="8"></div><div class="field"><label>Rekabet Seviyesi *</label><select class="inp"><option>Olimpiyat / Dünya</option><option>Milli Sporcu</option><option>Süper Lig</option><option>Bölgesel</option><option>Amatör</option></select></div><div class="field"><label>Lisans Durumu</label><select class="inp"><option>Aktif Lisans</option><option>Pasif</option><option>Lisanssız</option></select></div><button class="btn-p" onclick="regNext()">Devam Et →</button><button class="btn-s" onclick="regPrev()">← Geri</button>`;
+  else if(regStep===3)content.innerHTML=`<div class="field"><label>Aylık Gelir Beklentisi</label><select class="inp"><option>₺3.000 – ₺5.000</option><option>₺5.000 – ₺10.000</option><option>₺10.000 – ₺20.000</option><option>₺20.000 – ₺50.000</option><option>₺50.000+</option></select></div><div class="field"><label>Aylık Kaç Video Üretebilirsin?</label><select class="inp"><option>2 video/ay (minimum)</option><option>4 video/ay</option><option>6 video/ay</option><option>8+ video/ay</option></select></div><div class="field"><label>Instagram Takipçi</label><input class="inp" placeholder="5000"></div><button class="btn-p" onclick="regNext()">Devam Et →</button><button class="btn-s" onclick="regPrev()">← Geri</button>`;
+  else if(regStep===4)content.innerHTML=`<div style="text-align:center;padding:20px 0 14px;"><div style="font-size:36px;margin-bottom:8px;">📄</div><div style="color:#fff;font-size:15px;font-weight:700;margin-bottom:4px;">Son Adım</div><div style="color:var(--muted);font-size:12px;">KVKK onayı ve kayıt tamamlama</div></div><div style="background:rgba(74,63,255,.08);border:1px solid rgba(74,63,255,.2);border-radius:12px;padding:12px;margin-bottom:12px;"><p style="color:#a78bfa;font-size:11px;line-height:1.6;">KVKK kapsamında verileriniz korunmaktadır. Sporcu Platformu verilerinizi yalnızca eşleştirme ve sponsorluk süreçleri için kullanır.</p></div><label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;margin-bottom:10px;"><input type="checkbox" style="margin-top:2px;"><span style="color:#c8d8ff;font-size:12px;line-height:1.5;">KVKK Aydınlatma Metni'ni okudum, kabul ediyorum.</span></label><label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;margin-bottom:14px;"><input type="checkbox" style="margin-top:2px;"><span style="color:#c8d8ff;font-size:12px;line-height:1.5;">Platform Kullanım Koşulları ve Sporcu Sözleşmesi'ni kabul ediyorum.</span></label><button class="btn-p" onclick="pg('pg4');regStep=1;">🎉 Kayıt Tamamla!</button><button class="btn-s" onclick="regPrev()">← Geri</button>`;
+}
+function regPrev(){regStep--;if(regStep<1)regStep=1;regNext();}
+
+// ── DYNAMIC BUILD ──
+function buildDynamic(){
+  renderSports();buildSporcuList();buildSponsorSporcu();buildSponsorDetay();
+  setTimeout(()=>{buildChart('homeChart',[3,5,7,4,8,6,9]);buildChart('perfChart',[4,7,5,8,6,9,7],'linear-gradient(to top,var(--blue),var(--teal))');buildAiChart();buildAIFactors();},50);
+}
+
+// ── STATS ANIMATION ──
+function animCount(id,target){let c=0;const step=Math.ceil(target/30);const iv=setInterval(()=>{c=Math.min(c+step,target);document.getElementById(id).textContent=c.toLocaleString('tr-TR');if(c>=target)clearInterval(iv);},50);}
+setTimeout(()=>{animCount('sn1',2847);animCount('sn2',184);animCount('sn3',78);},600);
+
+// ── TOAST ──
+let tt;
+function t(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),2500);}
+
+// init
+buildDynamic();
+</script>
+</body>
+</html>

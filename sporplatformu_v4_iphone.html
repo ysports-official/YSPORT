@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SporPlatformu — v4</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#080d1a;--surf:#0f1623;--border:#1e2d4a;
+  --a:#6339ff;--a2:#a78bff;
+  --gold:#f5a623;--green:#00c88c;--red:#ef4444;--cyan:#06b6d4;
+  --t2:#8ba8d4;--t3:#3a5080;
+}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Outfit',sans-serif;background:#030408;display:flex;justify-content:center;align-items:center;}
+
+/* ══ iPHONE 15 PRO FRAME ══ */
+.iphone{
+  width:393px;height:852px;
+  background:#1c1c1e;
+  border-radius:56px;
+  box-shadow:
+    0 0 0 1.5px #3a3a3c,
+    0 0 0 6px #1c1c1e,
+    0 60px 140px rgba(0,0,0,.98),
+    inset 0 0 0 1px #2c2c2e;
+  overflow:hidden;
+  position:relative;
+  display:flex;flex-direction:column;
+}
+/* Side buttons */
+.iphone::before{content:'';position:absolute;left:-3.5px;top:110px;width:3.5px;height:34px;background:#2c2c2e;border-radius:2px 0 0 2px;box-shadow:0 52px 0 #2c2c2e,0 90px 0 #2c2c2e;}
+.iphone::after{content:'';position:absolute;right:-3.5px;top:158px;width:3.5px;height:76px;background:#2c2c2e;border-radius:0 2px 2px 0;}
+
+/* Screen */
+.iphone-screen{position:absolute;inset:0;border-radius:56px;overflow:hidden;background:var(--bg);display:flex;flex-direction:column;}
+
+/* Dynamic Island */
+.di{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:128px;height:38px;background:#000;border-radius:20px;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 12px;}
+.di-cam{width:14px;height:14px;border-radius:50%;background:#1a1a1a;border:2px solid #0a0a0a;}
+.di-dot{width:10px;height:10px;border-radius:50%;background:#1a1a1a;}
+
+/* Status bar */
+.sb{height:60px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 10px;flex-shrink:0;background:var(--bg);}
+.sb-time{font-size:16px;font-weight:700;color:#fff;letter-spacing:-.3px;}
+.sb-icons{display:flex;align-items:center;gap:5px;font-size:13px;color:#fff;}
+
+/* App layer */
+.app{flex:1;overflow:hidden;position:relative;background:var(--bg);}
+
+/* Pages */
+.page{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;background:var(--bg);}
+.page::-webkit-scrollbar{display:none;}
+.page.active{transform:translateX(0);}
+.page.prev{transform:translateX(-28%);}
+
+/* Bottom Nav */
+.bnav{display:flex;padding:8px 0 6px;border-top:1px solid rgba(255,255,255,.06);background:var(--bg);flex-shrink:0;z-index:50;}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:3px 0;transition:all .15s;}
+.bni-ic{font-size:19px;line-height:1;}
+.bni-lb{font-size:8.5px;color:var(--t3);font-weight:500;}
+.bni.on .bni-lb{color:var(--a2);}
+.bni.on .bni-ic{filter:drop-shadow(0 0 6px rgba(163,139,255,.65));}
+
+/* Home indicator */
+.home-bar{height:34px;display:flex;align-items:center;justify-content:center;background:var(--bg);flex-shrink:0;}
+.home-pill{width:134px;height:5px;border-radius:3px;background:rgba(255,255,255,.2);}
+
+/* Topbar */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px 10px;background:var(--bg);border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0;position:sticky;top:0;z-index:10;}
+.tbk{width:36px;height:36px;background:rgba(255,255,255,.07);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;border:1px solid rgba(255,255,255,.1);cursor:pointer;flex-shrink:0;}
+.tbt{font-size:14px;font-weight:700;color:#fff;letter-spacing:.5px;}
+.tbr{width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;}
+
+/* Section title */
+.stitle{font-size:10px;font-weight:700;color:rgba(138,156,200,.4);letter-spacing:1.3px;text-transform:uppercase;padding:14px 18px 7px;display:flex;align-items:center;gap:8px;}
+.stitle::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.05);}
+
+/* Toast */
+.toast{position:absolute;bottom:90px;left:50%;transform:translateX(-50%) translateY(30px);background:rgba(99,57,255,.96);color:#fff;font-size:11.5px;font-weight:600;padding:10px 22px;border-radius:24px;transition:all .3s cubic-bezier(.34,1.56,.64,1);z-index:9999;pointer-events:none;white-space:nowrap;opacity:0;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+/* Glow helper */
+.glow{position:absolute;border-radius:50%;pointer-events:none;}
+
+/* ════════ SPLASH ════════ */
+#p-splash{background:linear-gradient(160deg,#080d1a,#0d1525);}
+.sp-g1{width:440px;height:440px;top:-160px;left:50%;transform:translateX(-50%);background:radial-gradient(circle,rgba(99,57,255,.2) 0%,transparent 70%);}
+.sp-g2{width:300px;height:300px;bottom:60px;right:-90px;background:radial-gradient(circle,rgba(245,166,35,.1) 0%,transparent 70%);}
+.sp-g3{width:240px;height:240px;bottom:100px;left:-60px;background:radial-gradient(circle,rgba(0,200,140,.07) 0%,transparent 70%);}
+.sp-inner{flex:1;display:flex;flex-direction:column;align-items:center;padding:16px 22px 12px;position:relative;z-index:2;overflow-y:auto;}
+.sp-inner::-webkit-scrollbar{display:none;}
+.sp-logo{width:78px;height:78px;background:linear-gradient(135deg,rgba(99,57,255,.4),rgba(163,139,255,.2));border:1.5px solid rgba(99,57,255,.5);border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:34px;margin-bottom:14px;box-shadow:0 8px 32px rgba(99,57,255,.4);}
+.sp-app{font-family:'Bebas Neue';font-size:11px;letter-spacing:3.5px;color:rgba(255,255,255,.3);margin-bottom:5px;}
+.sp-title{font-family:'Bebas Neue';font-size:33px;color:#fff;text-align:center;line-height:1.05;margin-bottom:5px;}
+.sp-sub{font-size:11px;color:rgba(255,255,255,.3);text-align:center;line-height:1.65;margin-bottom:14px;}
+.sp-stats{display:flex;width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;overflow:hidden;margin-bottom:16px;}
+.sp-stat{flex:1;padding:10px 5px;text-align:center;border-right:1px solid rgba(255,255,255,.06);}
+.sp-stat:last-child{border-right:none;}
+.sp-sv{font-family:'Bebas Neue';font-size:20px;letter-spacing:1px;line-height:1;}
+.sp-sl{font-size:8px;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
+
+/* Role section */
+.role-section{width:100%;margin-bottom:10px;}
+.role-section-title{font-size:9px;font-weight:700;color:rgba(255,255,255,.22);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;text-align:center;}
+.role-card{width:100%;padding:13px 16px;border-radius:14px;border:none;cursor:pointer;font-family:'Outfit';display:flex;align-items:center;gap:10px;transition:all .15s;margin-bottom:8px;}
+.role-card:last-child{margin-bottom:0;}
+.role-card:active{transform:scale(.97);}
+.rc-icon{font-size:20px;flex-shrink:0;}
+.rc-texts{display:flex;flex-direction:column;align-items:flex-start;flex:1;}
+.rc-main{font-size:13px;font-weight:700;}
+.rc-sub{font-size:9.5px;opacity:.65;font-weight:400;margin-top:2px;}
+.rc-btns{display:flex;gap:6px;flex-shrink:0;}
+.rc-btn{padding:6px 12px;border-radius:20px;font-size:10px;font-weight:700;cursor:pointer;font-family:'Outfit';border:none;transition:all .15s;}
+.rc-btn:active{transform:scale(.93);}
+.rc-btn.login{background:rgba(255,255,255,.12);color:#fff;}
+.rc-btn.register{color:#fff;}
+
+.role-card.sporcu{background:linear-gradient(135deg,rgba(80,48,238,.25),rgba(144,96,255,.15));border:1.5px solid rgba(99,57,255,.4);}
+.role-card.sponsor{background:rgba(245,166,35,.08);border:1.5px solid rgba(245,166,35,.3);}
+.role-card.il{background:rgba(0,200,140,.08);border:1.5px solid rgba(0,200,140,.25);}
+.role-card.fed{background:rgba(6,182,212,.08);border:1.5px solid rgba(6,182,212,.22);}
+
+.rc-btn.sporcu-r{background:linear-gradient(135deg,#5030ee,#9060ff);}
+.rc-btn.sponsor-r{background:linear-gradient(135deg,#f5a623,#f56a35);}
+.rc-btn.il-r{background:linear-gradient(135deg,#00c88c,#059669);}
+.rc-btn.fed-r{background:linear-gradient(135deg,#0ea5e9,#06b6d4);}
+.sp-ver{font-size:10px;color:rgba(255,255,255,.15);margin-top:8px;}
+
+/* ════════ GİRİŞ / KAYIT SHARED ════════ */
+.auth-page{background:var(--bg);}
+.auth-glow{position:absolute;width:320px;height:320px;top:-100px;left:50%;transform:translateX(-50%);border-radius:50%;pointer-events:none;}
+.auth-inner{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 24px 20px;overflow-y:auto;position:relative;z-index:2;}
+.auth-inner::-webkit-scrollbar{display:none;}
+.auth-logo{width:62px;height:62px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:12px;}
+.auth-appname{font-family:'Bebas Neue';font-size:11px;letter-spacing:3px;color:rgba(255,255,255,.28);margin-bottom:4px;}
+.auth-big{font-family:'Bebas Neue';font-size:28px;letter-spacing:1px;color:#fff;text-align:center;line-height:1.1;margin-bottom:4px;}
+.auth-sub{font-size:11px;color:rgba(255,255,255,.35);text-align:center;margin-bottom:22px;}
+.google-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;background:#fff;border-radius:14px;border:none;cursor:pointer;font-size:13px;font-weight:600;color:#1a1a2e;font-family:'Outfit';transition:all .15s;margin-bottom:14px;}
+.google-btn:active{transform:scale(.97);background:#f0f0f0;}
+.gdiv{display:flex;align-items:center;gap:10px;margin-bottom:14px;width:100%;}
+.gdl{flex:1;height:1px;background:rgba(255,255,255,.08);}
+.gdt{font-size:10px;color:rgba(255,255,255,.25);}
+.phone-field{width:100%;background:var(--surf);border:1.5px solid var(--border);border-radius:14px;display:flex;align-items:center;height:50px;margin-bottom:12px;overflow:hidden;transition:border-color .2s;}
+.phone-field:focus-within{border-color:rgba(99,57,255,.45);}
+.pf-flag{padding:0 10px;font-size:17px;border-right:1px solid var(--border);}
+.pf-code{padding:0 10px;font-size:12px;color:var(--t2);border-right:1px solid var(--border);}
+.pf-inp{flex:1;background:transparent;border:none;outline:none;color:#fff;font-size:13px;font-family:'Outfit';padding:0 13px;}
+.pf-inp::placeholder{color:var(--t3);}
+.auth-btn{width:100%;height:50px;border-radius:14px;border:none;cursor:pointer;font-size:13.5px;font-weight:700;font-family:'Outfit';color:#fff;margin-bottom:16px;transition:all .15s;}
+.auth-btn:active{opacity:.9;transform:scale(.98);}
+.auth-link-row{font-size:11px;color:rgba(255,255,255,.3);text-align:center;}
+.auth-link-row span{font-weight:700;cursor:pointer;}
+
+/* ════════ FORM SHARED ════════ */
+.finput{width:100%;background:var(--surf);border:1.5px solid var(--border);border-radius:12px;padding:11px 13px;color:#fff;font-size:13px;font-family:'Outfit';outline:none;-webkit-appearance:none;}
+.finput:focus{border-color:rgba(99,57,255,.5);}
+.finput::placeholder{color:var(--t3);}
+select.finput{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='%236b82a8'%3E%3Cpath d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:28px;cursor:pointer;}
+select.finput option{background:var(--surf);}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.frow{margin-bottom:10px;}
+.flbl{font-size:9.5px;color:rgba(255,255,255,.4);font-weight:600;margin-bottom:4px;display:block;letter-spacing:.3px;}
+.req{color:var(--red);margin-left:2px;}
+.rbgroup{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;}
+.rbopt{padding:6px 11px;border-radius:20px;font-size:10px;font-weight:500;cursor:pointer;border:1px solid var(--border);color:var(--t3);background:transparent;font-family:'Outfit';transition:all .15s;}
+.rbopt.sel{background:rgba(99,57,255,.2);border-color:rgba(99,57,255,.5);color:var(--a2);}
+.chk{display:flex;align-items:flex-start;gap:9px;padding:10px 12px;background:var(--surf);border:1.5px solid var(--border);border-radius:12px;margin-bottom:7px;cursor:pointer;transition:border-color .15s;}
+.chk.on{border-color:rgba(99,57,255,.35);}
+.cbox{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;background:var(--bg);font-size:10px;transition:all .15s;}
+.cbox.on{background:var(--a);border-color:var(--a);}
+.ctxt-t{font-size:10.5px;font-weight:600;color:rgba(255,255,255,.8);}
+.ctxt-s{font-size:8.5px;color:var(--t3);margin-top:2px;line-height:1.4;}
+.doc-btn{display:flex;align-items:center;gap:10px;padding:12px 13px;background:var(--surf);border:1.5px solid var(--border);border-radius:13px;margin-bottom:7px;cursor:pointer;}
+.db-ic{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.db-t{font-size:12px;font-weight:600;color:#fff;}
+.db-s{font-size:9px;color:var(--t3);margin-top:1px;}
+.add-btn{display:flex;align-items:center;gap:6px;padding:9px 12px;background:rgba(255,255,255,.025);border:1px dashed rgba(255,255,255,.12);border-radius:10px;font-size:10.5px;color:var(--t3);cursor:pointer;font-family:'Outfit';}
+.odul-item{display:flex;align-items:center;gap:7px;background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:8px 10px;margin-bottom:5px;}
+.od-del{font-size:12px;color:rgba(255,255,255,.2);cursor:pointer;padding:2px 5px;}
+.photo-up{display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px;background:var(--surf);border:1.5px dashed rgba(99,57,255,.35);border-radius:14px;cursor:pointer;margin-bottom:12px;}
+.photo-circle{width:70px;height:70px;border-radius:50%;background:rgba(99,57,255,.15);border:2px solid rgba(99,57,255,.3);display:flex;align-items:center;justify-content:center;font-size:28px;}
+
+/* Step bar */
+.step-wrap{padding:10px 18px 8px;flex-shrink:0;background:var(--bg);border-bottom:1px solid rgba(255,255,255,.05);}
+.step-bar{display:flex;align-items:center;margin-bottom:6px;}
+.sbc{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--t3);flex-shrink:0;transition:all .3s;}
+.sbc.cur{border-color:var(--a);color:var(--a2);background:rgba(99,57,255,.12);}
+.sbc.done{border-color:var(--a);background:var(--a);color:#fff;}
+.sbl{flex:1;height:2px;background:var(--border);transition:background .3s;}
+.sbl.done{background:var(--a);}
+.sblbs{display:flex;justify-content:space-between;margin-bottom:5px;}
+.sblb{font-size:8.5px;color:var(--t3);flex:1;text-align:center;transition:color .3s;}
+.sblb.cur{color:var(--a2);}
+.sblb.done{color:var(--green);}
+.kpbar{height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
+.kpbar-fill{height:100%;background:linear-gradient(90deg,var(--a),var(--a2));transition:width .4s;border-radius:2px;}
+.step-badge{display:inline-flex;background:rgba(99,57,255,.15);border:1px solid rgba(99,57,255,.3);border-radius:20px;padding:3px 11px;font-size:10px;color:var(--a2);font-weight:600;margin-top:6px;}
+.kscroll{flex:1;overflow-y:auto;padding:0 18px 8px;}
+.kscroll::-webkit-scrollbar{display:none;}
+.kpage{display:none;}
+.kpage.act{display:block;}
+.k-sec{font-size:15px;font-weight:700;color:#fff;margin:13px 0 4px;}
+.k-sub{font-size:11px;color:rgba(255,255,255,.3);margin-bottom:14px;}
+.nav-btns{display:flex;gap:8px;padding:10px 18px 12px;border-top:1px solid rgba(255,255,255,.05);background:var(--bg);flex-shrink:0;}
+.btn-back2{flex:1;height:48px;border-radius:13px;border:1.5px solid var(--border);background:transparent;color:rgba(255,255,255,.45);font-size:13px;font-weight:600;font-family:'Outfit';cursor:pointer;}
+.btn-next2{flex:2;height:48px;border-radius:13px;border:none;background:linear-gradient(135deg,var(--a),var(--a2));color:#fff;font-size:13px;font-weight:700;font-family:'Outfit';cursor:pointer;transition:all .15s;}
+.btn-next2.green{background:linear-gradient(135deg,#00c88c,#3ddc84);}
+.btn-next2.gold{background:linear-gradient(135deg,#f5a623,#f56a35);}
+.btn-next2.teal{background:linear-gradient(135deg,#00c88c,#6339ff);}
+.btn-next2.cyan{background:linear-gradient(135deg,#0ea5e9,#38bdf8);}
+.btn-next2:active{opacity:.9;transform:scale(.98);}
+
+/* ════════ SPORCU DASHBOARD ════════ */
+#p-home{background:var(--bg);}
+.home-topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px;flex-shrink:0;}
+.h-av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--a),var(--a2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;border:2px solid rgba(99,57,255,.4);}
+.h-gr{font-size:13.5px;font-weight:700;color:#fff;}
+.h-sg{font-size:10px;color:var(--t2);margin-top:1px;}
+.notif-btn{width:38px;height:38px;background:rgba(255,255,255,.07);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;border:1px solid rgba(255,255,255,.1);cursor:pointer;position:relative;}
+.ndot{position:absolute;top:7px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--red);border:1.5px solid var(--bg);}
+.hero-c{margin:0 14px 10px;padding:16px;border-radius:18px;background:linear-gradient(135deg,rgba(99,57,255,.2),rgba(163,139,255,.1));border:1px solid rgba(99,57,255,.3);}
+.hc-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.hc-av{width:52px;height:52px;border-radius:50%;background:rgba(99,57,255,.25);border:2.5px solid rgba(99,57,255,.4);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:var(--a2);flex-shrink:0;}
+.hc-name{font-size:15px;font-weight:700;color:#fff;}
+.hc-meta{font-size:11px;color:var(--t2);margin-top:2px;}
+.hc-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(99,57,255,.18);border:1px solid rgba(99,57,255,.38);border-radius:20px;padding:3px 10px;font-size:9px;color:var(--a2);font-weight:600;margin-top:4px;}
+.hc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.hs{background:rgba(255,255,255,.05);border-radius:12px;padding:10px 6px;text-align:center;}
+.hs-val{font-family:'Bebas Neue';font-size:24px;letter-spacing:1px;line-height:1;}
+.hs-lbl{font-size:8px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+.piyasa-c{margin:0 14px 10px;padding:14px;background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.2);border-radius:16px;cursor:pointer;transition:all .15s;}
+.piyasa-c:active{transform:scale(.98);}
+.pv-lbl{font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.8px;}
+.pv-val{font-family:'Bebas Neue';font-size:34px;color:var(--gold);letter-spacing:1px;margin-top:2px;}
+.pv-bar{height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;margin:8px 0 4px;}
+.pv-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--green));border-radius:3px;}
+.pv-pct{font-size:9px;color:rgba(255,255,255,.3);}
+.qgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 14px;}
+.qcard{background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:14px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;gap:8px;}
+.qcard:active{transform:scale(.97);}
+.qc-ic{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;}
+.qc-t{font-size:12px;font-weight:700;color:#fff;}
+.qc-s{font-size:10px;color:var(--t2);}
+.act-row{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;transition:background .15s;}
+.act-row:active{background:rgba(255,255,255,.02);}
+.act-ic{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.act-info{flex:1;}
+.act-t{font-size:12.5px;font-weight:600;color:#fff;}
+.act-s{font-size:10.5px;color:var(--t2);margin-top:2px;}
+.act-time{font-size:10px;color:var(--t3);}
+
+/* ════════ PERFORMANS ════════ */
+.gauge-wrap{display:flex;justify-content:center;padding:16px 0 8px;}
+.gauge-inner{position:relative;width:160px;height:160px;}
+.gauge-inner svg{width:160px;height:160px;}
+.g-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.gc-lbl{font-size:9px;font-weight:700;color:var(--t3);letter-spacing:1px;text-transform:uppercase;}
+.gc-score{font-family:'Bebas Neue';font-size:54px;color:#fff;line-height:1;}
+.gc-grade{font-size:13px;color:var(--green);font-weight:600;}
+.gc-diff{font-size:11px;color:var(--green);}
+.chart-c{margin:0 14px 10px;background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:15px;}
+.cc-head{font-size:10px;font-weight:700;color:rgba(138,156,200,.4);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:12px;}
+.mini-chart{height:80px;display:flex;align-items:flex-end;gap:4px;}
+.mc-b{flex:1;border-radius:4px 4px 0 0;min-height:4px;background:rgba(99,57,255,.3);}
+.mc-b.hi{background:linear-gradient(180deg,#6339ff,#a78bff);}
+.chart-lbs{display:flex;justify-content:space-between;margin-top:5px;}
+.chart-lbs span{font-size:8.5px;color:var(--t3);flex:1;text-align:center;}
+.ana-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;margin-bottom:7px;cursor:pointer;background:var(--surf);border:1px solid var(--border);}
+.ar-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.ar-info{flex:1;}
+.ar-t{font-size:12px;font-weight:600;color:#fff;}
+.ar-s{font-size:10px;color:var(--t2);margin-top:2px;}
+.ar-val{font-family:'Bebas Neue';font-size:20px;}
+.ttab{padding:5px 12px;border-radius:20px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid var(--border);color:var(--t3);background:transparent;font-family:'Outfit';}
+.ttab.on{background:rgba(99,57,255,.2);border-color:rgba(99,57,255,.5);color:var(--a2);}
+.train-c{margin:0 14px 10px;background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:15px;}
+.train-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;}
+.ts-item{background:rgba(255,255,255,.04);border-radius:11px;padding:10px 6px;text-align:center;}
+.ts-val{font-family:'Bebas Neue';font-size:22px;color:#fff;line-height:1;}
+.ts-unit{font-size:9px;color:var(--t2);font-weight:600;}
+.ts-lbl{font-size:8px;color:rgba(255,255,255,.3);margin-top:3px;text-transform:uppercase;}
+
+/* ════════ MEDYA ════════ */
+.upload-btn{margin:8px 14px;height:46px;background:rgba(99,57,255,.1);border:1px dashed rgba(99,57,255,.4);border-radius:13px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--a2);}
+.upload-btn:active{background:rgba(99,57,255,.18);}
+.vid-c{margin:0 14px 10px;background:var(--surf);border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;transition:transform .15s;}
+.vid-c:active{transform:scale(.98);}
+.vid-thumb{height:130px;display:flex;align-items:center;justify-content:center;position:relative;}
+.vid-play{width:46px;height:46px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.vid-dur{position:absolute;bottom:8px;right:10px;background:rgba(0,0,0,.7);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600;color:#fff;}
+.vid-sp{position:absolute;top:8px;left:8px;background:rgba(245,166,35,.92);border-radius:6px;padding:2px 8px;font-size:9px;font-weight:700;color:#000;}
+.vid-info{padding:10px 13px;}
+.vid-title{font-size:13px;font-weight:600;color:#fff;margin-bottom:4px;}
+.vid-meta{display:flex;align-items:center;gap:8px;font-size:10.5px;color:var(--t2);}
+.vid-stats{display:flex;gap:12px;padding:8px 13px;border-top:1px solid rgba(255,255,255,.04);}
+.vs-i{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t2);}
+.yk-bar{margin:10px 14px 0;padding:13px;background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.2);border-radius:14px;}
+.yk-prog{display:flex;align-items:center;gap:8px;margin:6px 0 4px;}
+.yk-track{flex:1;height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;}
+.yk-fill{height:100%;background:var(--gold);border-radius:3px;}
+.yk-num{font-size:11px;font-weight:700;color:var(--gold);}
+
+/* ════════ BORSA ════════ */
+.brs-hero{margin:12px 14px 0;padding:14px;border-radius:17px;background:linear-gradient(135deg,rgba(99,57,255,.15),rgba(6,182,212,.06));border:1px solid rgba(99,57,255,.3);}
+.bh-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.bh-left h2{font-family:'Bebas Neue';font-size:22px;color:#fff;letter-spacing:1px;line-height:1;}
+.bh-left p{font-size:10px;color:var(--t2);margin-top:1px;}
+.live-d{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:600;color:var(--green);}
+.ldot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.3s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+.bh-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.bhs{background:rgba(255,255,255,.05);border-radius:9px;padding:7px 4px;text-align:center;}
+.bhs-v{font-family:'Bebas Neue';font-size:17px;line-height:1;}
+.bhs-l{font-size:7px;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
+.filters{display:flex;gap:5px;padding:7px 14px 5px;overflow-x:auto;scrollbar-width:none;}
+.filters::-webkit-scrollbar{display:none;}
+.fb{padding:5px 12px;border-radius:20px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid var(--border);color:var(--t3);background:transparent;font-family:'Outfit';white-space:nowrap;transition:all .15s;}
+.fb.on{background:rgba(99,57,255,.2);border-color:rgba(99,57,255,.5);color:var(--a2);}
+.srch{margin:0 14px 5px;background:var(--surf);border:1.5px solid var(--border);border-radius:12px;padding:9px 13px 9px 35px;color:#fff;font-size:12px;font-family:'Outfit';outline:none;width:calc(100% - 28px);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' fill='%236b82a8' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.868-3.833zm-5.242 1.656a5 5 0 1 1 0-10 5 5 0 0 1 0 10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:11px center;}
+.srch::placeholder{color:var(--t3);}
+.hisse-c{margin:0 14px 8px;background:var(--surf);border:1px solid var(--border);border-radius:15px;overflow:hidden;cursor:pointer;transition:all .15s;}
+.hisse-c:active{transform:scale(.98);}
+.hc2-main{display:flex;align-items:center;gap:9px;padding:11px 12px 7px;}
+.hc2-rank{font-family:'Bebas Neue';font-size:18px;color:rgba(255,255,255,.1);width:20px;flex-shrink:0;line-height:1;}
+.hc2-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;border:2px solid;}
+.hc2-info{flex:1;min-width:0;}
+.hc2-name{font-size:12.5px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hc2-meta{font-size:9px;color:var(--t3);margin-top:1px;}
+.hc2-br{display:inline-flex;background:rgba(255,255,255,.06);border-radius:100px;padding:1.5px 7px;font-size:8px;color:rgba(255,255,255,.4);margin-top:3px;}
+.hc2-r{text-align:right;flex-shrink:0;}
+.hc2-price{font-family:'Bebas Neue';font-size:18px;letter-spacing:.5px;line-height:1;}
+.hc2-chg{font-size:10px;font-weight:700;margin-top:2px;}
+.spark{display:flex;align-items:flex-end;gap:1.5px;height:22px;padding:6px 12px;border-top:1px solid rgba(255,255,255,.04);}
+.spb{flex:1;border-radius:1.5px 1.5px 0 0;min-height:2px;}
+.trade-row{display:flex;gap:6px;padding:0 10px 10px;}
+.tbtn{flex:1;height:30px;border-radius:9px;border:none;font-size:11px;font-weight:700;font-family:'Outfit';cursor:pointer;transition:all .15s;}
+.tbtn:active{transform:scale(.94);}
+.tbtn.buy{background:rgba(0,200,140,.15);border:1px solid rgba(0,200,140,.35);color:var(--green);}
+.tbtn.sell{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--red);}
+.tbtn.watch{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--t2);}
+
+/* ════════ MADALYA ════════ */
+.medal-hero{margin:12px 14px 0;background:linear-gradient(135deg,#1a1060,#2d1b69 50%,#1a3060);border-radius:18px;padding:16px;position:relative;overflow:hidden;}
+.mh-bg{position:absolute;top:-10px;right:-10px;font-size:90px;opacity:.07;line-height:1;}
+.mh-tag{background:rgba(255,215,0,.2);border:1px solid rgba(255,215,0,.4);border-radius:20px;padding:4px 12px;color:#ffd700;font-size:10px;font-weight:600;display:inline-block;margin-bottom:8px;}
+.mh-title{color:#fff;font-size:17px;font-weight:700;line-height:1.3;margin-bottom:5px;}
+.mh-sub{color:var(--t2);font-size:11px;line-height:1.5;}
+.mh-stats{display:flex;gap:16px;margin-top:12px;}
+.mhs{text-align:center;}
+.mhs-val{color:#fff;font-size:20px;font-weight:700;}
+.mhs-lbl{color:var(--t2);font-size:9px;margin-top:2px;}
+.feat-scroll{display:flex;gap:10px;overflow-x:auto;padding:0 14px 4px;scrollbar-width:none;}
+.feat-scroll::-webkit-scrollbar{display:none;}
+.feat-card{flex-shrink:0;width:158px;background:var(--surf);border-radius:17px;overflow:hidden;cursor:pointer;border:1px solid var(--border);transition:transform .15s;}
+.feat-card:active{transform:scale(.96);}
+.fc-top{height:82px;position:relative;display:flex;align-items:center;justify-content:center;}
+.fc-gold{background:linear-gradient(135deg,#3a2800,#7a5500);}
+.fc-silver{background:linear-gradient(135deg,#1a2030,#3a4060);}
+.fc-bronze{background:linear-gradient(135deg,#2a1800,#5a3010);}
+.medal-big{font-size:30px;position:absolute;top:8px;right:8px;}
+.av-circle{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;border:2px solid rgba(255,255,255,.15);}
+.av-gold{background:linear-gradient(135deg,#c9a227,#ffd700);}
+.av-silver{background:linear-gradient(135deg,#708090,#c0c0c0);}
+.fc-info{padding:10px;}
+.fc-name{color:#fff;font-size:12px;font-weight:700;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fc-branch{color:var(--t2);font-size:10px;margin-bottom:6px;}
+.fc-medals{display:flex;gap:6px;}
+.fc-medal{display:inline-flex;align-items:center;gap:2px;font-size:10px;font-weight:600;}
+.sporcu-row2{display:flex;align-items:center;gap:10px;margin:0 14px 8px;padding:11px 12px;background:var(--surf);border:1px solid var(--border);border-radius:14px;cursor:pointer;transition:all .15s;}
+.sporcu-row2:active{transform:scale(.98);}
+.sr2-rank{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.rk1{background:rgba(255,215,0,.2);color:#ffd700;border:1px solid rgba(255,215,0,.4);}
+.rk2{background:rgba(192,192,192,.2);color:#c0c0c0;border:1px solid rgba(192,192,192,.35);}
+.rk3{background:rgba(205,127,50,.2);color:#cd7f32;border:1px solid rgba(205,127,50,.35);}
+.rkn{background:rgba(255,255,255,.08);color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.15);}
+.sr2-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;border:2px solid;}
+.sr2-info{flex:1;min-width:0;}
+.sr2-name{font-size:12.5px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sr2-meta{font-size:9.5px;color:var(--t3);margin-top:2px;}
+.sr2-medals{display:flex;gap:6px;margin-top:4px;}
+.sr2-r{text-align:right;flex-shrink:0;}
+.sr2-sgs{font-family:'Bebas Neue';font-size:20px;letter-spacing:1px;}
+.sr2-chg{font-size:10px;font-weight:700;margin-top:2px;}
+
+/* ════════ SPOR DALLARI ════════ */
+.sport-grid2{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+.si{background:var(--surf);border:1.5px solid var(--border);border-radius:12px;padding:10px 5px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:all .15s;}
+.si.sel{border-color:rgba(99,57,255,.55);background:rgba(99,57,255,.15);}
+.si:active{transform:scale(.95);}
+.si-em{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;}
+.si-nm{font-size:9px;color:rgba(255,255,255,.5);text-align:center;font-weight:500;line-height:1.2;}
+.si.sel .si-nm{color:var(--a2);}
+.srch2{margin:0 14px 8px;background:var(--surf);border:1.5px solid var(--border);border-radius:12px;padding:9px 13px 9px 35px;color:#fff;font-size:12px;font-family:'Outfit';outline:none;width:calc(100% - 28px);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' fill='%236b82a8' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.868-3.833zm-5.242 1.656a5 5 0 1 1 0-10 5 5 0 0 1 0 10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:11px center;}
+.srch2::placeholder{color:var(--t3);}
+.bot-apply{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid rgba(255,255,255,.05);background:var(--bg);flex-shrink:0;}
+.ba-info{font-size:11px;color:var(--t2);}
+.ba-info span{color:var(--a2);font-weight:700;}
+.ba-btn{background:linear-gradient(135deg,var(--a),var(--a2));border:none;border-radius:11px;padding:10px 20px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit';}
+
+/* ════════ SPONSOR ════════ */
+.spon-hero{margin:12px 14px 0;padding:14px;background:linear-gradient(135deg,rgba(245,166,35,.12),rgba(245,100,35,.06));border:1px solid rgba(245,166,35,.28);border-radius:18px;}
+.sph-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.sph-av{width:50px;height:50px;border-radius:14px;background:linear-gradient(135deg,#f5a623,#f56a35);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:#fff;flex-shrink:0;}
+.sph-nm{font-size:15px;font-weight:700;color:#fff;}
+.sph-tp{font-size:10px;color:rgba(255,255,255,.4);margin-top:2px;}
+.sph-badge{display:inline-flex;background:rgba(245,166,35,.18);border:1px solid rgba(245,166,35,.35);border-radius:100px;padding:3px 10px;font-size:9px;color:var(--gold);font-weight:600;margin-top:4px;}
+.sph-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.sphs{background:rgba(255,255,255,.05);border-radius:10px;padding:9px 6px;text-align:center;}
+.sphs-val{font-family:'Bebas Neue';font-size:21px;letter-spacing:1px;line-height:1;}
+.sphs-lbl{font-size:8px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+.sporcu-c2{margin:0 14px 9px;background:var(--surf);border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;transition:transform .15s;}
+.sporcu-c2:active{transform:scale(.98);}
+.sc2-top{display:flex;align-items:center;gap:10px;padding:12px 12px 9px;}
+.sc2-rk{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.sc2-av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;border:2px solid;}
+.sc2-info{flex:1;min-width:0;}
+.sc2-nm{font-size:13px;font-weight:600;color:#fff;}
+.sc2-mt{font-size:10px;color:var(--t2);margin-top:1px;}
+.sc2-br{display:inline-flex;background:rgba(255,255,255,.06);border-radius:100px;padding:2px 8px;font-size:8.5px;color:rgba(255,255,255,.45);margin-top:3px;}
+.sgs-c{position:relative;width:42px;height:42px;}
+.sgs-c svg{width:42px;height:42px;}
+.sgs-n{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:14px;}
+.sc2-medals{display:flex;align-items:center;gap:5px;padding:7px 12px;}
+.sc2-footer{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-top:1px solid rgba(255,255,255,.04);}
+.pv2{font-family:'Bebas Neue';font-size:18px;color:var(--green);}
+.pl2{font-size:9px;color:rgba(255,255,255,.3);}
+.det-btn{background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.3);border-radius:8px;padding:5px 12px;font-size:10px;color:var(--gold);font-weight:600;cursor:pointer;font-family:'Outfit';}
+
+/* ════════ İL TEMSİLCİSİ ════════ */
+.il-hero{margin:12px 14px 0;padding:14px;background:linear-gradient(135deg,rgba(0,200,140,.12),rgba(99,57,255,.08));border:1px solid rgba(0,200,140,.25);border-radius:18px;}
+.ilh-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.ilh-flag{width:48px;height:48px;border-radius:12px;background:rgba(0,200,140,.15);border:1px solid rgba(0,200,140,.3);display:flex;align-items:center;justify-content:center;font-size:22px;}
+.ilh-nm{font-family:'Bebas Neue';font-size:26px;letter-spacing:2px;color:#fff;line-height:1;}
+.ilh-reg{font-size:10px;color:rgba(255,255,255,.4);margin-top:2px;}
+.ilh-badge{display:inline-flex;background:rgba(0,200,140,.15);border:1px solid rgba(0,200,140,.3);border-radius:100px;padding:3px 10px;font-size:10px;color:var(--green);font-weight:600;}
+.il-stats-g{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.ils{background:rgba(255,255,255,.04);border-radius:10px;padding:8px 6px;text-align:center;}
+.ils-val{font-family:'Bebas Neue';font-size:20px;letter-spacing:1px;line-height:1;}
+.ils-lbl{font-size:7.5px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
+.aq-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 14px;}
+.aqc{background:var(--surf);border:1px solid var(--border);border-radius:14px;padding:13px;cursor:pointer;transition:all .15s;}
+.aqc:active{transform:scale(.97);}
+.aqc-ic{font-size:22px;margin-bottom:7px;}
+.aqc-t{font-size:12px;font-weight:700;color:#fff;}
+.aqc-s{font-size:10px;color:var(--t2);margin-top:2px;}
+.aqc-b{display:inline-block;border-radius:20px;padding:3px 9px;font-size:9px;font-weight:600;margin-top:7px;}
+.pend-c{margin:0 14px 8px;background:var(--surf);border:1px solid rgba(245,166,35,.2);border-left:3px solid var(--gold);border-radius:14px;padding:12px;}
+.pend-top{display:flex;align-items:center;gap:9px;margin-bottom:10px;}
+.pend-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0;}
+.pend-nm{font-size:12.5px;font-weight:600;color:#fff;}
+.pend-mt{font-size:10px;color:var(--t2);margin-top:2px;}
+.pend-actions{display:flex;gap:7px;}
+.pca{flex:1;height:34px;border-radius:9px;border:none;font-size:11px;font-weight:700;font-family:'Outfit';cursor:pointer;transition:all .15s;}
+.pca.ok{background:rgba(0,200,140,.15);border:1px solid rgba(0,200,140,.35);color:var(--green);}
+.pca.no{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--red);}
+.sporcu-row3{display:flex;align-items:center;gap:10px;margin:0 14px 7px;padding:10px 12px;background:var(--surf);border:1px solid var(--border);border-radius:13px;cursor:pointer;transition:all .15s;}
+.sporcu-row3:active{transform:scale(.98);}
+.sr3-rank{width:20px;font-family:'Bebas Neue';font-size:16px;color:rgba(255,255,255,.2);text-align:center;flex-shrink:0;}
+.sr3-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;border:1.5px solid;}
+.sr3-info{flex:1;min-width:0;}
+.sr3-nm{font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sr3-mt{font-size:9px;color:rgba(255,255,255,.35);margin-top:2px;}
+.sr3-sgs{text-align:right;flex-shrink:0;}
+.sgs-val3{font-family:'Bebas Neue';font-size:20px;letter-spacing:1px;}
+.sgs-chg{font-size:10px;font-weight:700;margin-top:2px;}
+
+/* ════════ SÖZLEŞME ════════ */
+.sozl-c{margin:0 14px 10px;background:var(--surf);border:1px solid var(--border);border-radius:14px;padding:14px;}
+.sozl-sec{font-size:11px;font-weight:700;color:var(--a2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:7px;}
+.sozl-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:7px;font-size:11.5px;color:rgba(255,255,255,.65);line-height:1.5;}
+.sozl-dot{width:5px;height:5px;border-radius:50%;background:var(--a2);flex-shrink:0;margin-top:6px;}
+.sozl-red{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:13px;padding:12px 13px;margin:0 14px 10px;}
+.sozl-ok2{background:rgba(0,200,140,.07);border:1px solid rgba(0,200,140,.2);border-radius:13px;padding:12px 13px;margin:0 14px 10px;}
+.san-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;margin-bottom:5px;}
+
+/* ════════ PROFİL ════════ */
+.prof-hero{padding:20px 18px 16px;text-align:center;background:linear-gradient(180deg,rgba(99,57,255,.1),transparent);border-bottom:1px solid rgba(255,255,255,.05);}
+.prof-av{width:78px;height:78px;border-radius:50%;background:linear-gradient(135deg,var(--a),var(--a2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:24px;color:#fff;margin:0 auto 10px;border:3px solid rgba(99,57,255,.4);}
+.prof-nm{font-size:18px;font-weight:700;color:#fff;}
+.prof-mt{font-size:11.5px;color:var(--t2);margin-top:3px;}
+.prof-badges{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:10px;}
+.pb{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:3px 11px;font-size:10px;color:rgba(255,255,255,.6);font-weight:500;}
+.menu-item{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;transition:background .15s;}
+.menu-item:active{background:rgba(255,255,255,.02);}
+.mi-ic{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.mi-info{flex:1;}
+.mi-t{font-size:13px;font-weight:600;color:#fff;}
+.mi-s{font-size:11px;color:var(--t2);margin-top:2px;}
+.mi-arr{font-size:19px;color:var(--t3);}
+
+/* ════════ AYARLAR ════════ */
+.sg{margin:0 14px 6px;}
+.sg-hd{font-size:10px;font-weight:700;color:rgba(138,156,200,.4);letter-spacing:1.2px;text-transform:uppercase;padding:12px 0 5px;}
+.sg-item{display:flex;align-items:center;gap:12px;background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:5px;cursor:pointer;}
+.sg-ic{font-size:19px;width:32px;text-align:center;flex-shrink:0;}
+.sg-info{flex:1;}
+.sg-t{font-size:13px;font-weight:600;color:#fff;}
+.sg-s{font-size:10px;color:var(--t2);margin-top:2px;}
+.sg-r{font-size:13px;color:var(--t3);}
+.toggle{width:44px;height:26px;border-radius:13px;background:rgba(255,255,255,.1);border:1px solid var(--border);position:relative;cursor:pointer;flex-shrink:0;transition:background .3s;}
+.toggle.on{background:var(--a);}
+.toggle-d{width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:left .3s;box-shadow:0 1px 4px rgba(0,0,0,.3);}
+.toggle.on .toggle-d{left:20px;}
+
+/* ════════ AI ════════ */
+.ai-val-c{margin:0 14px 10px;padding:15px;background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.22);border-radius:16px;}
+.ai-v{font-family:'Bebas Neue';font-size:38px;color:var(--gold);letter-spacing:1px;line-height:1;}
+.ai-lbl{font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+.ai-bar{height:6px;background:rgba(255,255,255,.07);border-radius:10px;overflow:hidden;margin:10px 0 4px;}
+.ai-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--green));border-radius:10px;}
+.factor-row{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+.fr-lbl{font-size:9.5px;color:rgba(255,255,255,.4);width:88px;flex-shrink:0;}
+.fr-track{flex:1;height:6px;background:rgba(255,255,255,.07);border-radius:10px;overflow:hidden;}
+.fr-fill{height:100%;border-radius:10px;}
+.fr-val{font-size:10px;font-weight:700;width:26px;text-align:right;flex-shrink:0;}
+.ai-comment{margin:0 14px 10px;background:rgba(99,57,255,.07);border:1px solid rgba(99,57,255,.2);border-radius:15px;padding:13px;}
+
+/* ════════ FED PANELİ ════════ */
+.fed-hero{margin:12px 14px 0;padding:14px;background:linear-gradient(135deg,rgba(6,182,212,.12),rgba(99,57,255,.08));border:1px solid rgba(6,182,212,.25);border-radius:18px;}
+.fed-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px;}
+</style>
+</head>
+<body>
+<div class="iphone">
+  <div class="di"><div class="di-dot"></div><div class="di-cam"></div></div>
+  <div class="iphone-screen">
+
+  <!-- STATUS BAR -->
+  <div class="sb">
+    <span class="sb-time">9:41</span>
+    <div class="sb-icons"><span>▲▲▲</span><span style="margin:0 2px;">WiFi</span><span>🔋</span></div>
+  </div>
+
+  <div class="app">
+
+  <!-- ════════════════════════════
+       SPLASH — ANA LANDING
+  ════════════════════════════ -->
+  <div class="page active" id="p-splash">
+    <div class="glow sp-g1"></div><div class="glow sp-g2"></div><div class="glow sp-g3"></div>
+    <div class="sp-inner">
+      <div class="sp-logo">⭐</div>
+      <div class="sp-app">SPORPLATFORMU</div>
+      <div class="sp-title">SPORCUYU<br><span style="color:var(--green);">GÜÇLENDİR</span><br><span style="color:var(--a2);">SPONSORU</span> BAĞ</div>
+      <div class="sp-sub">Türkiye'nin akıllı spor ekosistemi<br>63 dal · 81 il · Canlı piyasa · AI değerleme</div>
+      <div class="sp-stats">
+        <div class="sp-stat"><div class="sp-sv" style="color:var(--a2);">2.4K</div><div class="sp-sl">Sporcu</div></div>
+        <div class="sp-stat"><div class="sp-sv" style="color:var(--gold);">340</div><div class="sp-sl">Sponsor</div></div>
+        <div class="sp-stat"><div class="sp-sv" style="color:var(--green);">81</div><div class="sp-sl">İl</div></div>
+        <div class="sp-stat"><div class="sp-sv" style="color:var(--cyan);">12</div><div class="sp-sl">Federasyon</div></div>
+      </div>
+
+      <!-- ── SPORCU ── -->
+      <div class="role-section">
+        <div class="role-section-title">🏃 SPORCU</div>
+        <div class="role-card sporcu">
+          <span class="rc-icon">🏃</span>
+          <div class="rc-texts"><div class="rc-main" style="color:#c4b5fd;">Sporcu</div><div class="rc-sub" style="color:rgba(196,181,253,.6);">Sporcular için giriş ve kayıt</div></div>
+          <div class="rc-btns">
+            <button class="rc-btn login" onclick="goAuth('sporcu','giris')">Giriş</button>
+            <button class="rc-btn register sporcu-r" onclick="goAuth('sporcu','kayit')">Kayıt</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SPONSOR ── -->
+      <div class="role-section">
+        <div class="role-section-title">💼 SPONSOR</div>
+        <div class="role-card sponsor">
+          <span class="rc-icon">💼</span>
+          <div class="rc-texts"><div class="rc-main" style="color:var(--gold);">Sponsor</div><div class="rc-sub" style="color:rgba(245,166,35,.6);">Markalar ve sponsorlar için</div></div>
+          <div class="rc-btns">
+            <button class="rc-btn login" onclick="goAuth('sponsor','giris')">Giriş</button>
+            <button class="rc-btn register sponsor-r" onclick="goAuth('sponsor','kayit')">Kayıt</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── İL TEMSİLCİSİ ── -->
+      <div class="role-section">
+        <div class="role-section-title">🏛️ İL TEMSİLCİSİ</div>
+        <div class="role-card il">
+          <span class="rc-icon">🏛️</span>
+          <div class="rc-texts"><div class="rc-main" style="color:var(--green);">İl Temsilcisi</div><div class="rc-sub" style="color:rgba(0,200,140,.6);">81 il · Bölge temsilcileri</div></div>
+          <div class="rc-btns">
+            <button class="rc-btn login" onclick="goAuth('il','giris')">Giriş</button>
+            <button class="rc-btn register il-r" onclick="goAuth('il','kayit')">Kayıt</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── FEDERASYON ── -->
+      <div class="role-section">
+        <div class="role-section-title">🏅 FEDERASYON</div>
+        <div class="role-card fed">
+          <span class="rc-icon">🏅</span>
+          <div class="rc-texts"><div class="rc-main" style="color:var(--cyan);">Federasyon</div><div class="rc-sub" style="color:rgba(6,182,212,.6);">Federasyon yönetim paneli</div></div>
+          <div class="rc-btns">
+            <button class="rc-btn login" onclick="goAuth('fed','giris')">Giriş</button>
+            <button class="rc-btn register fed-r" onclick="goAuth('fed','kayit')">Kayıt</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sp-ver">v4.0 · SporPlatformu © 2026</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       GİRİŞ SAYFASI (Tüm roller)
+  ════════════════════════════ -->
+  <div class="page auth-page" id="p-giris">
+    <div class="topbar"><div class="tbk" onclick="goBack()">‹</div><span class="tbt" id="g-title">GİRİŞ</span><div class="tbr"></div></div>
+    <div class="auth-inner">
+      <div class="auth-glow" id="g-glow"></div>
+      <div class="auth-logo" id="g-logo">🏃</div>
+      <div class="auth-appname">SPORPLATFORMU</div>
+      <div class="auth-big" id="g-big">GİRİŞ</div>
+      <div class="auth-sub" id="g-sub">Hesabınıza giriş yapın</div>
+      <button class="google-btn" onclick="handleGoogle()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Google ile Giriş Yap
+      </button>
+      <div class="gdiv"><div class="gdl"></div><div class="gdt">veya telefon ile</div><div class="gdl"></div></div>
+      <div class="phone-field"><span class="pf-flag">🇹🇷</span><span class="pf-code">+90</span><input class="pf-inp" id="phoneInp" type="tel" placeholder="5XX XXX XX XX" maxlength="10"></div>
+      <button class="auth-btn" id="g-btn" style="background:linear-gradient(135deg,#6339ff,#a78bff);" onclick="handleLogin()">Doğrulama Kodu Gönder</button>
+      <div class="auth-link-row">Hesabın yok mu? <span id="g-kayit-link" style="color:var(--a2);" onclick="switchToKayit()">Kayıt Ol →</span></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       SPORCU KAYIT (3 adım)
+  ════════════════════════════ -->
+  <div class="page auth-page" id="p-sporcu-kayit">
+    <div class="step-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div class="tbk" onclick="kGoBack('sporcu')" style="cursor:pointer;">‹</div>
+        <span style="font-size:14px;font-weight:700;color:#fff;">🏃 SPORCU KAYDI</span>
+        <span class="step-badge" id="sk-badge">Adım 1/3</span>
+      </div>
+      <div class="step-bar">
+        <div class="sbc cur" id="sk1">1</div><div class="sbl" id="skl1"></div>
+        <div class="sbc" id="sk2">2</div><div class="sbl" id="skl2"></div>
+        <div class="sbc" id="sk3">3</div>
+      </div>
+      <div class="sblbs"><span class="sblb cur" id="skb1">Kişisel</span><span class="sblb" id="skb2">Spor</span><span class="sblb" id="skb3">Belgeler</span></div>
+      <div class="kpbar"><div class="kpbar-fill" id="sk-pbar" style="width:33%;"></div></div>
+    </div>
+    <div class="kscroll" id="sk-scroll">
+      <div class="kpage act" id="skp1">
+        <div class="k-sec">Kişisel Bilgiler</div>
+        <div class="k-sub">Temel bilgilerini eksiksiz doldurun</div>
+        <div class="photo-up" onclick="toast('Fotoğraf yükleniyor...')"><div class="photo-circle">📷</div><div style="font-size:11px;color:var(--a2);font-weight:500;">Profil Fotoğrafı Yükle</div><div style="font-size:9px;color:rgba(255,255,255,.25);">JPG veya PNG · Maks 5MB</div></div>
+        <div class="frow"><label class="flbl">Ad Soyad <span class="req">*</span></label><input class="finput" id="sk_ad" placeholder="Örn: Ömer Ediz Perik"></div>
+        <div class="fg2"><div class="frow"><label class="flbl">Doğum Tarihi</label><input class="finput" type="date" id="sk_dob"></div><div class="frow"><label class="flbl">Cinsiyet</label><select class="finput"><option>Seç</option><option>Erkek</option><option>Kadın</option></select></div></div>
+        <div class="frow"><label class="flbl">Telefon <span class="req">*</span></label><div class="phone-field" style="border-radius:12px;height:46px;"><span class="pf-flag">🇹🇷</span><span class="pf-code">+90</span><input class="pf-inp" id="sk_tel" type="tel" placeholder="5XX XXX XX XX" style="font-size:12px;"></div></div>
+        <div class="frow"><label class="flbl">E-posta</label><input class="finput" type="email" placeholder="ornek@mail.com"></div>
+        <div class="fg2"><div class="frow"><label class="flbl">İl</label><select class="finput"><option>Seç</option><option>Samsun</option><option>İstanbul</option><option>Ankara</option><option>İzmir</option><option>Trabzon</option><option>Bursa</option><option>Diğer</option></select></div><div class="frow"><label class="flbl">Antrenör</label><input class="finput" placeholder="Antrenör adı"></div></div>
+      </div>
+      <div class="kpage" id="skp2">
+        <div class="k-sec">Spor Bilgileri</div>
+        <div class="k-sub">Branş, lisans ve başarı bilgilerinizi girin</div>
+        <div class="frow"><label class="flbl">Spor Dalı <span class="req">*</span></label><select class="finput" id="sk_spor"><option value="">Seç</option><option>Karate</option><option>Taekwondo</option><option>Judo</option><option>Güreş</option><option>Boks</option><option>Atletizm</option><option>Yüzme</option><option>Basketbol</option><option>Voleybol</option><option>Okçuluk</option><option>Halter</option><option>Badminton</option><option>Tenis</option><option>Diğer</option></select></div>
+        <div class="frow"><label class="flbl">Federasyon Lisans No <span class="req">*</span></label><input class="finput" id="sk_lisans" placeholder="Örn: KRT-2024-00142"></div>
+        <div class="frow"><label class="flbl">Kariyer Süresi</label><div class="rbgroup" id="sk-kariyer"><div class="rbopt" onclick="selRb('sk-kariyer',this)">1 yıldan az</div><div class="rbopt sel" onclick="selRb('sk-kariyer',this)">1-3 yıl</div><div class="rbopt" onclick="selRb('sk-kariyer',this)">3-5 yıl</div><div class="rbopt" onclick="selRb('sk-kariyer',this)">5+ yıl</div></div></div>
+        <div class="frow"><label class="flbl">Rekabet Seviyesi</label><div class="rbgroup" id="sk-seviye"><div class="rbopt" onclick="selRb('sk-seviye',this)">İl</div><div class="rbopt" onclick="selRb('sk-seviye',this)">Bölge</div><div class="rbopt sel" onclick="selRb('sk-seviye',this)">Türkiye</div><div class="rbopt" onclick="selRb('sk-seviye',this)">Uluslararası</div></div></div>
+        <div class="frow"><label class="flbl">Ödüller & Başarılar</label>
+          <div id="sk-odullar"><div class="odul-item"><span style="font-size:14px;">🥇</span><input style="background:transparent;border:none;outline:none;color:#fff;font-size:10.5px;font-family:Outfit;flex:1;" value="Türkiye Şampiyonası – 2025"><span class="od-del" onclick="this.parentElement.remove()">✕</span></div></div>
+          <div class="add-btn" onclick="addOdul('sk-odullar')">+ Ödül Ekle</div>
+        </div>
+        <div class="frow"><label class="flbl">Instagram</label><input class="finput" placeholder="@kullanici_adi"></div>
+      </div>
+      <div class="kpage" id="skp3">
+        <div class="k-sec">Belgeler & Onay</div>
+        <div class="k-sub">Gerekli belgeleri yükleyin ve sözleşmeyi onaylayın</div>
+        <div class="doc-btn" onclick="toast('Kimlik yükleniyor...')"><div class="db-ic" style="background:rgba(99,57,255,.2);">🪪</div><div><div class="db-t">Kimlik Belgesi</div><div class="db-s">TC Kimlik veya Pasaport</div></div><span style="margin-left:auto;color:var(--t3);">+</span></div>
+        <div class="doc-btn" onclick="toast('Lisans yükleniyor...')"><div class="db-ic" style="background:rgba(0,200,140,.15);">📋</div><div><div class="db-t">Federasyon Lisansı</div><div class="db-s">Güncel lisans belgesi</div></div><span style="margin-left:auto;color:var(--t3);">+</span></div>
+        <div style="font-size:10px;font-weight:700;color:rgba(138,156,200,.4);letter-spacing:1px;text-transform:uppercase;margin:12px 0 6px;">SÖZLEŞME ONAYI</div>
+        <div class="chk on" onclick="togChk(this)"><div class="cbox on">✓</div><div><div class="ctxt-t">Sporcu Sözleşmesi (Madde 1-13)</div><div class="ctxt-s">1 yıllık Sporcu Katılım ve Sponsorluk Sözleşmesi'ni okudum, onaylıyorum</div></div></div>
+        <div class="chk on" onclick="togChk(this)"><div class="cbox on">✓</div><div><div class="ctxt-t">Ahlak Kuralları & Davranış Yükümlülükleri</div><div class="ctxt-s">Küfür, hakaret, doping ve reklam kurallarına uyarım (Madde 4)</div></div></div>
+        <div class="chk on" onclick="togChk(this)"><div class="cbox on">✓</div><div><div class="ctxt-t">KVKK — Kişisel Veri İzni</div><div class="ctxt-s">Kişisel verilerimin platform tarafından işlenmesine izin veriyorum</div></div></div>
+        <div style="padding:10px 12px;background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.15);border-radius:11px;font-size:10px;color:rgba(255,255,255,.4);line-height:1.6;margin-top:6px;">ℹ️ 18 yaşından küçük sporcular için veli/vasi imzası gereklidir. Kayıt sonrası İl Temsilcisi onayına gönderilir.</div>
+        <div style="height:8px;"></div>
+      </div>
+    </div>
+    <div class="nav-btns">
+      <button class="btn-back2" id="sk-back" style="display:none;" onclick="kGoBack('sporcu')">‹ Geri</button>
+      <button class="btn-next2" id="sk-next" onclick="kNext('sporcu')">Devam Et ›</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       SPONSOR KAYIT
+  ════════════════════════════ -->
+  <div class="page auth-page" id="p-sponsor-kayit">
+    <div class="step-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div class="tbk" onclick="kGoBack('sponsor')" style="cursor:pointer;">‹</div>
+        <span style="font-size:14px;font-weight:700;color:#fff;">💼 SPONSOR KAYDI</span>
+        <span class="step-badge" id="spk-badge" style="background:rgba(245,166,35,.15);border-color:rgba(245,166,35,.3);color:var(--gold);">Adım 1/2</span>
+      </div>
+      <div class="step-bar">
+        <div class="sbc cur" id="spk1">1</div><div class="sbl" id="spkl1"></div><div class="sbc" id="spk2">2</div>
+      </div>
+      <div class="sblbs"><span class="sblb cur" id="spkb1">Firma Bilgileri</span><span class="sblb" id="spkb2">Sponsorluk & Onay</span></div>
+      <div class="kpbar"><div class="kpbar-fill" id="spk-pbar" style="width:50%;background:linear-gradient(90deg,var(--gold),#f56a35);"></div></div>
+    </div>
+    <div class="kscroll" id="spk-scroll">
+      <div class="kpage act" id="spkp1">
+        <div class="k-sec">Firma Bilgileri</div>
+        <div class="k-sub">Sponsorluk bilgilerinizi eksiksiz doldurun</div>
+        <div class="frow"><label class="flbl">Firma / Marka Adı <span class="req">*</span></label><input class="finput" id="spk_firma" placeholder="Örn: SportsTech A.Ş."></div>
+        <div class="frow"><label class="flbl">Yetkili Ad Soyad <span class="req">*</span></label><input class="finput" id="spk_ad" placeholder="Yetkili kişi adı"></div>
+        <div class="fg2"><div class="frow"><label class="flbl">Sektör</label><select class="finput"><option>Seç</option><option>Spor Ekipmanı</option><option>Teknoloji</option><option>Gıda & İçecek</option><option>Tekstil</option><option>Finans</option><option>Sağlık</option><option>Diğer</option></select></div><div class="frow"><label class="flbl">İl</label><select class="finput"><option>Seç</option><option>İstanbul</option><option>Ankara</option><option>İzmir</option><option>Bursa</option><option>Diğer</option></select></div></div>
+        <div class="frow"><label class="flbl">Telefon <span class="req">*</span></label><div class="phone-field" style="border-radius:12px;height:46px;"><span class="pf-flag">🇹🇷</span><span class="pf-code">+90</span><input class="pf-inp" id="spk_tel" type="tel" placeholder="5XX XXX XX XX" style="font-size:12px;"></div></div>
+        <div class="frow"><label class="flbl">Kurumsal E-posta</label><input class="finput" type="email" placeholder="sponsor@firma.com"></div>
+        <div class="frow"><label class="flbl">Sponsorluk Paketi</label><div class="rbgroup" id="spk-paket"><div class="rbopt" onclick="selRb('spk-paket',this)">🥉 Silver</div><div class="rbopt sel" onclick="selRb('spk-paket',this)">🥇 Gold</div><div class="rbopt" onclick="selRb('spk-paket',this)">💎 Platinum</div></div></div>
+        <div class="frow"><label class="flbl">Sponsorlamak İstediğiniz Branşlar</label><div class="rbgroup" id="spk-brans"><div class="rbopt sel" onclick="selRb2('spk-brans',this)">🥋 Karate</div><div class="rbopt" onclick="selRb2('spk-brans',this)">🏊 Yüzme</div><div class="rbopt" onclick="selRb2('spk-brans',this)">🤸 Jimnastik</div><div class="rbopt" onclick="selRb2('spk-brans',this)">🏀 Basketbol</div><div class="rbopt" onclick="selRb2('spk-brans',this)">Diğer</div></div></div>
+      </div>
+      <div class="kpage" id="spkp2">
+        <div class="k-sec">Sponsorluk & Onay</div>
+        <div class="k-sub">Sözleşme koşullarını onaylayın</div>
+        <div style="background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.2);border-radius:14px;padding:14px;margin-bottom:12px;">
+          <div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:8px;">📋 Komisyon Yapısı (Madde 3.2)</div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.7);padding:6px 8px;background:rgba(255,255,255,.04);border-radius:8px;"><span>Aylık Maddi Sponsorluk</span><span style="color:var(--gold);">Platform %10 · Temsilci %5</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.7);padding:6px 8px;background:rgba(255,255,255,.04);border-radius:8px;"><span>Video İçerik Sponsorluğu</span><span style="color:var(--gold);">Platform %15 · Temsilci %7</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.7);padding:6px 8px;background:rgba(255,255,255,.04);border-radius:8px;"><span>Etkinlik / Turnuva</span><span style="color:var(--gold);">Platform %12 · Temsilci %6</span></div>
+          </div>
+        </div>
+        <div class="doc-btn" onclick="toast('Logo yükleniyor...')"><div class="db-ic" style="background:rgba(245,166,35,.15);">🏢</div><div><div class="db-t">Marka Logosu</div><div class="db-s">PNG veya SVG · Şeffaf arka plan</div></div><span style="margin-left:auto;color:var(--t3);">+</span></div>
+        <div class="doc-btn" onclick="toast('Vergi levhası yükleniyor...')"><div class="db-ic" style="background:rgba(99,57,255,.2);">📄</div><div><div class="db-t">Vergi Levhası</div><div class="db-s">Güncel vergi belgesi</div></div><span style="margin-left:auto;color:var(--t3);">+</span></div>
+        <div style="font-size:10px;font-weight:700;color:rgba(138,156,200,.4);letter-spacing:1px;text-transform:uppercase;margin:12px 0 6px;">ONAY</div>
+        <div class="chk on" onclick="togChk(this)"><div class="cbox on">✓</div><div><div class="ctxt-t">İl Temsilcisi Sponsorluk Sözleşmesi</div><div class="ctxt-s">Nike/Adidas/Red Bull model referanslı · Madde 1-10 · Tüm yükümlülükleri okudum</div></div></div>
+        <div class="chk on" onclick="togChk(this)"><div class="cbox on">✓</div><div><div class="ctxt-t">Etik Marka Beyanı (Madde 4.1)</div><div class="ctxt-s">Alkol, tütün, kumar veya yasadışı faaliyetlerle ilişkili bir marka değilim</div></div></div>
+        <div class="chk on" onclick="togChk(this)"><div class="cbox on">✓</div><div><div class="ctxt-t">Sporcu Hakları & KVKK</div><div class="ctxt-s">Sporcu verilerini üçüncü taraflarla paylaşmayacağımı kabul ediyorum</div></div></div>
+        <div style="height:8px;"></div>
+      </div>
+    </div>
+    <div class="nav-btns">
+      <button class="btn-back2" id="spk-back" style="display:none;" onclick="kGoBack('sponsor')">‹ Geri</button>
+      <button class="btn-next2 gold" id="spk-next" onclick="kNext('sponsor')">Devam Et ›</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       İL TEMSİLCİSİ KAYIT
+  ════════════════════════════ -->
+  <div class="page auth-page" id="p-il-kayit">
+    <div class="step-wrap">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div class="tbk" onclick="kGoBack('il')" style="cursor:pointer;">‹</div>
+        <span style="font-size:14px;font-weight:700;color:#fff;">🏛️ TEMSİLCİ KAYDI</span>
+        <span class="step-badge" id="ilk-badge" style="background:rgba(0,200,140,.15);border-color:rgba(0,200,140,.3);color:var(--green);">Adım 1/2</span>
+      </div>
+      <div class="step-bar">
+        <div class="sbc cur" id="ilk1">1</div><div class="sbl" id="ilkl1"></div><div class="sbc" id="ilk2">2</div>
+      </div>
+      <div class="sblbs"><span class="sblb cur" id="ilkb1">Kişisel & İl</span><span class="sblb" id="ilkb2">Yetki & Onay</span></div>
+      <div class="kpbar"><div class="kpbar-fill" id="ilk-pbar" style="width:50%;background:linear-gradient(90deg,var(--green),#059669);"></div></div>
+    </div>
+    <div class="kscroll" id="ilk-scroll">
+      <div class="kpage act" id="ilkp1">
+        <div class="k-sec">Kişisel & İl Bilgileri</div>
+        <div class="k-sub">Temsilci bilgilerini eksiksiz doldurun</div>
+        <div class="frow"><label class="flbl">Ad Soyad <span class="req">*</span></label><input class="finput" id="ilk_ad" placeholder="Ad Soyad"></div>
+        <div class="fg2"><div class="frow"><label class="flbl">TC Kimlik No <span class="req">*</span></label><input class="finput" id="ilk_tc" type="number" placeholder="11 haneli TC"></div><div class="frow"><label class="flbl">Doğum Tarihi</label><input class="finput" type="date"></div></div>
+        <div class="frow"><label class="flbl">Temsil Ettiğiniz İl <span class="req">*</span></label><select class="finput" id="ilk_il"><option value="">İl seçin</option><option>Samsun</option><option>İstanbul</option><option>Ankara</option><option>İzmir</option><option>Trabzon</option><option>Bursa</option><option>Antalya</option><option>Konya</option><option>Adana</option><option>Gaziantep</option><option>Diğer</option></select></div>
+        <div class="frow"><label class="flbl">Telefon <span class="req">*</span></label><div class="phone-field" style="border-radius:12px;height:46px;"><span class="pf-flag">🇹🇷</span><span class="pf-code">+90</span><input class="pf-inp" id="ilk_tel" type="tel" placeholder="5XX XXX XX XX" style="font-size:12px;"></div></div>
+        <div class="frow"><label class="flbl">E-posta</label><input class="finput" type="email" placeholder="temsilci@mail.com"></div>
+        <div class="frow"><label class="flbl">Görev / Unvan</label><select class="finput"><option>Seç</option><option>Belediye Görevlisi</option><option>Federasyon Temsilcisi</option><option>Spor Kulübü Yöneticisi</option><option>Bağımsız Temsilci</option><option>Diğer</option></select></div>
+      </div>
+      <div class="kpage" id="ilkp2">
+        <div class="k-sec">Yetki & Onay</div>
+        <div class="k-sub">Sözleşme koşullarını ve yetki belgelerini onaylayın</div>
+        <div style="background:rgba(0,200,140,.07);border:1px solid rgba(0,200,140,.2);border-radius:14px;padding:14px;margin-bottom:12px;">
+          <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:8px;">💰 Komisyon Geliri (Madde 3.2)</div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.7);padding:6px 8px;background:rgba(255,255,255,.04);border-radius:8px;"><span>Maddi Sponsorluk</span><span style="color:var(--green);">%5 Komisyon</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.7);padding:6px 8px;background:rgba(255,255,255,.04);border-radius:8px;"><span>Video İçerik</span><span style="color:var(--green);">%7 Komisyon</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.7);padding:6px 8px;background:rgba(255,255,255,.04);border-radius:8px;"><span>Etkinlik / Turnuva</span><span style="color:var(--green);">%6 Komisyon</span></div>
+          </div>
+        </div>
+        <div class="doc-btn" onclick="toast('Kimlik yükleniyor...')"><div class="db-ic" style="background:rgba(0,200,140,.15);">🪪</div><div><div class="db-t">Kimlik Belgesi</div><div class="db-s">TC Kimlik fotokopisi</div></div><span style="margin-left:auto;color:var(--t3);">+</span></div>
+        <div class="doc-btn" onclick="toast('Yetki belgesi yükleniyor...')"><div class="db-ic" style="background:rgba(99,57,255,.2);">📜</div><div><div class="db-t">Yetki / Görev Belgesi</div><div class="db-s">Kurumsal görev belgesi (varsa)</div></div><span style="margin-left:auto;color:var(--t3);">+</span></div>
+        <div class="doc-btn" onclick="toast('IBAN kaydediliyor...')"><div class="db-ic" style="background:rgba(245,166,35,.15);">🏦</div><div><div class="db-t">IBAN Bilgisi</div><div class="db-s">Komisyon ödemeleri için</div></div><span style="margin-left:auto;color:var(--t3);">+</span></div>
+        <div style="font-size:10px;font-weight:700;color:rgba(138,156,200,.4);letter-spacing:1px;text-transform:uppercase;margin:12px 0 6px;">ONAY</div>
+        <div class="chk on" onclick="togChk(this)"><div class="cbox on">✓</div><div><div class="ctxt-t">İl Temsilcisi Sponsorluk Sözleşmesi</div><div class="ctxt-s">Nike/Red Bull model referanslı · Madde 1-10 · Tüm koşulları okudum ve kabul ediyorum</div></div></div>
+        <div class="chk on" onclick="togChk(this)"><div class="cbox on">✓</div><div><div class="ctxt-t">Tarafsızlık & Etik Beyanı (Madde 4.3)</div><div class="ctxt-s">Sporcu ve sponsor arasında tarafsız arabulucu olarak hareket edeceğimi kabul ediyorum</div></div></div>
+        <div class="chk on" onclick="togChk(this)"><div class="cbox on">✓</div><div><div class="ctxt-t">Münhasırlık & Gizlilik (Madde 6)</div><div class="ctxt-s">Sözleşme süresince yalnızca bu platformu temsil edeceğim · 3 yıl gizlilik</div></div></div>
+        <div style="height:8px;"></div>
+      </div>
+    </div>
+    <div class="nav-btns">
+      <button class="btn-back2" id="ilk-back" style="display:none;" onclick="kGoBack('il')">‹ Geri</button>
+      <button class="btn-next2 teal" id="ilk-next" onclick="kNext('il')">Devam Et ›</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       FEDERASYON KAYIT
+  ════════════════════════════ -->
+  <div class="page auth-page" id="p-fed-kayit">
+    <div class="topbar"><div class="tbk" onclick="goBack()">‹</div><span class="tbt">🏅 FEDERASYON KAYDI</span><div class="tbr"></div></div>
+    <div class="kscroll" style="padding:0 18px 8px;">
+      <div class="k-sec">Federasyon Bilgileri</div>
+      <div class="k-sub">Federasyon bilgilerinizi eksiksiz doldurun</div>
+      <div class="frow"><label class="flbl">Federasyon Adı <span class="req">*</span></label><input class="finput" id="fk_ad" placeholder="Türkiye Karate Federasyonu"></div>
+      <div class="frow"><label class="flbl">Yetkili Ad Soyad <span class="req">*</span></label><input class="finput" id="fk_yetkili" placeholder="Yetkili kişi adı soyadı"></div>
+      <div class="fg2"><div class="frow"><label class="flbl">Branş</label><select class="finput"><option>Karate</option><option>Taekwondo</option><option>Judo</option><option>Güreş</option><option>Atletizm</option><option>Yüzme</option><option>Diğer</option></select></div><div class="frow"><label class="flbl">Kuruluş Yılı</label><input class="finput" type="number" placeholder="2010"></div></div>
+      <div class="frow"><label class="flbl">Telefon <span class="req">*</span></label><div class="phone-field" style="border-radius:12px;height:46px;"><span class="pf-flag">🇹🇷</span><span class="pf-code">+90</span><input class="pf-inp" id="fk_tel" type="tel" placeholder="2XX XXX XX XX" style="font-size:12px;"></div></div>
+      <div class="frow"><label class="flbl">Kurumsal E-posta</label><input class="finput" type="email" placeholder="info@federasyon.org.tr"></div>
+      <div class="frow"><label class="flbl">Web Sitesi</label><input class="finput" placeholder="www.federasyon.org.tr"></div>
+      <div class="doc-btn" onclick="toast('Logo yükleniyor...')"><div class="db-ic" style="background:rgba(6,182,212,.15);">🏅</div><div><div class="db-t">Federasyon Logosu</div><div class="db-s">Resmi logo</div></div><span style="margin-left:auto;color:var(--t3);">+</span></div>
+      <div class="doc-btn" onclick="toast('Tüzük yükleniyor...')"><div class="db-ic" style="background:rgba(99,57,255,.2);">📜</div><div><div class="db-t">Federasyon Tüzüğü</div><div class="db-s">Resmi federasyon belgesi</div></div><span style="margin-left:auto;color:var(--t3);">+</span></div>
+      <div class="chk on" onclick="togChk(this)" style="margin-top:10px;"><div class="cbox on">✓</div><div><div class="ctxt-t">Platform Kullanım Koşulları</div><div class="ctxt-s">Tüm koşulları okudum ve kabul ediyorum</div></div></div>
+      <div style="height:8px;"></div>
+    </div>
+    <div class="nav-btns">
+      <button class="btn-back2" onclick="goBack()">İptal</button>
+      <button class="btn-next2 cyan" onclick="toast('🎉 Federasyon başvurusu gönderildi! İncelenecek.');setTimeout(goBack,2000);">Başvuruyu Gönder ✓</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       SPORCU ANA SAYFA
+  ════════════════════════════ -->
+  <div class="page" id="p-home">
+    <div class="home-topbar">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="h-av">ÖE</div>
+        <div><div class="h-gr">Merhaba, Ömer Ediz 👋</div><div class="h-sg">Amatör Karateci · Samsun</div></div>
+      </div>
+      <div class="notif-btn" onclick="toast('Bildirimler')">🔔<div class="ndot"></div></div>
+    </div>
+    <div style="overflow-y:auto;flex:1;">
+      <div class="hero-c">
+        <div class="hc-row"><div class="hc-av">ÖE</div><div><div class="hc-name">Ömer Ediz Perik</div><div class="hc-meta">11 Yaş · Samsun · 🥋 Karate · 3 Yıl</div><div class="hc-badge">✓ Lisanslı · KRT-2024-00142</div></div></div>
+        <div class="hc-stats">
+          <div class="hs"><div class="hs-val" style="color:var(--a2);">85</div><div class="hs-lbl">SGS Puan</div></div>
+          <div class="hs"><div class="hs-val" style="color:var(--gold);">5</div><div class="hs-lbl">🏆 Toplam</div></div>
+          <div class="hs"><div class="hs-val" style="color:var(--green);">3</div><div class="hs-lbl">Sponsor</div></div>
+        </div>
+      </div>
+      <div class="piyasa-c" onclick="navigate('p-ai')">
+        <div style="display:flex;align-items:center;justify-content:space-between;"><div class="pv-lbl">Piyasa Değeri</div><span style="font-size:11px;color:var(--green);font-weight:700;">▲ +12.4%</span></div>
+        <div class="pv-val">₺ 200.000</div>
+        <div class="pv-bar"><div class="pv-fill" style="width:80%;"></div></div>
+        <div class="pv-pct">Hedefe %80 ulaşıldı · AI analizi için dokun ›</div>
+      </div>
+      <div class="stitle">Hızlı Erişim</div>
+      <div class="qgrid">
+        <div class="qcard" onclick="navigate('p-perf')"><div class="qc-ic" style="background:rgba(99,57,255,.2);">📊</div><div class="qc-t">Performans</div><div class="qc-s">SGS: 85 · ▲+3</div></div>
+        <div class="qcard" onclick="navigate('p-medya')"><div class="qc-ic" style="background:rgba(0,200,140,.15);">🎬</div><div class="qc-t">Medya Merkezi</div><div class="qc-s">3 video · 2 onaylı</div></div>
+        <div class="qcard" onclick="navigate('p-borsa')"><div class="qc-ic" style="background:rgba(245,166,35,.15);">📈</div><div class="qc-t">Sporcu Borsası</div><div class="qc-s">Canlı piyasa</div></div>
+        <div class="qcard" onclick="navigate('p-madalya')"><div class="qc-ic" style="background:rgba(255,215,0,.12);">🏆</div><div class="qc-t">Madalya Tablosu</div><div class="qc-s">2🥇 3🥈 1🥉</div></div>
+      </div>
+      <div class="stitle">Son Aktiviteler</div>
+      <div class="act-row" onclick="toast('Video detayı')"><div class="act-ic" style="background:rgba(0,200,140,.15);">✅</div><div class="act-info"><div class="act-t">Video Onaylandı</div><div class="act-s">Kata antrenman videosu onaylandı</div></div><div class="act-time">2s</div></div>
+      <div class="act-row" onclick="navigate('p-sponsor-dash')"><div class="act-ic" style="background:rgba(245,166,35,.15);">💼</div><div class="act-info"><div class="act-t">Sponsor Teklifi</div><div class="act-s">SportsTech A.Ş. teklif gönderdi</div></div><div class="act-time">1g</div></div>
+      <div class="act-row" onclick="navigate('p-iltem')"><div class="act-ic" style="background:rgba(99,57,255,.15);">🏛️</div><div class="act-info"><div class="act-t">İl Onayı Bekleniyor</div><div class="act-s">Bölge turnuvası kaydı beklemede</div></div><div class="act-time">3g</div></div>
+      <div class="act-row" onclick="navigate('p-sozlesme')"><div class="act-ic" style="background:rgba(239,68,68,.12);">📄</div><div class="act-info"><div class="act-t">Sözleşme Hatırlatması</div><div class="act-s">Bu ay 1 video daha yükleyin</div></div><div class="act-time">5g</div></div>
+      <div style="height:16px;"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       PERFORMANS
+  ════════════════════════════ -->
+  <div class="page" id="p-perf">
+    <div class="topbar"><div class="tbk" onclick="goBack()">‹</div><span class="tbt">PERFORMANS & SGS</span><div class="tbr" onclick="toast('Rapor')">📥</div></div>
+    <div style="overflow-y:auto;flex:1;">
+      <div class="gauge-wrap"><div class="gauge-inner">
+        <svg viewBox="0 0 160 160"><circle cx="80" cy="80" r="65" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="10"/><circle cx="80" cy="80" r="65" fill="none" stroke="url(#gGrad)" stroke-width="10" stroke-dasharray="340" stroke-dashoffset="68" stroke-linecap="round" transform="rotate(-90 80 80)"/><defs><linearGradient id="gGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#6339ff"/><stop offset="100%" stop-color="#00c88c"/></linearGradient></defs></svg>
+        <div class="g-center"><div class="gc-lbl">SGS PUANI</div><div class="gc-score">85</div><div class="gc-grade">Çok İyi</div><div class="gc-diff">▲ +3 bu ay</div></div>
+      </div></div>
+      <div class="train-c">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><span style="font-size:10px;font-weight:700;color:rgba(138,156,200,.4);letter-spacing:1px;text-transform:uppercase;">Bugünün Antrenmanı</span><span style="font-size:10px;color:var(--green);font-weight:600;">● Aktif</span></div>
+        <div style="display:flex;gap:5px;margin-bottom:10px;">
+          <button class="ttab on" onclick="selTtab(this)">Günlük</button>
+          <button class="ttab" onclick="selTtab(this)">Haftalık</button>
+          <button class="ttab" onclick="selTtab(this)">Aylık</button>
+        </div>
+        <div class="train-stats">
+          <div class="ts-item"><div class="ts-val">5.2<span class="ts-unit">KM</span></div><div class="ts-lbl">Koşu</div></div>
+          <div class="ts-item"><div class="ts-val">1h<span class="ts-unit">20m</span></div><div class="ts-lbl">Antrenman</div></div>
+          <div class="ts-item"><div class="ts-val">450<span class="ts-unit">kal</span></div><div class="ts-lbl">Yakım</div></div>
+        </div>
+      </div>
+      <div class="chart-c"><div class="cc-head">6 Aylık SGS Gelişimi</div><div class="mini-chart" id="perfChart"></div><div class="chart-lbs"><span>Eki</span><span>Kas</span><span>Ara</span><span>Oca</span><span>Şub</span><span>Mar</span></div></div>
+      <div style="padding:0 14px;margin-bottom:6px;">
+        <div class="ana-row"><div class="ar-dot" style="background:var(--green);"></div><div class="ar-info"><div class="ar-t">Teknik Performans</div><div class="ar-s">Kata & Kumite puanları</div></div><div class="ar-val" style="color:var(--green);">92</div></div>
+        <div class="ana-row"><div class="ar-dot" style="background:var(--a2);"></div><div class="ar-info"><div class="ar-t">Fiziksel Kondisyon</div><div class="ar-s">Hız, güç, dayanıklılık</div></div><div class="ar-val" style="color:var(--a2);">78</div></div>
+        <div class="ana-row"><div class="ar-dot" style="background:var(--gold);"></div><div class="ar-info"><div class="ar-t">Turnuva Başarısı</div><div class="ar-s">Son 6 ay sonuçları</div></div><div class="ar-val" style="color:var(--gold);">85</div></div>
+        <div class="ana-row"><div class="ar-dot" style="background:var(--cyan);"></div><div class="ar-info"><div class="ar-t">Sosyal Medya Skoru</div><div class="ar-s">Etkileşim & büyüme</div></div><div class="ar-val" style="color:var(--cyan);">64</div></div>
+      </div>
+      <div style="height:16px;"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       MEDYA
+  ════════════════════════════ -->
+  <div class="page" id="p-medya">
+    <div class="topbar"><div class="tbk" onclick="goBack()">‹</div><span class="tbt">MEDYA MERKEZİ</span><div class="tbr" onclick="toast('Filtre')">⚙️</div></div>
+    <div style="overflow-y:auto;flex:1;">
+      <div class="yk-bar">
+        <div style="font-size:10px;color:var(--t2);">📋 Aylık Video Yükümlülüğü (Madde 3.1)</div>
+        <div class="yk-prog"><div class="yk-track"><div class="yk-fill" style="width:50%;"></div></div><span class="yk-num">1/2</span></div>
+        <div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:3px;">1 video daha yükleyin — ay bitimine 12 gün kaldı</div>
+      </div>
+      <div class="upload-btn" onclick="toast('Video yükleme...')"><span style="font-size:18px;">📹</span> Yeni Video Yükle</div>
+      <div class="stitle">Yüklenen Videolar</div>
+      <div class="vid-c" onclick="toast('Video oynatılıyor...')">
+        <div class="vid-thumb" style="background:linear-gradient(135deg,rgba(99,57,255,.35),rgba(0,200,140,.25));"><div class="vid-play">▶</div><div class="vid-dur">2:34</div><div class="vid-sp">SPONSOR</div></div>
+        <div class="vid-info"><div class="vid-title">Kata Antrenmanı — Mart 2026</div><div class="vid-meta"><span>📅 15 Mar 2026</span><span>·</span><span style="color:var(--green);">✅ Onaylı</span></div></div>
+        <div class="vid-stats"><div class="vs-i">👁️ 1.2K</div><div class="vs-i">❤️ 84</div><div class="vs-i">💬 12</div></div>
+      </div>
+      <div class="vid-c" onclick="toast('Video oynatılıyor...')">
+        <div class="vid-thumb" style="background:linear-gradient(135deg,rgba(245,166,35,.3),rgba(99,57,255,.2));"><div class="vid-play">▶</div><div class="vid-dur">1:48</div></div>
+        <div class="vid-info"><div class="vid-title">Turnuva Hazırlık — Şubat</div><div class="vid-meta"><span>📅 22 Şub 2026</span><span>·</span><span style="color:var(--green);">✅ Onaylı</span></div></div>
+        <div class="vid-stats"><div class="vs-i">👁️ 890</div><div class="vs-i">❤️ 62</div></div>
+      </div>
+      <div class="vid-c" onclick="toast('İncelemede...')">
+        <div class="vid-thumb" style="background:linear-gradient(135deg,rgba(239,68,68,.2),rgba(99,57,255,.15));"><div class="vid-play">▶</div><div class="vid-dur">3:12</div></div>
+        <div class="vid-info"><div class="vid-title">Kumite Sparring — Ocak</div><div class="vid-meta"><span>📅 10 Oca 2026</span><span>·</span><span style="color:var(--gold);">⏳ İncelemede</span></div></div>
+        <div class="vid-stats"><div class="vs-i">👁️ —</div><div class="vs-i">❤️ —</div></div>
+      </div>
+      <div style="height:16px;"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       SPORCU BORSASI
+  ════════════════════════════ -->
+  <div class="page" id="p-borsa">
+    <div class="topbar"><div class="tbk" onclick="goBack()">‹</div><span class="tbt">SPORCU BORSASI</span><div class="tbr" onclick="toast('Portföyüm')">💼</div></div>
+    <div style="overflow-y:auto;flex:1;">
+      <div class="brs-hero">
+        <div class="bh-row"><div class="bh-left"><h2>SPX Endeksi</h2><p>Sporcu Piyasa Endeksi</p></div><div class="live-d"><div class="ldot"></div>Canlı</div></div>
+        <div class="bh-stats">
+          <div class="bhs"><div class="bhs-v" style="color:var(--green);" id="brs-today">+6.2%</div><div class="bhs-l">Bugün</div></div>
+          <div class="bhs"><div class="bhs-v" style="color:var(--gold);">2.4K</div><div class="bhs-l">Sporcu</div></div>
+          <div class="bhs"><div class="bhs-v" style="color:var(--a2);">47.2M</div><div class="bhs-l">Hacim TL</div></div>
+        </div>
+      </div>
+      <input class="srch" id="brsaSrch" placeholder="Sporcu veya branş ara..." oninput="filterBorsa(this.value)">
+      <div class="filters" id="brsaF">
+        <div class="fb on" onclick="setBF('tumu',this)">Tümü</div>
+        <div class="fb" onclick="setBF('artan',this)">▲ Yükselen</div>
+        <div class="fb" onclick="setBF('dusen',this)">▼ Düşen</div>
+        <div class="fb" onclick="setBF('ipo',this)">🆕 IPO</div>
+        <div class="fb" onclick="setBF('izle',this)">⭐ İzleme</div>
+      </div>
+      <div id="hisseList"></div>
+      <div style="height:16px;"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       MADALYA TABLOSU
+  ════════════════════════════ -->
+  <div class="page" id="p-madalya">
+    <div class="topbar"><div class="tbk" onclick="goBack()">‹</div><span class="tbt">MADALYA TABLOSU</span><div class="tbr" onclick="toast('Filtre')">🔍</div></div>
+    <div style="overflow-y:auto;flex:1;">
+      <div class="medal-hero"><div class="mh-bg">🏆</div><div class="mh-tag">🏅 Türkiye Sıralaması</div><div class="mh-title">En İyi Genç<br>Sporcular</div><div class="mh-sub">SGS, madalya ve piyasa değerine göre sıralanmıştır</div><div class="mh-stats"><div class="mhs"><div class="mhs-val">2.4K</div><div class="mhs-lbl">Sporcu</div></div><div class="mhs"><div class="mhs-val">8.7K</div><div class="mhs-lbl">Madalya</div></div><div class="mhs"><div class="mhs-val">63</div><div class="mhs-lbl">Branş</div></div></div></div>
+      <div class="stitle">Öne Çıkanlar</div>
+      <div class="feat-scroll">
+        <div class="feat-card" onclick="navigate('p-ai')"><div class="fc-top fc-gold"><div class="medal-big">🥇</div><div class="av-circle av-gold">🥋</div></div><div class="fc-info"><div class="fc-name">Ömer Ediz Perik</div><div class="fc-branch">Karate · Samsun · 11y</div><div class="fc-medals"><span class="fc-medal" style="color:#ffd700;">🥇 2</span><span class="fc-medal" style="color:#c0c0c0;">🥈 3</span></div></div></div>
+        <div class="feat-card" onclick="toast('Zeynep Kaya')"><div class="fc-top fc-gold"><div class="medal-big">🥇</div><div class="av-circle av-gold">🤸</div></div><div class="fc-info"><div class="fc-name">Zeynep Kaya</div><div class="fc-branch">Jimnastik · İstanbul · 13y</div><div class="fc-medals"><span class="fc-medal" style="color:#ffd700;">🥇 4</span></div></div></div>
+        <div class="feat-card" onclick="toast('Selin Çelik')"><div class="fc-top fc-silver"><div class="medal-big">🥈</div><div class="av-circle av-silver">🦵</div></div><div class="fc-info"><div class="fc-name">Selin Çelik</div><div class="fc-branch">Kick Boks · İzmir · 17y</div><div class="fc-medals"><span class="fc-medal" style="color:#ffd700;">🥇 3</span></div></div></div>
+        <div class="feat-card" onclick="toast('Burak Arslan')"><div class="fc-top fc-gold"><div class="medal-big">🥇</div><div class="av-circle av-gold">🏹</div></div><div class="fc-info"><div class="fc-name">Burak Arslan</div><div class="fc-branch">Okçuluk · Bursa · 8y</div><div class="fc-medals"><span class="fc-medal" style="color:#ffd700;">🥇 1</span></div></div></div>
+      </div>
+      <div class="stitle">Tam Sıralama</div>
+      <div class="sporcu-row2" onclick="navigate('p-ai')"><div class="sr2-rank rk1">1</div><div class="sr2-av" style="background:rgba(99,57,255,.25);color:#a78bff;border-color:rgba(99,57,255,.4);">ÖE</div><div class="sr2-info"><div class="sr2-name">Ömer Ediz Perik</div><div class="sr2-meta">11 Yaş · Karate · Samsun</div><div class="sr2-medals"><span style="font-size:11px;color:#ffd700;">🥇2</span><span style="font-size:11px;color:#c0c0c0;">🥈3</span><span style="font-size:11px;color:#cd7f32;">🥉1</span></div></div><div class="sr2-r"><div class="sr2-sgs" style="color:var(--a2);">85</div><div class="sr2-chg" style="color:var(--green);">▲+3</div></div></div>
+      <div class="sporcu-row2" onclick="toast('Zeynep Kaya')"><div class="sr2-rank rk2">2</div><div class="sr2-av" style="background:rgba(236,72,153,.2);color:#f9a8d4;border-color:rgba(236,72,153,.35);">ZK</div><div class="sr2-info"><div class="sr2-name">Zeynep Kaya</div><div class="sr2-meta">13 Yaş · Jimnastik · İstanbul</div><div class="sr2-medals"><span style="font-size:11px;color:#ffd700;">🥇4</span><span style="font-size:11px;color:#c0c0c0;">🥈1</span></div></div><div class="sr2-r"><div class="sr2-sgs" style="color:#f9a8d4;">92</div><div class="sr2-chg" style="color:var(--green);">▲+5</div></div></div>
+      <div class="sporcu-row2" onclick="toast('Ali Can Demir')"><div class="sr2-rank rk3">3</div><div class="sr2-av" style="background:rgba(14,165,233,.2);color:#38bdf8;border-color:rgba(14,165,233,.35);">AC</div><div class="sr2-info"><div class="sr2-name">Ali Can Demir</div><div class="sr2-meta">15 Yaş · Yüzme · Ankara</div><div class="sr2-medals"><span style="font-size:11px;color:#c0c0c0;">🥈5</span><span style="font-size:11px;color:#cd7f32;">🥉2</span></div></div><div class="sr2-r"><div class="sr2-sgs" style="color:#38bdf8;">76</div><div class="sr2-chg" style="color:var(--gold);">→ 0</div></div></div>
+      <div class="sporcu-row2" onclick="toast('Selin Çelik')"><div class="sr2-rank rkn">4</div><div class="sr2-av" style="background:rgba(239,68,68,.2);color:#fca5a5;border-color:rgba(239,68,68,.35);">SC</div><div class="sr2-info"><div class="sr2-name">Selin Çelik</div><div class="sr2-meta">17 Yaş · Kick Boks · İzmir</div><div class="sr2-medals"><span style="font-size:11px;color:#ffd700;">🥇3</span><span style="font-size:11px;color:#cd7f32;">🥉2</span></div></div><div class="sr2-r"><div class="sr2-sgs" style="color:#fca5a5;">94</div><div class="sr2-chg" style="color:var(--green);">▲+7</div></div></div>
+      <div class="sporcu-row2" onclick="toast('Burak Arslan')"><div class="sr2-rank rkn">5</div><div class="sr2-av" style="background:rgba(0,200,140,.2);color:#00c88c;border-color:rgba(0,200,140,.35);">BA</div><div class="sr2-info"><div class="sr2-name">Burak Arslan</div><div class="sr2-meta">8 Yaş · Okçuluk · Bursa</div><div class="sr2-medals"><span style="font-size:11px;color:#ffd700;">🥇1</span><span style="font-size:11px;color:#cd7f32;">🥉3</span></div></div><div class="sr2-r"><div class="sr2-sgs" style="color:#00c88c;">61</div><div class="sr2-chg" style="color:var(--green);">▲+12</div></div></div>
+      <div style="height:16px;"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       SPOR DALLARI
+  ════════════════════════════ -->
+  <div class="page" id="p-sporlar">
+    <div class="topbar"><div class="tbk" onclick="goBack()">‹</div><span class="tbt">SPOR DALLARI</span><div class="tbr" id="selDalCount" style="font-size:11px;color:var(--a2);font-weight:700;">0 Seçili</div></div>
+    <div style="overflow-y:auto;flex:1;padding-top:8px;">
+      <input class="srch2" id="sporSrch" placeholder="Spor dalı ara..." oninput="filterSp(this.value)">
+      <div style="padding:0 14px 6px;display:flex;justify-content:space-between;"><span style="font-size:10px;color:var(--t3);" id="dal-badge">0 Dal</span><span style="font-size:10px;color:var(--a2);cursor:pointer;" onclick="selSports.clear();renderSports();toast('Temizlendi')">Temizle</span></div>
+      <div id="sporContainer"></div>
+      <div style="height:10px;"></div>
+    </div>
+    <div class="bot-apply"><div class="ba-info">Seçili: <span id="selCount">0</span> dal</div><button class="ba-btn" onclick="applySports()">Uygula ›</button></div>
+  </div>
+
+  <!-- ════════════════════════════
+       SPONSOR DASHBOARD (Sporcularım)
+  ════════════════════════════ -->
+  <div class="page" id="p-sponsor-dash">
+    <div class="topbar"><div class="tbk" onclick="goBack()">‹</div><span class="tbt">SPONSOR PANELİ</span><div class="tbr" onclick="toast('Bildirimler')">🔔</div></div>
+    <div style="overflow-y:auto;flex:1;">
+      <div class="spon-hero">
+        <div class="sph-top"><div class="sph-av">ST</div><div><div class="sph-nm">SportsTech A.Ş.</div><div class="sph-tp">Teknoloji & Spor Ekipmanları · İstanbul</div><div class="sph-badge">⭐ Platinum Sponsor</div></div></div>
+        <div class="sph-stats"><div class="sphs"><div class="sphs-val" style="color:var(--gold);">3</div><div class="sphs-lbl">Sporcu</div></div><div class="sphs"><div class="sphs-val" style="color:var(--cyan);">375K</div><div class="sphs-lbl">Toplam TL</div></div><div class="sphs"><div class="sphs-val" style="color:var(--green);">+18%</div><div class="sphs-lbl">Büyüme</div></div></div>
+      </div>
+      <div class="stitle">Sporcularım</div>
+      <div class="sporcu-c2" onclick="navigate('p-ai')">
+        <div class="sc2-top"><div class="sc2-rk rk1">1</div><div class="sc2-av" style="background:rgba(99,57,255,.25);color:#a78bff;border-color:rgba(99,57,255,.4);">ÖE</div><div class="sc2-info"><div class="sc2-nm">Ömer Ediz Perik</div><div class="sc2-mt">11 Yaş · Samsun</div><div class="sc2-br">🥋 Karate</div></div><div class="sgs-c"><svg viewBox="0 0 42 42"><circle cx="21" cy="21" r="16" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="4"/><circle cx="21" cy="21" r="16" fill="none" stroke="#6339ff" stroke-width="4" stroke-dasharray="85 15" stroke-dashoffset="20" stroke-linecap="round" transform="rotate(-90 21 21)"/></svg><div class="sgs-n" style="color:#a78bff;">85</div></div></div>
+        <div class="sc2-medals"><span style="font-size:11px;color:#ffd700;">🥇 2</span><span style="color:rgba(255,255,255,.15);font-size:10px;margin:0 4px;">·</span><span style="font-size:11px;color:#c0c0c0;">🥈 3</span><span style="color:rgba(255,255,255,.15);font-size:10px;margin:0 4px;">·</span><span style="font-size:11px;color:#cd7f32;">🥉 1</span></div>
+        <div class="sc2-footer"><div><div class="pl2">Piyasa Değeri</div><div class="pv2">200.000 TL</div></div><button class="det-btn" onclick="event.stopPropagation();navigate('p-ai')">AI Değeri ›</button></div>
+      </div>
+      <div class="sporcu-c2" onclick="toast('Eyüp Uday profili')">
+        <div class="sc2-top"><div class="sc2-rk rk2">2</div><div class="sc2-av" style="background:rgba(239,68,68,.2);color:#fca5a5;border-color:rgba(239,68,68,.35);">EU</div><div class="sc2-info"><div class="sc2-nm">Eyüp Uday Perik</div><div class="sc2-mt">9 Yaş · Samsun</div><div class="sc2-br">🦵 Kick Boks</div></div><div class="sgs-c"><svg viewBox="0 0 42 42"><circle cx="21" cy="21" r="16" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="4"/><circle cx="21" cy="21" r="16" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="65 35" stroke-dashoffset="20" stroke-linecap="round" transform="rotate(-90 21 21)"/></svg><div class="sgs-n" style="color:#fca5a5;">65</div></div></div>
+        <div class="sc2-medals"><span style="font-size:11px;color:#ffd700;">🥇 1</span><span style="color:rgba(255,255,255,.15);font-size:10px;margin:0 4px;">·</span><span style="font-size:11px;color:#c0c0c0;">🥈 3</span></div>
+        <div class="sc2-footer"><div><div class="pl2">Piyasa Değeri</div><div class="pv2">125.000 TL</div></div><button class="det-btn" onclick="event.stopPropagation();toast('Detay...')">AI Değeri ›</button></div>
+      </div>
+      <div class="sporcu-c2" onclick="toast('Yusra Su profili')">
+        <div class="sc2-top"><div class="sc2-rk rk3">3</div><div class="sc2-av" style="background:rgba(236,72,153,.2);color:#f9a8d4;border-color:rgba(236,72,153,.35);">YS</div><div class="sc2-info"><div class="sc2-nm">Yusra Su Perik</div><div class="sc2-mt">7 Yaş · Samsun</div><div class="sc2-br">🤸 Jimnastik</div></div><div class="sgs-c"><svg viewBox="0 0 42 42"><circle cx="21" cy="21" r="16" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="4"/><circle cx="21" cy="21" r="16" fill="none" stroke="#ec4899" stroke-width="4" stroke-dasharray="45 55" stroke-dashoffset="20" stroke-linecap="round" transform="rotate(-90 21 21)"/></svg><div class="sgs-n" style="color:#f9a8d4;">45</div></div></div>
+        <div class="sc2-medals"><span style="font-size:11px;color:#c0c0c0;">🥈 2</span></div>
+        <div class="sc2-footer"><div><div class="pl2">Piyasa Değeri</div><div class="pv2">50.000 TL</div></div><button class="det-btn" onclick="event.stopPropagation();toast('Detay...')">AI Değeri ›</button></div>
+      </div>
+      <div style="margin:4px 14px 16px;padding:13px;background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.18);border-radius:14px;display:flex;justify-content:space-between;align-items:center;">
+        <div><div style="font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.8px;">Toplam Portföy</div><div style="font-family:'Bebas Neue';font-size:26px;color:var(--gold);letter-spacing:1px;margin-top:2px;">375.000 TL</div></div>
+        <div style="text-align:right;"><div style="font-size:9px;color:rgba(255,255,255,.3);">Ort. SGS</div><div style="font-family:'Bebas Neue';font-size:26px;color:var(--green);letter-spacing:1px;margin-top:2px;">63.3</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       İL TEMSİLCİSİ PANELİ
+  ════════════════════════════ -->
+  <div class="page" id="p-iltem">
+    <div class="topbar"><div class="tbk" onclick="goBack()">‹</div><span class="tbt">İL TEMSİLCİSİ</span><div class="tbr" onclick="toast('Bildirimler')">🔔</div></div>
+    <div style="overflow-y:auto;flex:1;">
+      <div class="il-hero">
+        <div class="ilh-top"><div class="ilh-flag">🏛️</div><div><div class="ilh-nm">SAMSUN</div><div class="ilh-reg">Karadeniz Bölgesi · Aktif Temsilci</div><div class="ilh-badge">✓ Onaylı Temsilci</div></div></div>
+        <div class="il-stats-g"><div class="ils"><div class="ils-val" style="color:var(--a2);">24</div><div class="ils-lbl">Sporcu</div></div><div class="ils"><div class="ils-val" style="color:var(--gold);">6</div><div class="ils-lbl">Sponsor</div></div><div class="ils"><div class="ils-val" style="color:var(--green);">18</div><div class="ils-lbl">Aktif</div></div><div class="ils"><div class="ils-val" style="color:var(--red);">3</div><div class="ils-lbl">Bekleyen</div></div></div>
+      </div>
+      <div class="stitle">Hızlı İşlemler</div>
+      <div class="aq-grid">
+        <div class="aqc" onclick="toast('Bekleyen başvurular...')"><div class="aqc-ic">📋</div><div class="aqc-t">Sporcu Onayla</div><div class="aqc-s">Bekleyen başvurular</div><div class="aqc-b" style="background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3);">3 Bekliyor</div></div>
+        <div class="aqc" onclick="navigate('p-sponsor-dash')"><div class="aqc-ic">💼</div><div class="aqc-t">Sponsor Eşleş</div><div class="aqc-s">Sporcu-Marka bağlantısı</div><div class="aqc-b" style="background:rgba(245,166,35,.15);color:var(--gold);border:1px solid rgba(245,166,35,.3);">6 Sponsor</div></div>
+        <div class="aqc" onclick="navigate('p-medya')"><div class="aqc-ic">🎬</div><div class="aqc-t">İçerik Denetle</div><div class="aqc-s">Video onay süreci</div><div class="aqc-b" style="background:rgba(99,57,255,.15);color:var(--a2);border:1px solid rgba(99,57,255,.3);">5 Video</div></div>
+        <div class="aqc" onclick="toast('Rapor oluşturuluyor...')"><div class="aqc-ic">📊</div><div class="aqc-t">Rapor Oluştur</div><div class="aqc-s">Aylık faaliyet raporu</div><div class="aqc-b" style="background:rgba(0,200,140,.15);color:var(--green);border:1px solid rgba(0,200,140,.3);">Hazır</div></div>
+      </div>
+      <div class="stitle">Bekleyen Başvurular</div>
+      <div class="pend-c"><div class="pend-top"><div class="pend-av" style="background:rgba(99,57,255,.25);color:#a78bff;">ME</div><div><div class="pend-nm">Mehmet Eren Yıldız</div><div class="pend-mt">12 Yaş · Atletizm · Samsun</div></div></div><div class="pend-actions"><button class="pca ok" onclick="this.closest('.pend-c').style.opacity='.4';toast('✓ Onaylandı!')">✓ Onayla</button><button class="pca no" onclick="this.closest('.pend-c').style.opacity='.4';toast('Reddedildi')">✕ Reddet</button></div></div>
+      <div class="pend-c"><div class="pend-top"><div class="pend-av" style="background:rgba(0,200,140,.2);color:var(--green);">AK</div><div><div class="pend-nm">Ayşe Kaya</div><div class="pend-mt">9 Yaş · Jimnastik · Samsun</div></div></div><div class="pend-actions"><button class="pca ok" onclick="this.closest('.pend-c').style.opacity='.4';toast('✓ Onaylandı!')">✓ Onayla</button><button class="pca no" onclick="this.closest('.pend-c').style.opacity='.4';toast('Reddedildi')">✕ Reddet</button></div></div>
+      <div class="pend-c"><div class="pend-top"><div class="pend-av" style="background:rgba(239,68,68,.2);color:#fca5a5;">BA</div><div><div class="pend-nm">Burak Aslan</div><div class="pend-mt">14 Yaş · Okçuluk · Samsun</div></div></div><div class="pend-actions"><button class="pca ok" onclick="this.closest('.pend-c').style.opacity='.4';toast('✓ Onaylandı!')">✓ Onayla</button><button class="pca no" onclick="this.closest('.pend-c').style.opacity='.4';toast('Reddedildi')">✕ Reddet</button></div></div>
+      <div class="stitle">Tüm Sporcular</div>
+      <div class="sporcu-row3" onclick="navigate('p-ai')"><div class="sr3-rank">1</div><div class="sr3-av" style="background:rgba(99,57,255,.25);color:#a78bff;border-color:rgba(99,57,255,.4);">ÖE</div><div class="sr3-info"><div class="sr3-nm">Ömer Ediz Perik</div><div class="sr3-mt">11 Yaş · 🥋 Karate · Pazartesi 15:00</div></div><div class="sr3-sgs"><div class="sgs-val3" style="color:var(--a2);">85</div><div class="sgs-chg" style="color:var(--green);">▲+3</div></div></div>
+      <div class="sporcu-row3" onclick="toast('Eyüp Uday profili')"><div class="sr3-rank">2</div><div class="sr3-av" style="background:rgba(239,68,68,.2);color:#fca5a5;border-color:rgba(239,68,68,.35);">EU</div><div class="sr3-info"><div class="sr3-nm">Eyüp Uday Perik</div><div class="sr3-mt">9 Yaş · 🦵 Kick Boks · Çarşamba 16:00</div></div><div class="sr3-sgs"><div class="sgs-val3" style="color:#fca5a5;">65</div><div class="sgs-chg" style="color:var(--gold);">→ 0</div></div></div>
+      <div class="sporcu-row3" onclick="toast('Yusra Su profili')"><div class="sr3-rank">3</div><div class="sr3-av" style="background:rgba(236,72,153,.2);color:#f9a8d4;border-color:rgba(236,72,153,.35);">YS</div><div class="sr3-info"><div class="sr3-nm">Yusra Su Perik</div><div class="sr3-mt">7 Yaş · 🤸 Jimnastik · ⚠ Risk</div></div><div class="sr3-sgs"><div class="sgs-val3" style="color:#f9a8d4;">45</div><div class="sgs-chg" style="color:var(--red);">▼-2</div></div></div>
+      <div style="height:16px;"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       FEDERASYON PANELİ
+  ════════════════════════════ -->
+  <div class="page" id="p-fed-dash">
+    <div class="topbar"><div class="tbk" onclick="goBack()">‹</div><span class="tbt">FEDERASYON PANELİ</span><div class="tbr" onclick="toast('Bildirimler')">🔔</div></div>
+    <div style="overflow-y:auto;flex:1;">
+      <div class="fed-hero">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <div style="width:50px;height:50px;border-radius:14px;background:linear-gradient(135deg,var(--cyan),#0369a1);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🏅</div>
+          <div><div style="font-size:15px;font-weight:700;color:#fff;">Türkiye Karate Federasyonu</div><div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:2px;">Yönetim Paneli · Aktif</div><div style="display:inline-flex;background:rgba(6,182,212,.18);border:1px solid rgba(6,182,212,.35);border-radius:100px;padding:3px 10px;font-size:9px;color:var(--cyan);font-weight:600;margin-top:4px;">✓ Onaylı Federasyon</div></div>
+        </div>
+        <div class="fed-stats"><div class="ils"><div class="ils-val" style="color:var(--cyan);">847</div><div class="ils-lbl">Lisanslı Sporcu</div></div><div class="ils"><div class="ils-val" style="color:var(--gold);">63</div><div class="ils-lbl">Turnuva</div></div><div class="ils"><div class="ils-val" style="color:var(--green);">24</div><div class="ils-lbl">Şampiyon</div></div><div class="ils"><div class="ils-val" style="color:var(--a2);">12</div><div class="ils-lbl">İl Temsilcisi</div></div></div>
+      </div>
+      <div class="stitle">Hızlı İşlemler</div>
+      <div class="aq-grid">
+        <div class="aqc" onclick="toast('Lisans onayları...')"><div class="aqc-ic">📋</div><div class="aqc-t">Lisans Onayla</div><div class="aqc-s">Bekleyen lisanslar</div><div class="aqc-b" style="background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3);">47 Bekliyor</div></div>
+        <div class="aqc" onclick="toast('Turnuva takvimi...')"><div class="aqc-ic">🏆</div><div class="aqc-t">Turnuva Takvimi</div><div class="aqc-s">2026 organizasyonları</div><div class="aqc-b" style="background:rgba(245,166,35,.15);color:var(--gold);border:1px solid rgba(245,166,35,.3);">12 Etkinlik</div></div>
+        <div class="aqc" onclick="navigate('p-madalya')"><div class="aqc-ic">🥇</div><div class="aqc-t">Madalya Tablosu</div><div class="aqc-s">Ulusal sıralamalar</div><div class="aqc-b" style="background:rgba(99,57,255,.15);color:var(--a2);border:1px solid rgba(99,57,255,.3);">Görüntüle</div></div>
+        <div class="aqc" onclick="toast('İstatistikler yükleniyor...')"><div class="aqc-ic">📊</div><div class="aqc-t">İstatistikler</div><div class="aqc-s">Branş verileri</div><div class="aqc-b" style="background:rgba(0,200,140,.15);color:var(--green);border:1px solid rgba(0,200,140,.3);">Yeni Rapor</div></div>
+      </div>
+      <div class="stitle">Son Kayıtlar</div>
+      <div class="sporcu-row3" onclick="toast('Ömer Ediz profili')"><div class="sr3-rank">1</div><div class="sr3-av" style="background:rgba(99,57,255,.25);color:#a78bff;border-color:rgba(99,57,255,.4);">ÖE</div><div class="sr3-info"><div class="sr3-nm">Ömer Ediz Perik</div><div class="sr3-mt">Karate · Samsun · KRT-2024-00142</div></div><div class="sr3-sgs"><div class="sgs-val3" style="color:var(--green);font-size:11px;font-weight:700;">✓ Aktif</div></div></div>
+      <div class="sporcu-row3" onclick="toast('Zeynep Kaya profili')"><div class="sr3-rank">2</div><div class="sr3-av" style="background:rgba(236,72,153,.2);color:#f9a8d4;border-color:rgba(236,72,153,.35);">ZK</div><div class="sr3-info"><div class="sr3-nm">Zeynep Kaya</div><div class="sr3-mt">Jimnastik · İstanbul · JMN-2024-00288</div></div><div class="sr3-sgs"><div class="sgs-val3" style="color:var(--green);font-size:11px;font-weight:700;">✓ Aktif</div></div></div>
+      <div style="height:16px;"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       AI DEĞERLEMESİ
+  ════════════════════════════ -->
+  <div class="page" id="p-ai">
+    <div class="topbar"><div class="tbk" onclick="goBack()">‹</div><span class="tbt">AI PİYASA DEĞERİ</span><div class="tbr" onclick="toast('Yeni analiz')">🔄</div></div>
+    <div style="overflow-y:auto;flex:1;">
+      <div style="margin:12px 14px 0;padding:12px;background:rgba(99,57,255,.07);border:1px solid rgba(99,57,255,.2);border-radius:14px;display:flex;gap:10px;align-items:center;"><span style="font-size:22px;">🤖</span><div><div style="font-size:11px;font-weight:700;color:var(--a2);">AI DEĞERLEME SİSTEMİ</div><div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:2px;">SGS, madalya, rekabet seviyesi ve medya faktörleri analiz edildi</div></div></div>
+      <div class="ai-val-c" style="margin-top:10px;"><div style="display:flex;align-items:baseline;justify-content:space-between;"><div><div class="ai-lbl">Tahmini Piyasa Değeri</div><div class="ai-v">₺ 200.000</div></div><div style="text-align:right;"><div style="font-size:9px;color:rgba(255,255,255,.3);">Değer Aralığı</div><div style="font-size:11px;color:var(--green);font-weight:700;">₺160K – ₺320K</div></div></div><div class="ai-bar"><div class="ai-bar-fill" style="width:80%;"></div></div><div style="font-size:9px;color:rgba(255,255,255,.3);">Hedefe %80 ulaşıldı · ▲ +12.4%</div></div>
+      <div style="margin:0 14px 10px;background:var(--surf);border:1px solid var(--border);border-radius:15px;padding:14px;"><div style="font-size:10px;font-weight:700;color:rgba(138,156,200,.4);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:13px;">DEĞER FAKTÖRLERİ</div><div class="factor-row"><span class="fr-lbl">Kariyer & Başarı</span><div class="fr-track"><div class="fr-fill" style="width:88%;background:var(--gold);"></div></div><span class="fr-val" style="color:var(--gold);">88</span></div><div class="factor-row"><span class="fr-lbl">Yaş & Potansiyel</span><div class="fr-track"><div class="fr-fill" style="width:92%;background:var(--green);"></div></div><span class="fr-val" style="color:var(--green);">92</span></div><div class="factor-row"><span class="fr-lbl">Perf. Trendi</span><div class="fr-track"><div class="fr-fill" style="width:78%;background:var(--a2);"></div></div><span class="fr-val" style="color:var(--a2);">78</span></div><div class="factor-row"><span class="fr-lbl">Sağlık Durumu</span><div class="fr-track"><div class="fr-fill" style="width:90%;background:#60a5fa;"></div></div><span class="fr-val" style="color:#60a5fa;">90</span></div><div class="factor-row"><span class="fr-lbl">Medya & Sosyal</span><div class="fr-track"><div class="fr-fill" style="width:62%;background:#f472b6;"></div></div><span class="fr-val" style="color:#f472b6;">62</span></div><div class="factor-row"><span class="fr-lbl">Sponsor Gücü</span><div class="fr-track"><div class="fr-fill" style="width:75%;background:#34d399;"></div></div><span class="fr-val" style="color:#34d399;">75</span></div></div>
+      <div class="ai-comment"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span style="font-size:16px;">🤖</span><span style="font-size:10px;font-weight:700;color:var(--a2);">AI YORUM</span></div><div style="font-size:10.5px;color:rgba(255,255,255,.6);line-height:1.75;">Sporcu güçlü bir kariyer profili sergilemiştir. Yaş avantajı ve madalya birikimi piyasa değerini olumlu etkiliyor. Sosyal medya görünürlüğü artırıldığında değer %30-40 büyüme potansiyeline sahiptir.</div></div>
+      <div style="margin:0 14px 10px;display:grid;grid-template-columns:1fr 1fr;gap:9px;"><div style="background:rgba(0,200,140,.07);border:1px solid rgba(0,200,140,.2);border-radius:13px;padding:11px;"><div style="font-size:9px;font-weight:700;color:var(--green);margin-bottom:7px;">✅ GÜÇLÜ</div><div style="font-size:9px;color:rgba(255,255,255,.5);line-height:2;">• Kariyer & Başarı<br>• Yaş & Potansiyel<br>• Sağlık Durumu</div></div><div style="background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:13px;padding:11px;"><div style="font-size:9px;font-weight:700;color:var(--red);margin-bottom:7px;">⚠️ GELİŞTİR</div><div style="font-size:9px;color:rgba(255,255,255,.5);line-height:2;">• Medya & Sosyal<br>• Sponsor Gücü<br>• Instagram takipçi</div></div></div>
+      <div style="height:16px;"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       SÖZLEŞME
+  ════════════════════════════ -->
+  <div class="page" id="p-sozlesme">
+    <div class="topbar"><div class="tbk" onclick="goBack()">‹</div><span class="tbt">SPORCU SÖZLEŞMESİ</span><div class="tbr" onclick="toast('PDF indir')">📥</div></div>
+    <div style="overflow-y:auto;flex:1;">
+      <div style="margin:12px 14px;padding:13px;background:rgba(99,57,255,.07);border:1px solid rgba(99,57,255,.2);border-radius:15px;"><div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;">Sporcu Katılım ve Sponsorluk Sözleşmesi</div><div style="font-size:10px;color:rgba(255,255,255,.4);">26.03.2026 · 1 Yıllık · Samsun Yetkili Mahkeme</div><div style="display:flex;gap:7px;margin-top:10px;flex-wrap:wrap;"><span style="background:rgba(0,200,140,.12);border:1px solid rgba(0,200,140,.3);border-radius:20px;padding:3px 10px;font-size:9px;color:var(--green);font-weight:600;">✓ İmzalandı</span><span style="background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.3);border-radius:20px;padding:3px 10px;font-size:9px;color:var(--gold);font-weight:600;">📅 26.03.2027</span><span style="background:rgba(99,57,255,.12);border:1px solid rgba(99,57,255,.3);border-radius:20px;padding:3px 10px;font-size:9px;color:var(--a2);font-weight:600;">📹 2 Video/Ay</span></div></div>
+      <div class="sozl-c"><div class="sozl-sec">İçerik Yükümlülükleri (Madde 3)</div><div class="sozl-item"><div class="sozl-dot"></div><span>Her ay en az 2 video içerik — minimum 60 saniye</span></div><div class="sozl-item"><div class="sozl-dot"></div><span>Videoların en az birinde sponsor markası görünür olmalı</span></div><div class="sozl-item"><div class="sozl-dot"></div><span>Ayda en az 3 sosyal medya etiketli paylaşımı</span></div><div class="sozl-item"><div class="sozl-dot"></div><span>Yılda en az 2 etkinliğe katılım zorunludur</span></div></div>
+      <div class="sozl-red"><div style="font-size:10px;font-weight:700;color:var(--red);margin-bottom:7px;">⚠️ Yasak Davranışlar (Madde 4)</div><div class="sozl-item"><div class="sozl-dot" style="background:var(--red);"></div><span style="font-size:11px;color:rgba(255,255,255,.6);">Küfür & hakaret — tüm platformlarda kesinlikle yasak</span></div><div class="sozl-item"><div class="sozl-dot" style="background:var(--red);"></div><span style="font-size:11px;color:rgba(255,255,255,.6);">Doping — WADA kurallarına tam uyum zorunlu</span></div><div class="sozl-item"><div class="sozl-dot" style="background:var(--red);"></div><span style="font-size:11px;color:rgba(255,255,255,.6);">Rakip marka kullanımı kamera önünde yasak</span></div></div>
+      <div class="sozl-ok2"><div style="font-size:10px;font-weight:700;color:var(--green);margin-bottom:7px;">✅ Sponsor Yükümlülükleri (Madde 6)</div><div class="sozl-item"><div class="sozl-dot" style="background:var(--green);"></div><span style="font-size:11px;color:rgba(255,255,255,.6);">Belirlenen destek miktarı düzenli ödenir</span></div><div class="sozl-item"><div class="sozl-dot" style="background:var(--green);"></div><span style="font-size:11px;color:rgba(255,255,255,.6);">Eğitim, ekipman veya organizasyon imkânı sağlanır</span></div></div>
+      <div class="sozl-c"><div class="sozl-sec">Yaptırım Düzeyleri (Madde 9)</div><div class="san-item" style="background:rgba(0,200,140,.06);border:1px solid rgba(0,200,140,.15);"><span style="font-size:10px;font-weight:700;color:var(--green);width:18px;">1.</span><span style="font-size:10px;color:rgba(255,255,255,.6);">Uyarı — Yazılı bildirim, 15 gün iyileştirme</span></div><div class="san-item" style="background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.15);margin-top:5px;"><span style="font-size:10px;font-weight:700;color:var(--gold);width:18px;">2.</span><span style="font-size:10px;color:rgba(255,255,255,.6);">İdari Para Cezası — Destek ödemesinden kesinti</span></div><div class="san-item" style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);margin-top:5px;"><span style="font-size:10px;font-weight:700;color:var(--red);width:18px;">3.</span><span style="font-size:10px;color:rgba(255,255,255,.6);">Askıya Alma — 30-90 gün profil askıya alınır</span></div><div class="san-item" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);margin-top:5px;"><span style="font-size:10px;font-weight:700;color:var(--red);width:18px;">4.</span><span style="font-size:10px;color:rgba(255,255,255,.6);">Derhal Fesih — İade talep edilebilir</span></div></div>
+      <div style="margin:0 14px 16px;padding:13px;background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.15);border-radius:13px;text-align:center;font-size:11px;color:rgba(255,255,255,.45);line-height:1.8;"><span style="font-size:16px;">💪</span><br>"Sahada nasıl mücadele ediyorsan,<br>ekran başında da aynı şekilde davran.<br><strong style="color:var(--gold);">Karakterin, kupalarından daha uzun yaşar.</strong>"</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       PROFİL
+  ════════════════════════════ -->
+  <div class="page" id="p-profil">
+    <div class="topbar"><div class="tbk" onclick="toast('Menü')">☰</div><span class="tbt">PROFİL</span><div class="tbr" onclick="toast('Düzenle')">✏️</div></div>
+    <div style="overflow-y:auto;flex:1;">
+      <div class="prof-hero"><div class="prof-av">ÖE</div><div class="prof-nm">Ömer Ediz Perik</div><div class="prof-mt">11 Yaş · Samsun · 🥋 Karate · KRT-2024-00142</div><div class="prof-badges"><div class="pb">🥋 Karate</div><div class="pb">🏅 Amatör</div><div class="pb">✓ Lisanslı</div><div class="pb">⭐ Sponsored</div></div></div>
+      <div class="menu-item" onclick="navigate('p-perf')"><div class="mi-ic" style="background:rgba(99,57,255,.2);">📊</div><div class="mi-info"><div class="mi-t">Performans & SGS</div><div class="mi-s">Skor: 85 · Çok İyi · ▲+3</div></div><div class="mi-arr">›</div></div>
+      <div class="menu-item" onclick="navigate('p-medya')"><div class="mi-ic" style="background:rgba(0,200,140,.15);">🎬</div><div class="mi-info"><div class="mi-t">Medya Merkezi</div><div class="mi-s">3 video · Aylık 2 zorunlu</div></div><div class="mi-arr">›</div></div>
+      <div class="menu-item" onclick="navigate('p-ai')"><div class="mi-ic" style="background:rgba(245,166,35,.15);">💰</div><div class="mi-info"><div class="mi-t">Piyasa Değeri AI</div><div class="mi-s">₺200.000 · Hedefe %80 ulaşıldı</div></div><div class="mi-arr">›</div></div>
+      <div class="menu-item" onclick="navigate('p-borsa')"><div class="mi-ic" style="background:rgba(99,57,255,.15);">📈</div><div class="mi-info"><div class="mi-t">Sporcu Borsası</div><div class="mi-s">Canlı piyasa · SPX +6.2%</div></div><div class="mi-arr">›</div></div>
+      <div class="menu-item" onclick="navigate('p-madalya')"><div class="mi-ic" style="background:rgba(255,215,0,.12);">🏆</div><div class="mi-info"><div class="mi-t">Madalya Tablosu</div><div class="mi-s">2🥇 3🥈 1🥉</div></div><div class="mi-arr">›</div></div>
+      <div class="menu-item" onclick="navigate('p-sporlar')"><div class="mi-ic" style="background:rgba(14,165,233,.15);">🏅</div><div class="mi-info"><div class="mi-t">Spor Dalları</div><div class="mi-s">63 dal · Karate seçili</div></div><div class="mi-arr">›</div></div>
+      <div class="menu-item" onclick="navigate('p-sozlesme')"><div class="mi-ic" style="background:rgba(239,68,68,.12);">📄</div><div class="mi-info"><div class="mi-t">Sporcu Sözleşmesi</div><div class="mi-s">1 Yıllık · 26.03.2027'ye kadar</div></div><div class="mi-arr">›</div></div>
+      <div class="menu-item" onclick="navigate('p-ayarlar')"><div class="mi-ic" style="background:rgba(255,255,255,.08);">⚙️</div><div class="mi-info"><div class="mi-t">Ayarlar</div><div class="mi-s">Bildirimler, gizlilik, hesap</div></div><div class="mi-arr">›</div></div>
+      <div class="menu-item" onclick="doLogout()"><div class="mi-ic" style="background:rgba(239,68,68,.1);">🚪</div><div class="mi-info"><div class="mi-t" style="color:var(--red);">Çıkış Yap</div><div class="mi-s">Oturum kapat</div></div><div class="mi-arr">›</div></div>
+      <div style="height:16px;"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       AYARLAR
+  ════════════════════════════ -->
+  <div class="page" id="p-ayarlar">
+    <div class="topbar"><div class="tbk" onclick="goBack()">‹</div><span class="tbt">AYARLAR</span><div class="tbr"></div></div>
+    <div style="overflow-y:auto;flex:1;">
+      <div class="sg"><div class="sg-hd">BİLDİRİMLER</div><div class="sg-item"><span class="sg-ic">🔔</span><div class="sg-info"><div class="sg-t">Anlık Bildirimler</div><div class="sg-s">Sistem bildirimleri</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-d"></div></div></div><div class="sg-item"><span class="sg-ic">💼</span><div class="sg-info"><div class="sg-t">Sponsor Teklifleri</div><div class="sg-s">Yeni teklif bildirimleri</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-d"></div></div></div><div class="sg-item"><span class="sg-ic">📊</span><div class="sg-info"><div class="sg-t">SGS Güncellemeleri</div><div class="sg-s">Puan değişikliği</div></div><div class="toggle" onclick="this.classList.toggle('on')"><div class="toggle-d"></div></div></div></div>
+      <div class="sg"><div class="sg-hd">GİZLİLİK</div><div class="sg-item" onclick="toast('Görünürlük ayarları')"><span class="sg-ic">👁️</span><div class="sg-info"><div class="sg-t">Profil Görünürlüğü</div><div class="sg-s">Herkese açık</div></div><div class="sg-r">›</div></div><div class="sg-item"><span class="sg-ic">📍</span><div class="sg-info"><div class="sg-t">Konum Paylaşımı</div><div class="sg-s">Sadece il bilgisi</div></div><div class="toggle on" onclick="this.classList.toggle('on')"><div class="toggle-d"></div></div></div></div>
+      <div class="sg"><div class="sg-hd">HESAP</div><div class="sg-item" onclick="toast('Şifre sıfırlama maili gönderildi')"><span class="sg-ic">🔒</span><div class="sg-info"><div class="sg-t">Şifre Değiştir</div><div class="sg-s">Güvenlik güncelleme</div></div><div class="sg-r">›</div></div><div class="sg-item" onclick="toast('Destek talebi oluşturuldu')"><span class="sg-ic">🆘</span><div class="sg-info"><div class="sg-t">Destek & Yardım</div><div class="sg-s">Sorun bildirin</div></div><div class="sg-r">›</div></div><div class="sg-item" onclick="toast('SporPlatformu v4.0 · iPhone · © 2026')"><span class="sg-ic">ℹ️</span><div class="sg-info"><div class="sg-t">Hakkında</div><div class="sg-s">SporPlatformu v4.0 · © 2026</div></div><div class="sg-r">›</div></div></div>
+      <div style="height:16px;"></div>
+    </div>
+  </div>
+
+  </div><!-- /app -->
+
+  <!-- BOTTOM NAV (Sporcu için) -->
+  <div class="bnav" id="bnav" style="display:none;">
+    <div class="bni on" onclick="navTo('p-home',0)"><div class="bni-ic">🏠</div><div class="bni-lb">Ana</div></div>
+    <div class="bni" onclick="navTo('p-perf',1)"><div class="bni-ic">📊</div><div class="bni-lb">Performans</div></div>
+    <div class="bni" onclick="navTo('p-borsa',2)"><div class="bni-ic">📈</div><div class="bni-lb">Borsa</div></div>
+    <div class="bni" onclick="navTo('p-medya',3)"><div class="bni-ic">🎬</div><div class="bni-lb">Medya</div></div>
+    <div class="bni" onclick="navTo('p-profil',4)"><div class="bni-ic">👤</div><div class="bni-lb">Profil</div></div>
+  </div>
+
+  <!-- Home indicator -->
+  <div class="home-bar"><div class="home-pill"></div></div>
+
+  <div class="toast" id="toastEl"></div>
+
+  </div><!-- /iphone-screen -->
+</div><!-- /iphone -->
+
+<script>
+/* ══ NAVİGASYON ══ */
+var stack=['p-splash'];
+function navigate(id){
+  if(!document.getElementById(id)) return;
+  var cur=stack[stack.length-1];
+  if(cur===id) return;
+  document.getElementById(cur).classList.remove('active');
+  document.getElementById(cur).classList.add('prev');
+  setTimeout(function(){if(document.getElementById(cur)) document.getElementById(cur).classList.remove('prev');},400);
+  document.getElementById(id).classList.add('active');
+  stack.push(id);
+}
+function goBack(){
+  if(stack.length<=1) return;
+  var cur=stack.pop();
+  var prev=stack[stack.length-1];
+  document.getElementById(cur).classList.remove('active');
+  document.getElementById(prev).classList.add('active');
+}
+function navTo(id,tabIdx){
+  document.querySelectorAll('.bni').forEach(function(b,i){b.classList.toggle('on',i===tabIdx);});
+  var cur=stack[stack.length-1];
+  document.getElementById(cur).classList.remove('active');
+  document.getElementById(id).classList.add('active');
+  stack=['p-home'];
+  if(id!=='p-home') stack.push(id);
+}
+
+/* ══ AUTH AKIŞI ══ */
+var userRole='sporcu';
+var authMode='giris'; // 'giris' or 'kayit'
+
+var authConf={
+  sporcu:{
+    title:'SPORCU GİRİŞİ', big:'SPORCU<br>GİRİŞİ', sub:'Hesabınıza giriş yapın',
+    icon:'🏃', logo:'background:linear-gradient(135deg,rgba(99,57,255,.25),rgba(163,139,255,.15));border:1px solid rgba(99,57,255,.4);',
+    btn:'background:linear-gradient(135deg,#6339ff,#a78bff);', glow:'rgba(99,57,255,.2)', regColor:'color:var(--a2);',
+    kayitPage:'p-sporcu-kayit', dashPage:'p-home', navShow:true
+  },
+  sponsor:{
+    title:'SPONSOR GİRİŞİ', big:'SPONSOR<br>GİRİŞİ', sub:'Sponsor panelinize giriş yapın',
+    icon:'💼', logo:'background:linear-gradient(135deg,rgba(245,166,35,.25),rgba(245,100,35,.15));border:1px solid rgba(245,166,35,.35);',
+    btn:'background:linear-gradient(135deg,#f5a623,#f56a35);', glow:'rgba(245,166,35,.2)', regColor:'color:var(--gold);',
+    kayitPage:'p-sponsor-kayit', dashPage:'p-sponsor-dash', navShow:false
+  },
+  il:{
+    title:'İL TEMSİLCİSİ GİRİŞİ', big:'İL / BÖLGE<br>TEMSİLCİSİ', sub:'İl panelinize giriş yapın',
+    icon:'🏛️', logo:'background:linear-gradient(135deg,rgba(0,200,140,.2),rgba(99,57,255,.15));border:1px solid rgba(0,200,140,.35);',
+    btn:'background:linear-gradient(135deg,#00c88c,#6339ff);', glow:'rgba(0,200,140,.2)', regColor:'color:var(--green);',
+    kayitPage:'p-il-kayit', dashPage:'p-iltem', navShow:false
+  },
+  fed:{
+    title:'FEDERASYON GİRİŞİ', big:'FEDERASYON<br>GİRİŞİ', sub:'Federasyon paneline giriş yapın',
+    icon:'🏅', logo:'background:linear-gradient(135deg,rgba(6,182,212,.2),rgba(14,165,233,.15));border:1px solid rgba(6,182,212,.35);',
+    btn:'background:linear-gradient(135deg,#0ea5e9,#38bdf8);', glow:'rgba(6,182,212,.2)', regColor:'color:var(--cyan);',
+    kayitPage:'p-fed-kayit', dashPage:'p-fed-dash', navShow:false
+  }
+};
+
+function goAuth(role, mode){
+  userRole=role; authMode=mode;
+  var c=authConf[role];
+  if(mode==='kayit'){
+    navigate(c.kayitPage);
+    return;
+  }
+  // Giriş sayfası
+  document.getElementById('g-title').textContent=c.title;
+  document.getElementById('g-big').innerHTML=c.big;
+  document.getElementById('g-sub').textContent=c.sub;
+  document.getElementById('g-logo').textContent=c.icon;
+  document.getElementById('g-logo').style.cssText=c.logo;
+  document.getElementById('g-btn').style.cssText=c.btn;
+  document.getElementById('g-kayit-link').style.cssText=c.regColor;
+  document.getElementById('g-glow').style.cssText='background:radial-gradient(circle,'+c.glow+' 0%,transparent 70%);position:absolute;width:320px;height:320px;top:-100px;left:50%;transform:translateX(-50%);border-radius:50%;pointer-events:none;';
+  document.getElementById('phoneInp').value='';
+  navigate('p-giris');
+}
+
+function switchToKayit(){
+  var c=authConf[userRole];
+  navigate(c.kayitPage);
+}
+
+function handleGoogle(){
+  toast('Google ile giriş başlatılıyor...');
+  setTimeout(afterLogin,1000);
+}
+function handleLogin(){
+  var val=document.getElementById('phoneInp').value.trim();
+  if(val.length<10){toast('Geçerli bir telefon numarası girin');return;}
+  toast('✓ Kod gönderildi! Giriş yapılıyor...');
+  setTimeout(afterLogin,1200);
+}
+function afterLogin(){
+  var c=authConf[userRole];
+  var bnav=document.getElementById('bnav');
+  bnav.style.display=c.navShow?'flex':'none';
+  navigate(c.dashPage);
+  if(c.navShow) navTo(c.dashPage,0);
+}
+function doLogout(){
+  document.getElementById('bnav').style.display='none';
+  stack=['p-splash'];
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active','prev');});
+  document.getElementById('p-splash').classList.add('active');
+  toast('Çıkış yapıldı');
+}
+
+/* ══ KAYIT FORM STEPPERler ══ */
+var kSteps={sporcu:1, sponsor:1, il:1};
+var kTotals={sporcu:3, sponsor:2, il:2};
+var kConf={
+  sporcu:{badge:'sk-badge',pbar:'sk-pbar',scroll:'sk-scroll',back:'sk-back',next:'sk-next',circles:['sk1','sk2','sk3'],lines:['skl1','skl2'],labels:['skb1','skb2','skb3'],pages:['skp1','skp2','skp3'],btnGrad:''},
+  sponsor:{badge:'spk-badge',pbar:'spk-pbar',scroll:'spk-scroll',back:'spk-back',next:'spk-next',circles:['spk1','spk2'],lines:['spkl1'],labels:['spkb1','spkb2'],pages:['spkp1','spkp2'],btnGrad:'gold'},
+  il:{badge:'ilk-badge',pbar:'ilk-pbar',scroll:'ilk-scroll',back:'ilk-back',next:'ilk-next',circles:['ilk1','ilk2'],lines:['ilkl1'],labels:['ilkb1','ilkb2'],pages:['ilkp1','ilkp2'],btnGrad:'teal'}
+};
+
+function kUpdateUI2(role){
+  var c=kConf[role]; var s=kSteps[role]; var tot=kTotals[role];
+  document.getElementById(c.badge).textContent='Adım '+s+'/'+tot;
+  document.getElementById(c.pbar).style.width=Math.round(s/tot*100)+'%';
+  c.circles.forEach(function(id,i){
+    var el=document.getElementById(id); if(!el) return;
+    el.className='sbc'+(i+1<s?' done':i+1===s?' cur':'');
+    el.textContent=i+1<s?'✓':i+1;
+  });
+  c.lines.forEach(function(id,i){
+    var el=document.getElementById(id); if(!el) return;
+    el.style.background=i+1<s?'var(--a)':'var(--border)';
+  });
+  c.labels.forEach(function(id,i){
+    var el=document.getElementById(id); if(!el) return;
+    el.className='sblb'+(i+1<s?' done':i+1===s?' cur':'');
+  });
+  c.pages.forEach(function(id,i){
+    var el=document.getElementById(id); if(!el) return;
+    el.className='kpage'+(i+1===s?' act':'');
+  });
+  var backEl=document.getElementById(c.back);
+  if(backEl) backEl.style.display=s>1?'block':'none';
+  var nextEl=document.getElementById(c.next); if(!nextEl) return;
+  if(s===tot){ nextEl.textContent='✓ Kaydı Tamamla'; nextEl.className='btn-next2 green'; }
+  else { nextEl.textContent='Devam Et ›'; nextEl.className='btn-next2'+(c.btnGrad?' '+c.btnGrad:''); }
+  var scrollEl=document.getElementById(c.scroll);
+  if(scrollEl) scrollEl.scrollTop=0;
+}
+
+function kNext(role){
+  var s=kSteps[role]; var tot=kTotals[role];
+  // Validasyon
+  if(role==='sporcu'){
+    if(s===1){if(!document.getElementById('sk_ad').value.trim()){toast('Ad Soyad zorunludur');return;}if(!document.getElementById('sk_tel').value.trim()){toast('Telefon zorunludur');return;}}
+    if(s===2){if(!document.getElementById('sk_spor').value){toast('Spor dalı seçin');return;}if(!document.getElementById('sk_lisans').value.trim()){toast('Lisans No zorunludur');return;}}
+  }
+  if(role==='sponsor'){
+    if(s===1){if(!document.getElementById('spk_firma').value.trim()){toast('Firma adı zorunludur');return;}if(!document.getElementById('spk_tel').value.trim()){toast('Telefon zorunludur');return;}}
+  }
+  if(role==='il'){
+    if(s===1){if(!document.getElementById('ilk_ad').value.trim()){toast('Ad Soyad zorunludur');return;}if(!document.getElementById('ilk_il').value){toast('İl seçin');return;}if(!document.getElementById('ilk_tel').value.trim()){toast('Telefon zorunludur');return;}}
+  }
+  if(s===tot){
+    var msgs={sporcu:'🎉 Sporcu kaydınız tamamlandı! İl Temsilcisi onayına gönderildi.',sponsor:'🎉 Sponsor başvurunuz alındı! İncelenecek.',il:'🎉 Temsilci başvurunuz gönderildi! Onay bekleniyor.'};
+    toast(msgs[role]);
+    setTimeout(function(){kSteps[role]=1;kUpdateUI2(role);goBack();},2000);
+    return;
+  }
+  kSteps[role]++; kUpdateUI2(role);
+}
+function kGoBack(role){
+  if(kSteps[role]>1){kSteps[role]--;kUpdateUI2(role);}
+  else{goBack();}
+}
+
+/* ══ FORM YARDIMCILARI ══ */
+function selRb(gid,el){
+  document.querySelectorAll('#'+gid+' .rbopt').forEach(function(b){b.classList.remove('sel');});
+  el.classList.add('sel');
+}
+function selRb2(gid,el){ el.classList.toggle('sel'); } // multi-select
+function togChk(el){var b=el.querySelector('.cbox');b.classList.toggle('on');b.textContent=b.classList.contains('on')?'✓':'';el.classList.toggle('on',b.classList.contains('on'));}
+function addOdul(listId){
+  var d=document.createElement('div'); d.className='odul-item';
+  d.innerHTML='<span style="font-size:14px;">🏆</span><input style="background:transparent;border:none;outline:none;color:#fff;font-size:10.5px;font-family:Outfit;flex:1;" placeholder="Ödül adı – Yıl"><span class="od-del" onclick="this.parentElement.remove()">✕</span>';
+  document.getElementById(listId).appendChild(d); d.querySelector('input').focus();
+}
+
+/* ══ PERFORMANS CHART ══ */
+function buildPerfChart(){
+  var data=[65,70,74,78,82,85]; var max=85;
+  document.getElementById('perfChart').innerHTML=data.map(function(v,i){
+    return '<div class="mc-b'+(i===data.length-1?' hi':'')+'" style="height:'+Math.round(v/max*100)+'%;"></div>';
+  }).join('');
+}
+function selTtab(btn){document.querySelectorAll('.ttab').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');}
+
+/* ══ SPOR DALLARI ══ */
+var CATS=[
+  {id:'bi',icon:'🏅',label:'Bireysel Sporlar',cls:'#1a4fff',sports:[{e:'🏹',n:'Okçuluk'},{e:'🏃',n:'Atletizm'},{e:'🥊',n:'Boks'},{e:'🤸',n:'Cimnastik'},{e:'🤼',n:'Güreş'},{e:'🏋️',n:'Halter'},{e:'🥋',n:'Judo'},{e:'🥋',n:'Karate'},{e:'🦵',n:'Kick Boks'},{e:'🏓',n:'Masa Tenisi'},{e:'🎾',n:'Tenis'},{e:'🏸',n:'Badminton'},{e:'⚔️',n:'Eskrim'},{e:'🔫',n:'Atıcılık'}]},
+  {id:'ta',icon:'👥',label:'Takım Sporları',cls:'#059669',sports:[{e:'🏀',n:'Basketbol'},{e:'🏐',n:'Voleybol'},{e:'🤾',n:'Hentbol'},{e:'🏉',n:'Ragbi'},{e:'🤽',n:'Sutopu'},{e:'⚽',n:'Futbol'}]},
+  {id:'su',icon:'🌊',label:'Su & Deniz',cls:'#0369a1',sports:[{e:'🏊',n:'Yüzme'},{e:'🤿',n:'Sualtı'},{e:'🚣',n:'Kürek'},{e:'🛶',n:'Kano'},{e:'⛵',n:'Yelken'}]},
+  {id:'mo',icon:'🚗',label:'Motor Sporları',cls:'#dc2626',sports:[{e:'🏎️',n:'Otomobil'},{e:'🏍️',n:'Motorsiklet'}]},
+  {id:'ki',icon:'❄️',label:'Kış & Buz',cls:'#0891b2',sports:[{e:'⛷️',n:'Kayak'},{e:'⛸️',n:'Buz Pateni'},{e:'🥌',n:'Curling'}]},
+  {id:'ge',icon:'🏹',label:'Geleneksel',cls:'#b45309',sports:[{e:'🏹',n:'Türk Okçuluğu'},{e:'🐎',n:'Atlı Spor'},{e:'💃',n:'Halk Oyunları'},{e:'🤼',n:'Gel. Güreş'}]},
+  {id:'wu',icon:'🥋',label:'Dövüş Sanatları',cls:'#be123c',sports:[{e:'🥋',n:'Taekwondo'},{e:'🥋',n:'Wushu Kungfu'}]},
+  {id:'en',icon:'♿',label:'Engelli & Özel',cls:'#7c3aed',sports:[{e:'♿',n:'Bedensel'},{e:'👁️',n:'Görme Eng.'},{e:'👂',n:'İşitme Eng.'},{e:'⭐',n:'Özel Sporcular'}]},
+  {id:'di',icon:'🎯',label:'Diğer & Gelişen',cls:'#db2777',sports:[{e:'🎮',n:'E-Spor'},{e:'🛹',n:'Kaykay'},{e:'♟️',n:'Satranç'},{e:'🎱',n:'Bilardo'},{e:'🚴',n:'Bisiklet'},{e:'🏇',n:'Binicilik'},{e:'🧗',n:'Dağcılık'}]},
+];
+var openCats=new Set(['bi']); var selSports=new Set(); var sporQ='';
+function renderSports(){
+  var q=sporQ.toLowerCase(); var html=''; var total=0;
+  CATS.forEach(function(cat){
+    var filtered=q?cat.sports.filter(function(s){return s.n.toLowerCase().includes(q);}):cat.sports;
+    if(!filtered.length) return; total+=filtered.length;
+    var isOpen=openCats.has(cat.id)||q.length>0;
+    html+='<div style="margin-bottom:8px;"><div style="display:flex;align-items:center;gap:7px;padding:8px 12px;border-radius:10px;cursor:pointer;margin:0 14px;background:'+cat.cls+'18;border:1px solid '+cat.cls+'33;" onclick="togCat(\''+cat.id+'\')">'
+      +'<div style="width:26px;height:26px;border-radius:7px;background:'+cat.cls+';display:flex;align-items:center;justify-content:center;font-size:13px;">'+cat.icon+'</div>'
+      +'<span style="font-size:12px;font-weight:600;color:#fff;flex:1;">'+cat.label+'</span>'
+      +'<span style="font-size:10px;color:var(--t2);">'+filtered.length+'</span>'
+      +'<span style="font-size:13px;color:var(--t3);transition:transform .2s;display:inline-block;'+(isOpen?'transform:rotate(90deg);':'')+'">›</span></div>';
+    if(isOpen){
+      html+='<div class="sport-grid2" style="padding:5px 14px 0;">';
+      filtered.forEach(function(sp){
+        var key=cat.id+'_'+sp.n; var isSel=selSports.has(key);
+        html+='<div class="si'+(isSel?' sel':'')+'" onclick="togSport(\''+key+'\',\''+sp.n+'\')">'
+          +'<div class="si-em" style="background:'+cat.cls+'33;">'+sp.e+'</div>'
+          +'<span class="si-nm">'+sp.n+'</span></div>';
+      });
+      html+='</div>';
+    }
+    html+='</div>';
+  });
+  document.getElementById('sporContainer').innerHTML=html;
+  document.getElementById('dal-badge').textContent=total+' Dal';
+  document.getElementById('selCount').textContent=selSports.size;
+  document.getElementById('selDalCount').textContent=selSports.size+' Seçili';
+}
+function togCat(id){openCats.has(id)?openCats.delete(id):openCats.add(id);renderSports();}
+function togSport(key,name){selSports.has(key)?(selSports.delete(key),toast(name+' kaldırıldı')):(selSports.add(key),toast('✓ '+name+' seçildi'));renderSports();}
+function filterSp(q){sporQ=q;renderSports();}
+function applySports(){if(!selSports.size){toast('Lütfen en az bir dal seçin');return;}toast('✓ '+selSports.size+' dal uygulandı!');}
+
+/* ══ BORSA ══ */
+var HISSELER=[
+  {isim:'Ömer Ediz Perik',yas:11,il:'Samsun',brans:'🥋 Karate',av:'ÖE',c1:'rgba(99,57,255,.25)',c2:'#a78bff',c3:'rgba(99,57,255,.4)',fiyat:285,degisim:+12.4,hacim:'1.2M',sgs:85,ipo:false,izle:true},
+  {isim:'Zeynep Kaya',yas:13,il:'İstanbul',brans:'🤸 Jimnastik',av:'ZK',c1:'rgba(236,72,153,.2)',c2:'#f9a8d4',c3:'rgba(236,72,153,.35)',fiyat:410,degisim:+18.7,hacim:'890K',sgs:92,ipo:false,izle:false},
+  {isim:'Ali Can Demir',yas:15,il:'Ankara',brans:'🏊 Yüzme',av:'AC',c1:'rgba(14,165,233,.2)',c2:'#38bdf8',c3:'rgba(14,165,233,.35)',fiyat:195,degisim:+5.2,hacim:'640K',sgs:76,ipo:false,izle:false},
+  {isim:'Fatma Nur Şahin',yas:9,il:'Trabzon',brans:'⚔️ Eskrim',av:'FN',c1:'rgba(245,166,35,.2)',c2:'#f5a623',c3:'rgba(245,166,35,.35)',fiyat:148,degisim:-3.1,hacim:'320K',sgs:68,ipo:false,izle:false},
+  {isim:'Burak Arslan',yas:8,il:'Bursa',brans:'🏹 Okçuluk',av:'BA',c1:'rgba(0,200,140,.2)',c2:'#00c88c',c3:'rgba(0,200,140,.35)',fiyat:92,degisim:+28.3,hacim:'980K',sgs:61,ipo:true,izle:true},
+  {isim:'Selin Çelik',yas:17,il:'İzmir',brans:'🦵 Kick Boks',av:'SC',c1:'rgba(239,68,68,.2)',c2:'#fca5a5',c3:'rgba(239,68,68,.35)',fiyat:680,degisim:+9.1,hacim:'2.1M',sgs:94,ipo:false,izle:false},
+];
+var bF='tumu',bQ='';
+function setBF(f,el){bF=f;document.querySelectorAll('#brsaF .fb').forEach(function(b){b.classList.remove('on');});el.classList.add('on');renderBorsa();}
+function filterBorsa(q){bQ=q;renderBorsa();}
+function renderBorsa(){
+  var list=HISSELER.slice();
+  if(bQ) list=list.filter(function(s){return s.isim.toLowerCase().includes(bQ.toLowerCase())||s.brans.toLowerCase().includes(bQ.toLowerCase());});
+  if(bF==='artan') list=list.filter(function(s){return s.degisim>0;}).sort(function(a,b){return b.degisim-a.degisim;});
+  else if(bF==='dusen') list=list.filter(function(s){return s.degisim<0;});
+  else if(bF==='ipo') list=list.filter(function(s){return s.ipo;});
+  else if(bF==='izle') list=list.filter(function(s){return s.izle;});
+  else list.sort(function(a,b){return b.fiyat-a.fiyat;});
+  var sp=[30,40,55,50,65,70,80,75,90,85,88,92];
+  document.getElementById('hisseList').innerHTML=list.map(function(s,i){
+    var pos=s.degisim>=0;
+    var sparkH=sp.map(function(v){return '<div class="spb" style="height:'+v+'%;background:'+(pos?'rgba(99,57,255,.5)':'rgba(239,68,68,.4)')+'"></div>';}).join('');
+    return '<div class="hisse-c">'
+      +'<div class="hc2-main"><div class="hc2-rank">'+(i+1)+'</div>'
+      +'<div class="hc2-av" style="background:'+s.c1+';color:'+s.c2+';border-color:'+s.c3+';">'+s.av+'</div>'
+      +'<div class="hc2-info"><div class="hc2-name">'+s.isim+'</div><div class="hc2-meta">'+s.yas+' Yaş · '+s.il+(s.ipo?' · <span style="color:var(--green);font-weight:700;font-size:8px;">IPO</span>':'')+'</div><div class="hc2-br">'+s.brans+' · SGS '+s.sgs+'</div></div>'
+      +'<div class="hc2-r"><div class="hc2-price" style="color:'+(s.fiyat>400?'#ffd700':s.fiyat>200?'#a78bff':'#00c88c')+';">₺'+s.fiyat+'</div><div class="hc2-chg" style="color:'+(pos?'#00c88c':'#ef4444')+';">'+(pos?'▲':'▼')+' '+Math.abs(s.degisim)+'%</div></div></div>'
+      +'<div class="spark">'+sparkH+'</div>'
+      +'<div class="trade-row"><button class="tbtn buy" onclick="toast(\'✅ '+s.isim+' alındı!\')">▲ AL</button><button class="tbtn sell" onclick="toast(\'🔴 '+s.isim+' satıldı!\')">▼ SAT</button><button class="tbtn watch" onclick="toast(\'★ İzlemeye alındı\')">★ İZLE</button></div></div>';
+  }).join('')||'<div style="text-align:center;padding:24px;font-size:12px;color:var(--t3);">Sonuç bulunamadı</div>';
+}
+
+/* ══ TOAST ══ */
+var tt;
+function toast(msg){
+  var el=document.getElementById('toastEl');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(tt);tt=setTimeout(function(){el.classList.remove('show');},2400);
+}
+
+/* ══ INIT ══ */
+renderSports();
+renderBorsa();
+buildPerfChart();
+Object.keys(kConf).forEach(function(r){kUpdateUI2(r);});
+
+/* Canlı fiyat */
+setInterval(function(){
+  HISSELER.forEach(function(s){
+    var chg=(Math.random()-.46)*3;
+    s.fiyat=Math.max(10,Math.round((s.fiyat+chg)*10)/10);
+    s.degisim=Math.round((s.degisim+chg*.1)*10)/10;
+  });
+  renderBorsa();
+},4000);
+</script>
+</body>
+</html>

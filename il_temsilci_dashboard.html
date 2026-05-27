@@ -1,0 +1,378 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Outfit',sans-serif;}
+.wrap{display:flex;justify-content:center;padding:12px 0;}
+.phone{width:360px;height:720px;background:#080d1a;border-radius:40px;overflow:hidden;border:2px solid #1e2d4a;box-shadow:0 30px 80px rgba(0,0,0,0.7);display:flex;flex-direction:column;}
+.status-bar{background:#050a14;padding:10px 22px 6px;display:flex;justify-content:space-between;flex-shrink:0;}
+.status-bar span{color:#6b82a8;font-size:10px;}
+.scroll{overflow-y:auto;flex:1;scrollbar-width:none;}
+.scroll::-webkit-scrollbar{display:none;}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:13px 16px 10px;background:#080d1a;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;position:sticky;top:0;z-index:10;}
+.tb-left{display:flex;align-items:center;gap:10px;}
+.tb-avatar{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#00c88c,#6339ff);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.tb-name{font-size:13px;font-weight:700;color:#fff;}
+.tb-sub{font-size:9px;color:rgba(255,255,255,0.4);margin-top:1px;}
+.tb-notif{width:32px;height:32px;background:rgba(0,200,140,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;border:1px solid rgba(0,200,140,0.25);cursor:pointer;position:relative;}
+.notif-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:#ef4444;border:1.5px solid #080d1a;}
+
+/* IL HEADER */
+.il-header{margin:14px 14px 0;padding:14px;background:linear-gradient(135deg,rgba(0,200,140,0.12),rgba(99,57,255,0.08));border:1px solid rgba(0,200,140,0.25);border-radius:18px;}
+.il-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.il-flag{width:48px;height:48px;border-radius:12px;background:rgba(0,200,140,0.15);border:1px solid rgba(0,200,140,0.3);display:flex;align-items:center;justify-content:center;font-size:24px;}
+.il-name{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:#fff;line-height:1;}
+.il-region{font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px;}
+.il-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(0,200,140,0.15);border:1px solid rgba(0,200,140,0.3);border-radius:100px;padding:3px 10px;font-size:10px;color:#00c88c;font-weight:600;}
+.il-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.il-stat{background:rgba(255,255,255,0.04);border-radius:10px;padding:8px 6px;text-align:center;}
+.il-stat-val{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;line-height:1;}
+.il-stat-val.green{color:#00c88c;}
+.il-stat-val.purple{color:#a78bff;}
+.il-stat-val.orange{color:#f5a623;}
+.il-stat-val.red{color:#ef4444;}
+.il-stat-lbl{font-size:8px;color:rgba(255,255,255,0.3);margin-top:3px;text-transform:uppercase;letter-spacing:0.5px;}
+
+/* QUICK ACTIONS */
+.quick-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:14px 14px 0;}
+.qa-btn{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 6px;background:#0f1623;border:1px solid #1e2d4a;border-radius:12px;cursor:pointer;transition:all 0.15s;}
+.qa-btn:active{transform:scale(0.95);}
+.qa-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.qa-lbl{font-size:9px;color:rgba(255,255,255,0.45);text-align:center;font-weight:500;line-height:1.2;}
+.qa-icon.green{background:rgba(0,200,140,0.15);}
+.qa-icon.purple{background:rgba(99,57,255,0.15);}
+.qa-icon.orange{background:rgba(245,166,35,0.15);}
+.qa-icon.blue{background:rgba(96,176,255,0.15);}
+
+/* SECTION HEADER */
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 14px 8px;}
+.sec-ttl{font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);letter-spacing:1.2px;text-transform:uppercase;}
+.sec-lnk{font-size:11px;color:#00c88c;font-weight:500;cursor:pointer;}
+
+/* BEKLEYEN ONAYLAR */
+.onay-card{display:flex;align-items:center;gap:10px;margin:0 14px 8px;padding:11px 12px;background:#0f1623;border:1px solid rgba(245,166,35,0.2);border-radius:13px;cursor:pointer;transition:all 0.15s;border-left:3px solid #f5a623;}
+.onay-card:active{transform:scale(0.98);}
+.onay-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;}
+.onay-info{flex:1;min-width:0;}
+.onay-name{font-size:12px;font-weight:600;color:#fff;}
+.onay-meta{font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px;}
+.onay-actions{display:flex;gap:5px;}
+.onay-ok{width:28px;height:28px;border-radius:8px;background:rgba(0,200,140,0.15);border:1px solid rgba(0,200,140,0.3);display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;transition:all 0.15s;}
+.onay-ok:active{background:rgba(0,200,140,0.3);}
+.onay-red{width:28px;height:28px;border-radius:8px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;}
+
+/* SPORCU LİSTESİ */
+.filter-tabs{display:flex;gap:6px;padding:0 14px 8px;overflow-x:auto;scrollbar-width:none;}
+.filter-tabs::-webkit-scrollbar{display:none;}
+.ftab{padding:5px 13px;border-radius:20px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid #1e2d4a;color:rgba(255,255,255,0.35);background:transparent;font-family:'Outfit',sans-serif;white-space:nowrap;transition:all 0.15s;flex-shrink:0;}
+.ftab.active{background:rgba(0,200,140,0.15);border-color:rgba(0,200,140,0.35);color:#00c88c;}
+
+.sporcu-row{display:flex;align-items:center;gap:10px;margin:0 14px 7px;padding:10px 12px;background:#0f1623;border:1px solid #1e2d4a;border-radius:13px;cursor:pointer;transition:all 0.15s;}
+.sporcu-row:active{transform:scale(0.98);}
+.sr-rank{width:20px;font-family:'Bebas Neue',sans-serif;font-size:16px;color:rgba(255,255,255,0.2);text-align:center;flex-shrink:0;}
+.sr-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;border:1.5px solid;}
+.sr-info{flex:1;min-width:0;}
+.sr-name{font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sr-meta{font-size:9px;color:rgba(255,255,255,0.35);margin-top:2px;}
+.sr-sgs{text-align:right;flex-shrink:0;}
+.sgs-val{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;}
+.sgs-lbl{font-size:8px;color:rgba(255,255,255,0.3);text-transform:uppercase;}
+.sr-status{font-size:8px;font-weight:600;padding:2px 7px;border-radius:10px;margin-top:3px;display:inline-block;}
+.st-aktif{background:rgba(0,200,140,0.12);color:#00c88c;}
+.st-bekle{background:rgba(245,166,35,0.12);color:#f5a623;}
+.st-pasif{background:rgba(239,68,68,0.1);color:#ef4444;}
+
+/* KAYIT BTN */
+.kayit-btn{display:flex;align-items:center;justify-content:center;gap:8px;margin:4px 14px 16px;padding:14px;background:linear-gradient(135deg,#00c88c,#6339ff);border-radius:14px;cursor:pointer;font-size:13px;font-weight:700;color:#fff;transition:all 0.15s;border:none;width:calc(100% - 28px);font-family:'Outfit',sans-serif;}
+.kayit-btn:active{opacity:0.88;transform:scale(0.98);}
+
+/* SPOR DALI DAGILIM */
+.dal-list{padding:0 14px;}
+.dal-item{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.dal-icon{font-size:16px;width:28px;text-align:center;flex-shrink:0;}
+.dal-name{font-size:11px;color:rgba(255,255,255,0.6);width:90px;flex-shrink:0;}
+.dal-bar-bg{flex:1;height:6px;background:#1e2d4a;border-radius:10px;overflow:hidden;}
+.dal-bar-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,#00c88c,#6339ff);}
+.dal-count{font-size:11px;color:#00c88c;font-weight:600;width:20px;text-align:right;flex-shrink:0;}
+
+/* NAVBAR */
+.navbar{display:flex;padding:10px 14px 14px;justify-content:space-around;border-top:1px solid rgba(255,255,255,0.06);flex-shrink:0;background:#080d1a;}
+.nb{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9px;color:rgba(255,255,255,0.3);cursor:pointer;transition:color 0.15s;}
+.nb.active{color:#00c88c;}
+.nb-ic{font-size:17px;}
+
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%) translateY(60px);background:rgba(0,200,140,0.95);color:#fff;font-size:11px;font-weight:600;padding:7px 16px;border-radius:20px;transition:transform 0.2s;z-index:999;pointer-events:none;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+</style>
+
+<div class="wrap">
+<div class="phone">
+  <div class="status-bar"><span>9:41</span><span>▲▲▲ WiFi 🔋</span></div>
+
+  <div class="scroll">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="tb-left">
+        <div class="tb-avatar">🏛️</div>
+        <div>
+          <div class="tb-name">Samsun İl Temsilcisi</div>
+          <div class="tb-sub">Karadeniz Bölgesi · Aktif</div>
+        </div>
+      </div>
+      <div class="tb-notif" onclick="toast('3 bekleyen bildirim')">
+        🔔<div class="notif-dot"></div>
+      </div>
+    </div>
+
+    <!-- İL HEADER -->
+    <div class="il-header">
+      <div class="il-top">
+        <div class="il-flag">🏙️</div>
+        <div>
+          <div class="il-name">SAMSUN</div>
+          <div class="il-region">Karadeniz Bölgesi · 55. İl</div>
+          <div class="il-badge">✅ Aktif Temsilci</div>
+        </div>
+      </div>
+      <div class="il-stats">
+        <div class="il-stat">
+          <div class="il-stat-val green">48</div>
+          <div class="il-stat-lbl">Sporcu</div>
+        </div>
+        <div class="il-stat">
+          <div class="il-stat-val purple">7</div>
+          <div class="il-stat-lbl">Spor Dalı</div>
+        </div>
+        <div class="il-stat">
+          <div class="il-stat-val orange">3</div>
+          <div class="il-stat-lbl">Bekleyen</div>
+        </div>
+        <div class="il-stat">
+          <div class="il-stat-val green">12</div>
+          <div class="il-stat-lbl">Madalya</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HIZLI İŞLEMLER -->
+    <div class="quick-actions">
+      <div class="qa-btn" onclick="toast('Yeni sporcu kayıt formu açılıyor...')">
+        <div class="qa-icon green">➕</div>
+        <div class="qa-lbl">Sporcu Kayıt</div>
+      </div>
+      <div class="qa-btn" onclick="toast('Etkinlik ekleniyor...')">
+        <div class="qa-icon purple">📅</div>
+        <div class="qa-lbl">Etkinlik Ekle</div>
+      </div>
+      <div class="qa-btn" onclick="toast('Rapor oluşturuluyor...')">
+        <div class="qa-icon orange">📊</div>
+        <div class="qa-lbl">Rapor Al</div>
+      </div>
+      <div class="qa-btn" onclick="toast('Duyuru gönderiliyor...')">
+        <div class="qa-icon blue">📢</div>
+        <div class="qa-lbl">Duyuru</div>
+      </div>
+    </div>
+
+    <!-- BEKLEYEN ONAYLAR -->
+    <div class="sec-hdr">
+      <span class="sec-ttl">⏳ Bekleyen Onaylar</span>
+      <span class="sec-lnk">Tümü (3) →</span>
+    </div>
+
+    <div class="onay-card" id="onay1">
+      <div class="onay-avatar" style="background:rgba(99,57,255,0.2);color:#a78bff;border:1.5px solid rgba(99,57,255,0.3);">ME</div>
+      <div class="onay-info">
+        <div class="onay-name">Mehmet Eren Koç</div>
+        <div class="onay-meta">🥋 Karate · 14 Yaş · Yeni Kayıt</div>
+      </div>
+      <div class="onay-actions">
+        <div class="onay-ok" onclick="onayKabul('onay1','Mehmet Eren Koç')">✓</div>
+        <div class="onay-red" onclick="onayReddet('onay1')">✕</div>
+      </div>
+    </div>
+
+    <div class="onay-card" id="onay2">
+      <div class="onay-avatar" style="background:rgba(236,72,153,0.15);color:#f9a8d4;border:1.5px solid rgba(236,72,153,0.3);">AY</div>
+      <div class="onay-info">
+        <div class="onay-name">Ayşe Yıldız</div>
+        <div class="onay-meta">🏊 Yüzme · 12 Yaş · Yeni Kayıt</div>
+      </div>
+      <div class="onay-actions">
+        <div class="onay-ok" onclick="onayKabul('onay2','Ayşe Yıldız')">✓</div>
+        <div class="onay-red" onclick="onayReddet('onay2')">✕</div>
+      </div>
+    </div>
+
+    <div class="onay-card" id="onay3">
+      <div class="onay-avatar" style="background:rgba(245,166,35,0.15);color:#f5a623;border:1.5px solid rgba(245,166,35,0.3);">BK</div>
+      <div class="onay-info">
+        <div class="onay-name">Burak Kaya</div>
+        <div class="onay-meta">🤸 Jimnastik · 10 Yaş · Lisans Güncelleme</div>
+      </div>
+      <div class="onay-actions">
+        <div class="onay-ok" onclick="onayKabul('onay3','Burak Kaya')">✓</div>
+        <div class="onay-red" onclick="onayReddet('onay3')">✕</div>
+      </div>
+    </div>
+
+    <!-- SPORCU LİSTESİ -->
+    <div class="sec-hdr">
+      <span class="sec-ttl">Sporcu Listesi</span>
+      <span class="sec-lnk" onclick="toast('Tüm liste açılıyor...')">Tümü (48) →</span>
+    </div>
+
+    <div class="filter-tabs">
+      <button class="ftab active" onclick="setFilter(this,'Tümü')">Tümü (48)</button>
+      <button class="ftab" onclick="setFilter(this,'Karate')">🥋 Karate (12)</button>
+      <button class="ftab" onclick="setFilter(this,'Atletizm')">🏃 Atletizm (9)</button>
+      <button class="ftab" onclick="setFilter(this,'Yüzme')">🏊 Yüzme (8)</button>
+      <button class="ftab" onclick="setFilter(this,'Jimnastik')">🤸 Jimnastik (7)</button>
+      <button class="ftab" onclick="setFilter(this,'Diğer')">Diğer (12)</button>
+    </div>
+
+    <!-- SPORCU SATIRLARI -->
+    <div id="sporcuListesi">
+      <div class="sporcu-row" onclick="toast('Ömer Ediz Perik profili açılıyor...')">
+        <div class="sr-rank">1</div>
+        <div class="sr-avatar" style="background:rgba(99,57,255,0.2);color:#a78bff;border-color:rgba(99,57,255,0.35);">ÖE</div>
+        <div class="sr-info">
+          <div class="sr-name">Ömer Ediz Perik</div>
+          <div class="sr-meta">🥋 Karate · 11 Yaş · 2🥇 3🥈 1🥉</div>
+          <div class="sr-status st-aktif">Aktif</div>
+        </div>
+        <div class="sr-sgs">
+          <div class="sgs-val" style="color:#00c88c;">80</div>
+          <div class="sgs-lbl">SGS</div>
+        </div>
+      </div>
+
+      <div class="sporcu-row" onclick="toast('Zeynep Arslan profili açılıyor...')">
+        <div class="sr-rank">2</div>
+        <div class="sr-avatar" style="background:rgba(236,72,153,0.15);color:#f9a8d4;border-color:rgba(236,72,153,0.3);">ZA</div>
+        <div class="sr-info">
+          <div class="sr-name">Zeynep Arslan</div>
+          <div class="sr-meta">🏊 Yüzme · 15 Yaş · 1🥇 2🥈</div>
+          <div class="sr-status st-aktif">Aktif</div>
+        </div>
+        <div class="sr-sgs">
+          <div class="sgs-val" style="color:#a78bff;">76</div>
+          <div class="sgs-lbl">SGS</div>
+        </div>
+      </div>
+
+      <div class="sporcu-row" onclick="toast('Eyüp Uday Perik profili açılıyor...')">
+        <div class="sr-rank">3</div>
+        <div class="sr-avatar" style="background:rgba(239,68,68,0.15);color:#fca5a5;border-color:rgba(239,68,68,0.3);">EU</div>
+        <div class="sr-info">
+          <div class="sr-name">Eyüp Uday Perik</div>
+          <div class="sr-meta">🦵 Kick Boks · 9 Yaş · 1🥇 3🥈</div>
+          <div class="sr-status st-aktif">Aktif</div>
+        </div>
+        <div class="sr-sgs">
+          <div class="sgs-val" style="color:#60b0ff;">65</div>
+          <div class="sgs-lbl">SGS</div>
+        </div>
+      </div>
+
+      <div class="sporcu-row" onclick="toast('Ali Demir profili açılıyor...')">
+        <div class="sr-rank">4</div>
+        <div class="sr-avatar" style="background:rgba(245,166,35,0.15);color:#f5a623;border-color:rgba(245,166,35,0.3);">AD</div>
+        <div class="sr-info">
+          <div class="sr-name">Ali Demir</div>
+          <div class="sr-meta">🏃 Atletizm · 17 Yaş · 2🥈 1🥉</div>
+          <div class="sr-status st-bekle">Onay Bekliyor</div>
+        </div>
+        <div class="sr-sgs">
+          <div class="sgs-val" style="color:#f5a623;">58</div>
+          <div class="sgs-lbl">SGS</div>
+        </div>
+      </div>
+
+      <div class="sporcu-row" onclick="toast('Yusra Su Perik profili açılıyor...')">
+        <div class="sr-rank">5</div>
+        <div class="sr-avatar" style="background:rgba(0,200,140,0.15);color:#00c88c;border-color:rgba(0,200,140,0.3);">YS</div>
+        <div class="sr-info">
+          <div class="sr-name">Yusra Su Perik</div>
+          <div class="sr-meta">🤸 Jimnastik · 7 Yaş · 2🥈</div>
+          <div class="sr-status st-aktif">Aktif</div>
+        </div>
+        <div class="sr-sgs">
+          <div class="sgs-val" style="color:#f9a8d4;">45</div>
+          <div class="sgs-lbl">SGS</div>
+        </div>
+      </div>
+
+      <div class="sporcu-row" onclick="toast('Fatma Çelik profili açılıyor...')">
+        <div class="sr-rank">6</div>
+        <div class="sr-avatar" style="background:rgba(96,176,255,0.15);color:#60b0ff;border-color:rgba(96,176,255,0.3);">FÇ</div>
+        <div class="sr-info">
+          <div class="sr-name">Fatma Çelik</div>
+          <div class="sr-meta">🏐 Voleybol · 16 Yaş</div>
+          <div class="sr-status st-pasif">Pasif</div>
+        </div>
+        <div class="sr-sgs">
+          <div class="sgs-val" style="color:rgba(255,255,255,0.3);">32</div>
+          <div class="sgs-lbl">SGS</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SPOR DALI DAĞILIMI -->
+    <div class="sec-hdr">
+      <span class="sec-ttl">Spor Dalı Dağılımı</span>
+    </div>
+    <div class="dal-list">
+      <div class="dal-item"><span class="dal-icon">🥋</span><span class="dal-name">Karate</span><div class="dal-bar-bg"><div class="dal-bar-fill" style="width:100%"></div></div><span class="dal-count">12</span></div>
+      <div class="dal-item"><span class="dal-icon">🏃</span><span class="dal-name">Atletizm</span><div class="dal-bar-bg"><div class="dal-bar-fill" style="width:75%"></div></div><span class="dal-count">9</span></div>
+      <div class="dal-item"><span class="dal-icon">🏊</span><span class="dal-name">Yüzme</span><div class="dal-bar-bg"><div class="dal-bar-fill" style="width:67%"></div></div><span class="dal-count">8</span></div>
+      <div class="dal-item"><span class="dal-icon">🤸</span><span class="dal-name">Jimnastik</span><div class="dal-bar-bg"><div class="dal-bar-fill" style="width:58%"></div></div><span class="dal-count">7</span></div>
+      <div class="dal-item"><span class="dal-icon">🏐</span><span class="dal-name">Voleybol</span><div class="dal-bar-bg"><div class="dal-bar-fill" style="width:42%"></div></div><span class="dal-count">5</span></div>
+      <div class="dal-item"><span class="dal-icon">🦵</span><span class="dal-name">Kick Boks</span><div class="dal-bar-bg"><div class="dal-bar-fill" style="width:33%"></div></div><span class="dal-count">4</span></div>
+      <div class="dal-item"><span class="dal-icon">🎯</span><span class="dal-name">Diğer</span><div class="dal-bar-bg"><div class="dal-bar-fill" style="width:25%"></div></div><span class="dal-count">3</span></div>
+    </div>
+
+    <!-- SPORCU KAYIT BUTONU -->
+    <div class="sec-hdr"><span class="sec-ttl"></span></div>
+    <button class="kayit-btn" onclick="toast('Yeni sporcu kayıt formu açılıyor...')">
+      ➕ Yeni Sporcu Kaydet
+    </button>
+
+  </div><!-- end scroll -->
+
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <div class="nb active" onclick="setNav(this)"><div class="nb-ic">🏠</div>Ana Sayfa</div>
+    <div class="nb" onclick="setNav(this)"><div class="nb-ic">👥</div>Sporcular</div>
+    <div class="nb" onclick="setNav(this)"><div class="nb-ic">📅</div>Etkinlik</div>
+    <div class="nb" onclick="setNav(this)"><div class="nb-ic">📊</div>Rapor</div>
+    <div class="nb" onclick="setNav(this)"><div class="nb-ic">⚙️</div>Ayarlar</div>
+  </div>
+</div>
+</div>
+<div class="toast" id="toastEl"></div>
+
+<script>
+function setNav(el){document.querySelectorAll('.nb').forEach(n=>n.classList.remove('active'));el.classList.add('active');}
+function setFilter(btn,f){document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');toast(f+' sporcuları gösteriliyor...');}
+function onayKabul(id,name){
+  const el=document.getElementById(id);
+  if(el){el.style.opacity='0';el.style.transform='translateX(30px)';el.style.transition='all 0.3s';setTimeout(()=>el.remove(),300);}
+  toast('✓ '+name+' onaylandı!');
+}
+function onayReddet(id){
+  const el=document.getElementById(id);
+  if(el){el.style.opacity='0';el.style.transform='translateX(-30px)';el.style.transition='all 0.3s';setTimeout(()=>el.remove(),300);}
+  toast('Kayıt reddedildi');
+}
+let toastTimer;
+function toast(msg){
+  const el=document.getElementById('toastEl');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),2300);
+}
+</script>
