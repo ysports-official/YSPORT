@@ -3,7 +3,7 @@ import { StyleSheet, View, Text } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { StatusBar } from 'expo-status-bar';
 import { useAssets } from 'expo-asset';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 
 export default function App() {
   const [assets] = useAssets([require('./assets/app_bundle.html')]);
