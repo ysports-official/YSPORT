@@ -195,7 +195,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 
 /* ── GOOGLE ACC MODAL ── */
 /* ── MOBILE OVERLAYS (GUARANTEED CONTAINED INSIDE PHONE) ── */
-#tradeModalMobile, #googleModal, #smsModal {
+#tradeModalMobile, #googleModal, #smsModal, #kvkkModal, #contractModal {
   display: none;
   position: absolute !important;
   top: 0 !important;
@@ -210,7 +210,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   border-radius: 44px; /* Matches phone screen rounding */
   overflow: hidden;
 }
-#tradeModalMobile.op, #googleModal.show, #smsModal.show {
+#tradeModalMobile.op, #googleModal.show, #smsModal.show, #kvkkModal.show, #contractModal.show {
   display: flex !important;
 }
 
@@ -243,6 +243,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   text-align: center;
   margin-bottom: 12px;
 }
+.sig-pad { background: #e2e8f0; border-radius: 8px; width: 100%; height: 120px; margin: 10px 0; border: 2px dashed #6b82a8; cursor: crosshair; touch-action: none; }
+.contract-text { max-height: 200px; overflow-y: auto; font-size: 10px; color: #cbd5e1; text-align: left; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px; margin-bottom: 10px; line-height: 1.4; scrollbar-width: thin; }
 
 /* ── ORDER BOOK GRID ── */
 .ob-row{display:flex;justify-content:space-between;padding:3.5px 0;font-size:10.5px;position:relative;}
@@ -1017,6 +1019,55 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       <div class="field"><label>Branş</label><input class="inp" id="mobProfBrans" value="Karate"></div>
 
       <button class="btn-p" style="margin-top:10px;" onclick="saveProfileMob()">Kaydet ve Profil Güncelle</button>
+
+      <!-- RESMİ SÖZLEŞMELER ALANI -->
+      <div style="margin-top:24px;">
+        <div class="sec-hdr">
+          <span class="sec-title">Resmi Sözleşmeler & Hukuk 📜</span>
+        </div>
+        <div class="card2" style="padding:4px 0;">
+          <div class="s-row" onclick="openContractModal('athlete')">
+            <div class="s-icon" style="background:rgba(26,79,255,0.15); color:var(--blue);">🏃</div>
+            <div class="s-info">
+              <div class="s-title">Sporcu İmaj & Veri Sözleşmesi</div>
+              <div class="s-sub">Performans ve KVKK Metni</div>
+            </div>
+            <div style="color:var(--dim);">›</div>
+          </div>
+          <div class="s-row" onclick="openContractModal('sponsor')">
+            <div class="s-icon" style="background:rgba(0,185,122,0.15); color:var(--green);">🤝</div>
+            <div class="s-info">
+              <div class="s-title">Sponsorluk Anlaşması</div>
+              <div class="s-sub">Küresel Rekabet Yasakları</div>
+            </div>
+            <div style="color:var(--dim);">›</div>
+          </div>
+          <div class="s-row" onclick="openContractModal('rep')">
+            <div class="s-icon" style="background:rgba(201,162,39,0.15); color:var(--gold);">🌍</div>
+            <div class="s-info">
+              <div class="s-title">İl Temsilcisi Franchise</div>
+              <div class="s-sub">Bölgesel Tekel Hakları</div>
+            </div>
+            <div style="color:var(--dim);">›</div>
+          </div>
+          <div class="s-row" onclick="openContractModal('club')">
+            <div class="s-icon" style="background:rgba(139,47,255,0.15); color:var(--purple);">🛡️</div>
+            <div class="s-info">
+              <div class="s-title">Kulüp İzleme Lisansı</div>
+              <div class="s-sub">Yetiştirme Bedeli Taahhüdü</div>
+            </div>
+            <div style="color:var(--dim);">›</div>
+          </div>
+          <div class="s-row" onclick="openContractModal('federation')">
+            <div class="s-icon" style="background:rgba(232,69,69,0.15); color:var(--red);">🏛️</div>
+            <div class="s-info">
+              <div class="s-title">Federasyon Entegrasyonu</div>
+              <div class="s-sub">Resmi Veri İşleme Ağı</div>
+            </div>
+            <div style="color:var(--dim);">›</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1095,6 +1146,45 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
       </div>
       <div style="text-align:center; font-size:11px; color:var(--muted); margin-bottom:12px;">Demo doğrulama kodu: <strong style="color:var(--pur-light);">1234</strong></div>
       <button class="btn-s" style="margin-bottom:0; padding:8px;" onclick="closeSmsModal()">İptal</button>
+    </div>
+  </div>
+
+  <!-- KVKK MODAL (Dinamik) -->
+  <div class="sms-modal-bg" id="kvkkModal">
+    <div class="modal-box">
+      <div style="text-align:center; margin-bottom:8px; font-size:30px;">🛡️</div>
+      <h3>KVKK / GDPR Aydınlatma Metni</h3>
+      <p style="color:#f87171; font-weight:bold; font-size:10px;">ÖZEL NİTELİKLİ BİYOMETRİK VERİ ONAYI</p>
+      <div class="contract-text" id="kvkkText">
+        Y SPORTS platformuna kayıt olduğunuz <strong id="kvkkBranchName">...</strong> branşı gereği, performans analizi ve algoritma hesaplamaları için aşağıdaki biyometrik ve kişisel verileriniz işlenecektir:<br><br>
+        <ul id="kvkkDataList" style="padding-left:14px; margin-top:6px; margin-bottom:6px; color:#4ade80;"></ul>
+        Verileriniz 6698 sayılı KVKK ve AB GDPR (Madde 9) kapsamında "Açık Rıza"ya dayalı olarak şifrelenip yurt dışındaki sunucularımızda saklanacak ve sponsor eşleşmelerinde profilinizi puanlamak için kullanılacaktır. Üçüncü taraflara satılmaz.
+      </div>
+      <label style="display:flex; align-items:flex-start; gap:8px; font-size:10px; color:var(--text); cursor:pointer; margin-bottom:12px; line-height: 1.3;">
+        <input type="checkbox" id="kvkkCheck" style="width:16px; height:16px; flex-shrink: 0;">
+        Yukarıdaki şartları ve biyometrik verilerimin işlenmesini okudum, açık rızamla onaylıyorum.
+      </label>
+      <button class="btn-p" onclick="acceptKVKK()">Kabul Et ve Devam Et</button>
+      <button class="btn-s" style="margin-bottom:0;" onclick="document.getElementById('kvkkModal').classList.remove('show')">İptal</button>
+    </div>
+  </div>
+
+  <!-- KÜRESEL SÖZLEŞMELER MODALI (E-İMZALI) -->
+  <div class="sms-modal-bg" id="contractModal">
+    <div class="modal-box" style="max-width:360px;">
+      <div style="text-align:center; margin-bottom:6px; font-size:26px;">📜</div>
+      <h3 id="contractTitle">Profesyonel Sözleşme</h3>
+      <div class="contract-text" id="contractBody" style="max-height:160px;">...</div>
+      
+      <p style="text-align:left; font-size:10.5px; font-weight:bold; margin-bottom:4px; color:#a78bfa;">Dijital İmzanızı Atın (E-İmza):</p>
+      <canvas id="sigCanvas" class="sig-pad"></canvas>
+      <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+        <span style="font-size:9px; color:var(--dim);">* Ekranı kaydırmadan kutu içine imza atın</span>
+        <button onclick="clearSignature()" style="background:none; border:none; color:#f87171; font-size:10px; font-weight:bold; cursor:pointer;">Temizle</button>
+      </div>
+
+      <button class="btn-p" id="contractSignBtn" onclick="signContract()">İmzala ve Onayla</button>
+      <button class="btn-s" style="margin-bottom:0;" onclick="closeContractModal()">Vazgeç</button>
     </div>
   </div>
 
@@ -2699,6 +2789,169 @@ function initApp() {
   recalcSgdSim();
   renderSportsMob();
   buildAthletesListMob();
+}
+
+// --- 64 BRANŞ KVKK & BİYOMETRİK VERİ TABANI ---
+const branchKVKKData = {
+  "Futbol": ["GPS Hareket ve Mesafe Verisi", "Kalp Ritmi (HRV)", "Oksijen Tüketimi (VO2 Max)", "Laktat Eşiği"],
+  "Basketbol": ["Dikey Sıçrama Kuvveti", "Eklem Açısal Hızı", "Kalp Ritmi", "Göz-El Koordinasyon Tepkisi"],
+  "Okçuluk": ["Göz Keskinliği Odaklanma Süresi", "Nefes Tutma Ritmi", "Omuz ve Sırt Kas Basıncı", "Nabız Stabilitesi"],
+  "Halter": ["Omurga Basınç Direnci", "Patlayıcı Kas Kuvveti (EMG)", "Kan Basıncı Değişimi", "Eklem Tork Verisi"],
+  "Yüzme": ["Akciğer Kapasitesi", "Su İçi Sürüklenme Direnci", "Kulaç Frekansı", "Laktik Asit Toleransı"],
+  "default": ["Genel Fiziksel Aktivite Verisi", "Kalp Ritmi", "Uyku ve Toparlanma Verisi", "Antrenman Şiddeti Endeksi"]
+};
+
+let kvkkAcceptedFor = null;
+
+function showKVKKModal(branchName) {
+  const branchData = branchKVKKData[branchName] || branchKVKKData["default"];
+  document.getElementById('kvkkBranchName').innerText = branchName;
+  const ul = document.getElementById('kvkkDataList');
+  ul.innerHTML = '';
+  branchData.forEach(item => {
+    ul.innerHTML += `<li>${item}</li>`;
+  });
+  document.getElementById('kvkkCheck').checked = false;
+  document.getElementById('kvkkModal').classList.add('show');
+}
+
+function acceptKVKK() {
+  if (!document.getElementById('kvkkCheck').checked) {
+    alert("Lütfen biyometrik verilerinizin işlenmesi için kutucuğu işaretleyerek Açık Rıza veriniz.");
+    return;
+  }
+  kvkkAcceptedFor = document.getElementById('kvkkBranchName').innerText;
+  document.getElementById('kvkkModal').classList.remove('show');
+  
+  // KVKK onayından sonra alanları tekrar yükle
+  renderDynamicOnboardingFields(true);
+}
+
+// Override renderDynamicOnboardingFields
+const originalRenderDynamicOnboardingFields = renderDynamicOnboardingFields;
+renderDynamicOnboardingFields = function(bypassKVKK = false) {
+  const branch = document.getElementById('onboardingBranchSelect').value;
+  if (!branch) return originalRenderDynamicOnboardingFields();
+  
+  if (kvkkAcceptedFor !== branch && !bypassKVKK) {
+    // Show KVKK modal first
+    showKVKKModal(branch);
+    return;
+  }
+  
+  // Actually render
+  originalRenderDynamicOnboardingFields();
+};
+
+// --- SÖZLEŞMELER VE E-İMZA MOTORU ---
+const contractTemplates = {
+  athlete: {
+    title: "Sporcu İmaj ve Biyo-Veri Sözleşmesi",
+    body: "<strong>Madde 1: İmaj Hakları</strong><br>Sporcu, adının, 3D avatarının ve performans verilerinin Y SPORTS tarafından Sponsor eşleşmeleri için kullanılmasına küresel ölçekte izin verir.<br><br><strong>Madde 2: Veri Paylaşımı</strong><br>Anlık SGD simülasyonu için giyilebilir cihazlardan alınan sağlık ve biyometrik veriler KVKK kapsamında işlenir.<br><br><strong>Madde 3: Fesih</strong><br>Doping veya ahlaka aykırı durumlarda (Morality Clause) sözleşme tek taraflı feshedilir."
+  },
+  sponsor: {
+    title: "Küresel Sponsorluk Anlaşması",
+    body: "<strong>Madde 1: Münhasırlık (Exclusivity)</strong><br>Sponsor, desteklediği sporcunun forması/profilinde kendi sektöründeki rakip markaların yer alamayacağını garanti altına alır.<br><br><strong>Madde 2: Ödemeler</strong><br>Tüm sponsorluk bedelleri SGD Token üzerinden akıllı kontratlarla (Smart Contract) otomatik ödenir.<br><br><strong>Madde 3: İptal Hakkı</strong><br>Sporcunun itibar zedeleyici eylemlerinde ödemeler anında dondurulur."
+  },
+  rep: {
+    title: "İl Temsilcisi Franchise Sözleşmesi",
+    body: "<strong>Madde 1: Bölgesel Tekel</strong><br>Temsilci, bulunduğu ildeki (örn: Ankara) tüm Y SPORTS lisans satışları ve aboneliklerden %15 Rev-Share (Gelir Paylaşımı) hakkına sahiptir.<br><br><strong>Madde 2: Rekabet Yasağı (NDA)</strong><br>Temsilci sözleşme süresince ve bittikten sonra 2 yıl boyunca benzer bir platform kuramaz.<br><br><strong>Madde 3: Kotalar</strong><br>Aylık 10,000 SGD ciro hedefine ulaşılmaması durumunda Y SPORTS tek taraflı fesih hakkına sahiptir."
+  },
+  club: {
+    title: "Kulüp İzleme ve Altyapı Lisansı",
+    body: "<strong>Madde 1: Yetiştirme Bedeli (Training Compensation)</strong><br>Kulüp altyapısındaki bir çocuk sistem üzerinden transfer yaparsa, kulüp FIFA standartlarında yetiştirme komisyonu alır.<br><br><strong>Madde 2: Veri Paylaşımı</strong><br>Kulüp, veli onayı alınmış sporcularının antrenman verilerini sisteme aktarmayı taahhüt eder.<br><br><strong>Madde 3: İmaj Hakları</strong><br>Kulüp arması sistemde serbestçe kullanılır."
+  },
+  federation: {
+    title: "Federasyon Resmi Entegrasyon Anlaşması",
+    body: "<strong>Madde 1: Veri Sağlayıcı</strong><br>Y SPORTS, federasyonun resmi lig verilerini çekecek ve oyuncu profillerine entegre edecektir.<br><br><strong>Madde 2: Disiplin ve Ceza</strong><br>Federasyon tarafından lisansı iptal edilen sporcuların Y SPORTS hesabı otomatik askıya alınır (Ban).<br><br><strong>Madde 3: Telif Hakları</strong><br>Lig isim hakları için federasyona yıllık havuz gelirinden pay verilir."
+  }
+};
+
+let currentContractType = null;
+let sigCtx = null;
+let isSigning = false;
+
+function openContractModal(type) {
+  const tpl = contractTemplates[type];
+  if (!tpl) return;
+  currentContractType = type;
+  document.getElementById('contractTitle').innerHTML = tpl.title;
+  document.getElementById('contractBody').innerHTML = tpl.body;
+  document.getElementById('contractModal').classList.add('show');
+  
+  const canvas = document.getElementById('sigCanvas');
+  sigCtx = canvas.getContext('2d');
+  
+  // Set real canvas dimensions relative to display size
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+  sigCtx.strokeStyle = "#1a4fff";
+  sigCtx.lineWidth = 3;
+  sigCtx.lineCap = "round";
+  
+  // Clear any existing drawing
+  sigCtx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function closeContractModal() {
+  document.getElementById('contractModal').classList.remove('show');
+}
+
+function clearSignature() {
+  if(sigCtx) {
+    const canvas = document.getElementById('sigCanvas');
+    sigCtx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+}
+
+function signContract() {
+  alert("Sözleşme E-İmzanızla (Hash) blockchain/veritabanı ağına şifrelenerek kaydedildi! (Demo)");
+  closeContractModal();
+}
+
+// Canvas Touch/Mouse Events
+const c = document.getElementById('sigCanvas');
+if (c) {
+  const getPos = (e) => {
+    const rect = c.getBoundingClientRect();
+    if(e.touches) {
+      return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
+    }
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  };
+
+  const startDraw = (e) => {
+    e.preventDefault();
+    isSigning = true;
+    const pos = getPos(e);
+    sigCtx.beginPath();
+    sigCtx.moveTo(pos.x, pos.y);
+  };
+
+  const draw = (e) => {
+    e.preventDefault();
+    if (!isSigning) return;
+    const pos = getPos(e);
+    sigCtx.lineTo(pos.x, pos.y);
+    sigCtx.stroke();
+  };
+
+  const endDraw = (e) => {
+    e.preventDefault();
+    isSigning = false;
+    sigCtx.closePath();
+  };
+
+  c.addEventListener('mousedown', startDraw);
+  c.addEventListener('mousemove', draw);
+  c.addEventListener('mouseup', endDraw);
+  c.addEventListener('mouseout', endDraw);
+  
+  c.addEventListener('touchstart', startDraw, {passive: false});
+  c.addEventListener('touchmove', draw, {passive: false});
+  c.addEventListener('touchend', endDraw);
+  c.addEventListener('touchcancel', endDraw);
 }
 
 document.addEventListener('DOMContentLoaded', initApp);
