@@ -1,0 +1,2707 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Y SPORTS — Türkiye'nin Akıllı Şehir Spor Ekosistemi</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+/* CSS RESET & MOBILE FRAME DESIGN SYSTEM */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --navy:#07090f;
+  --card:#161d2e;
+  --card2:#111827;
+  --border:#1e2d4a;
+  --border2:#2a3a5a;
+  --blue:#1a4fff;
+  --purple:#8b2fff;
+  --pur-light:#a78bff;
+  --gold:#c9a227;
+  --gold2:#ffd700;
+  --green:#00b97a;
+  --red:#e84545;
+  --teal:#00c2d1;
+  --orange:#e85d04;
+  --text:#fff;
+  --muted:#8ba8d4;
+  --dim:#4a6fa5;
+  --gray:#6b82a8;
+}
+body{
+  font-family:'Outfit', sans-serif;
+  background:#090b11;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:16px 8px 40px;
+  color:#fff;
+}
+
+/* ── PHONE FRAME SIMULATOR ── */
+.app-frame{width:100%;max-width:390px;}
+.frame-label{text-align:center;color:var(--dim);font-size:10px;letter-spacing:2px;margin-bottom:8px;font-weight:600;}
+.phone{background:#12151f;border-radius:52px;padding:10px;border:2px solid #252d45;width:100%;box-shadow:0 25px 60px rgba(0,0,0,0.85);}
+.screen-wrap{background:var(--navy);border-radius:44px;overflow:hidden;height:780px;position:relative;display:flex;flex-direction:column;}
+.notch{height:28px;display:flex;align-items:center;justify-content:center;background:var(--navy);flex-shrink:0;}
+.notch-pill{width:90px;height:5px;background:#1e2d4a;border-radius:10px;}
+.statusbar{display:flex;justify-content:space-between;padding:2px 20px 5px;background:var(--navy);flex-shrink:0;}
+.statusbar span{color:var(--muted);font-size:10px;font-weight:500;}
+
+/* ── SCREENS ROUTER ── */
+.screen{display:none;flex-direction:column;height:calc(780px - 56px - 28px - 17px);}
+.screen.active{display:flex;}
+.scroll{flex:1;overflow-y:auto;scrollbar-width:none;padding-bottom:24px;}
+.scroll::-webkit-scrollbar{display:none;}
+
+/* ── HEADER BARS ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px 10px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.03);}
+.tb-title{color:var(--text);font-size:15px;font-weight:700;}
+.back-btn{width:32px;height:32px;background:rgba(255,255,255,0.07);border-radius:50%;border:none;color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.tb-right{color:var(--muted);font-size:18px;cursor:pointer;}
+
+/* ── BOTTOM NAV ── */
+.bnav{display:flex;background:#0d1117;border-top:1px solid var(--border);flex-shrink:0;}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px 12px;cursor:pointer;border:none;background:none;transition:all .15s;}
+.bni-icon{font-size:19px;}
+.bni-lbl{font-size:9px;color:var(--dim);font-weight:600;}
+.bni.on .bni-lbl{color:#7c6fff;}
+.bni.on .bni-icon{filter:drop-shadow(0 0 5px rgba(124,111,255,.7));}
+
+/* ── DYNAMIC LIVE TICKER (Sponsor Match Notifications) ── */
+.ticker-band{
+  height:32px;
+  background:rgba(99, 57, 255, 0.05);
+  border-bottom:1px solid var(--border);
+  overflow:hidden;
+  white-space:nowrap;
+  display:flex;
+  align-items:center;
+  flex-shrink:0;
+}
+.ticker-inner{
+  display:inline-block;
+  animation:tickerScroll 25s linear infinite;
+  padding-left:100%;
+}
+@keyframes tickerScroll{
+  0%{transform:translateX(0);}
+  100%{transform:translateX(-100%);}
+}
+.tick-item{display:inline-flex;align-items:center;gap:5px;margin-right:26px;font-size:10px;font-weight:700;}
+.tick-up{color:var(--green);}
+.tick-dn{color:var(--red);}
+
+/* ── COMMON UI COMPONENTS ── */
+.tag{display:inline-block;border-radius:20px;padding:3px 12px;font-size:10px;font-weight:700;margin-bottom:8px;}
+.tag-blue{background:rgba(74,63,255,.15);border:1px solid rgba(74,63,255,.3);color:#a78bfa;}
+.tag-gold{background:rgba(201,162,39,.15);border:1px solid rgba(201,162,39,.3);color:var(--gold2);}
+.tag-green{background:rgba(0,185,122,.15);border:1px solid rgba(0,185,122,.3);color:#4ade80;}
+.tag-red{background:rgba(232,69,69,.12);border:1px solid rgba(232,69,69,.3);color:#f87171;}
+.tag-teal{background:rgba(0,194,209,.12);border:1px solid rgba(0,194,209,.3);color:var(--teal);}
+
+.sh{font-size:18px;font-weight:800;color:var(--text);line-height:1.3;margin-bottom:6px;}
+.sp{color:var(--muted);font-size:11.5px;line-height:1.5;margin-bottom:12px;}
+.card{background:var(--card);border-radius:16px;border:1px solid var(--border);margin-bottom:10px;cursor:pointer;transition:transform .12s;}
+.card:active{transform:scale(.97);}
+.card2{background:var(--card2);border-radius:16px;border:1px solid var(--border);margin-bottom:10px;}
+
+.btn-p{background:linear-gradient(135deg,var(--blue),var(--purple));border:none;border-radius:12px;padding:12px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;width:100%;margin-bottom:8px;transition:opacity .15s;}
+.btn-p:active{opacity:.85;}
+.btn-s{background:rgba(255,255,255,.06);border:1px solid var(--border2);border-radius:12px;padding:11px;color:var(--text);font-size:12px;font-weight:600;cursor:pointer;width:100%;margin-bottom:8px;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#f59e0b);border:none;border-radius:12px;padding:12px;color:#1a1000;font-size:13px;font-weight:700;cursor:pointer;width:100%;margin-bottom:8px;}
+
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #111827;}
+.info-row:last-child{border-bottom:none;}
+.ir-label{color:var(--muted);font-size:11.5px;}
+.ir-val{color:var(--text);font-size:11.5px;font-weight:600;text-align:right;}
+
+.sec-hdr{display:flex;justify-content:space-between;align-items:center;margin:12px 0 6px;}
+.sec-title{color:var(--text);font-size:13px;font-weight:700;}
+.sec-link{color:#7c6fff;font-size:11px;cursor:pointer;}
+
+.inp{width:100%;background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:11px 14px;color:var(--text);font-size:12.5px;outline:none;transition:border-color .15s;margin-bottom:10px;font-family:inherit;}
+.inp:focus{border-color:var(--blue);}
+select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236b82a8' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+
+/* ── STATS CARD ── */
+.stats-row{display:grid;gap:8px;}
+.stat-card{background:var(--card2);border-radius:12px;padding:10px;border:1px solid var(--border);text-align:center;}
+.stat-val{font-size:18px;font-weight:800;color:var(--text);}
+.stat-lbl{color:var(--gray);font-size:9.5px;margin-top:2px;}
+
+/* ── CIRCULAR TAAHHÜT TRACKER ── */
+.comm-widget{display:flex;align-items:center;gap:14px;background:rgba(99, 57, 255, 0.06);border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:10px;}
+.circle-svg{width:60px;height:60px;transform:rotate(-90deg);flex-shrink:0;}
+.circle-bg{fill:none;stroke:rgba(255,255,255,0.05);stroke-width:6;}
+.circle-fill{fill:none;stroke:#6339ff;stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset 0.6s ease;}
+.comm-info{flex:1;}
+.comm-title{font-size:12.5px;font-weight:700;}
+.comm-sub{font-size:10.5px;color:var(--muted);margin-top:2px;line-height:1.4;}
+
+/* ── DYNAMIC FACTOR BARS ── */
+.factor-row{margin-bottom:8px;}
+.frow-top{display:flex;justify-content:space-between;margin-bottom:3px;}
+.frow-name{color:#c8d8ff;font-size:10.5px;font-weight:600;}
+.frow-score{font-size:10.5px;font-weight:700;}
+.fbar{height:4px;background:#1e2d4a;border-radius:4px;overflow:hidden;}
+.fbar-fill{height:100%;border-radius:4px;transition:width 1s ease;}
+
+/* ── CHAMP SCROLL ── */
+.champ-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
+.champ-scroll::-webkit-scrollbar{display:none;}
+.champ-card{flex-shrink:0;width:124px;background:var(--card2);border-radius:14px;overflow:hidden;border:1px solid var(--border);cursor:pointer;}
+.champ-card:active{opacity:.85;}
+.ct-top{height:60px;display:flex;align-items:center;justify-content:center;position:relative;}
+.ct-gold{background:linear-gradient(135deg,#3a2800,#7a5500);}
+.ct-silver{background:linear-gradient(135deg,#1a2030,#3a4060);}
+.ct-bronze{background:linear-gradient(135deg,#2a1800,#5a3010);}
+.medal-sm{position:absolute;top:4px;right:6px;font-size:12px;}
+.cbody{padding:7px 8px 8px;}
+.cname{color:var(--text);font-size:10.5px;font-weight:700;}
+.cbranch{color:var(--muted);font-size:8.5px;margin-top:1px;}
+.cach{color:#c8d8ff;font-size:8.5px;margin-top:3px;}
+
+/* ── SPORTS GRID ── */
+.sports-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.sg-item{background:var(--card);border-radius:12px;padding:9px 6px;text-align:center;border:1px solid var(--border);cursor:pointer;}
+.sg-icon{font-size:20px;margin-bottom:4px;}
+.sg-name{color:#c8d8ff;font-size:9.5px;font-weight:600;}
+.cat-lbl{color:var(--gray);font-size:9.5px;font-weight:700;letter-spacing:1px;margin:10px 0 5px;padding-left:2px;}
+
+/* ── SETTINGS ROWS ── */
+.s-row{display:flex;align-items:center;gap:12px;padding:12px;cursor:pointer;transition:background .15s;border-bottom:1px solid #111827;}
+.s-row:last-child{border-bottom:none;}
+.s-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.s-info{flex:1;}
+.s-title{color:var(--text);font-size:12.5px;font-weight:600;}
+.s-sub{color:var(--gray);font-size:9.5px;margin-top:1px;}
+
+/* ── HERO HEADER ── */
+.hero{padding:18px 16px 14px;background:linear-gradient(180deg,#0a0d20,var(--navy));}
+.hero-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(74,63,255,.15);border:1px solid rgba(74,63,255,.3);border-radius:20px;padding:3px 10px;color:#a78bfa;font-size:9px;font-weight:600;margin-bottom:10px;}
+.hero h1{font-size:22px;font-weight:800;line-height:1.2;margin-bottom:8px;color:var(--text);}
+.hero h1 em{font-style:normal;background:linear-gradient(135deg,#4a8fff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{color:var(--muted);font-size:11px;line-height:1.5;margin-bottom:14px;}
+
+/* ── SLIDERS ── */
+input[type=range]{width:100%;height:5px;border-radius:4px;background:var(--border);outline:none;-webkit-appearance:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;cursor:pointer;border:2.5px solid var(--purple);}
+.slider-wrap{background:var(--card);border-radius:14px;padding:12px;border:1px solid var(--border2);margin-bottom:8px;}
+.slider-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.slider-lbl{color:#c8d8ff;font-size:11.5px;font-weight:600;}
+.slider-v{font-size:14px;font-weight:800;color:#7c6fff;}
+
+/* ── GOOGLE ACC MODAL ── */
+/* ── MOBILE OVERLAYS (GUARANTEED CONTAINED INSIDE PHONE) ── */
+#tradeModalMobile, #googleModal, #smsModal {
+  display: none;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background: rgba(7, 9, 15, 0.96) !important;
+  z-index: 9999 !important;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-radius: 44px; /* Matches phone screen rounding */
+  overflow: hidden;
+}
+#tradeModalMobile.op, #googleModal.show, #smsModal.show {
+  display: flex !important;
+}
+
+.gmodal{background:#161c2c;border-radius:20px;padding:18px;width:100%;max-width:320px;border:1px solid var(--border2);z-index:10000;}
+.google-acc{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:10px;margin-bottom:6px;cursor:pointer;}
+
+.sms-modal{background:#161c2c;border-radius:20px;padding:18px;width:100%;max-width:320px;border:1px solid var(--border2);z-index:10000;}
+.sms-dots{display:flex;gap:8px;justify-content:center;margin:12px 0;}
+.sms-dot-inp{width:36px;height:46px;background:var(--card);border:2px solid var(--border2);border-radius:10px;color:#fff;font-size:20px;font-weight:800;text-align:center;outline:none;}
+.modal-box {
+  background: #161c2c;
+  border-radius: 20px;
+  padding: 18px;
+  width: 100%;
+  max-width: 320px;
+  border: 1px solid var(--border2);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+.modal-box h3 {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 8px;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+.modal-box p {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+/* ── ORDER BOOK GRID ── */
+.ob-row{display:flex;justify-content:space-between;padding:3.5px 0;font-size:10.5px;position:relative;}
+.ob-fill{position:absolute;top:0;bottom:0;left:0;opacity:0.12;border-radius:2px;z-index:1;}
+.ob-price{font-family:'Bebas Neue';font-size:12.5px;z-index:2;}
+.ob-qty{color:var(--muted);z-index:2;}
+
+/* ── FACILITY ROW ── */
+.fac-row{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:12px;padding:10px;margin-bottom:8px;}
+.fac-progress{height:4px;background:rgba(255,255,255,0.05);border-radius:2px;margin:6px 0 2px;overflow:hidden;}
+.fac-fill{height:100%;border-radius:2px;}
+
+/* ── AI SCANNING overlay ── */
+#aiScanWidget{display:none;background:rgba(99, 57, 255, 0.08);border:1px solid rgba(99,57,255,0.25);border-radius:14px;padding:12px;margin-bottom:12px;}
+.scan-bar{height:5px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;margin:8px 0;}
+.scan-fill{height:100%;background:linear-gradient(90deg, var(--blue), var(--purple));width:0%;transition:width 2.8s linear;}
+
+/* ── TRANSITIONS ── */
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(80px);background:rgba(74,63,255,.95);color:#fff;font-size:11.5px;padding:9px 18px;border-radius:20px;transition:transform .25s;z-index:9999;pointer-events:none;white-space:nowrap;}
+#toast.show{transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<div class="app-frame">
+<div class="frame-label">📱 Y SPORTS — TAM DEMO v4.0</div>
+<div class="phone">
+<div class="screen-wrap">
+  
+  <div class="notch"><div class="notch-pill"></div></div>
+  <div class="statusbar"><span>9:41</span><span>5G 🔋</span></div>
+
+  <!-- LIVE SPONSORSHIP MATCH TICKER -->
+  <div class="ticker-band">
+    <div class="ticker-inner" id="tickerInner">
+      <!-- JS generates ticker details -->
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       S1: ANA SAYFA / LANDING
+       ══════════════════════════════════════════ -->
+  <div class="screen active" id="pg1">
+    <div class="scroll">
+      <div class="hero">
+        <div class="hero-badge">🏆 Y SPORTS — Sporcuyu Merkeze Al</div>
+        <h1>Yetenek <em>Sınır</em><br>Tanımaz</h1>
+        <p class="hero-sub">64 spor dalında AI destekli sporcu–sponsor buluşması. <strong style="color:#fff;">Y SPORTS</strong> ile Türk sporcusu artık merkezdedir.</p>
+        <button class="btn-p" style="background:linear-gradient(135deg, #3b82f6, #1d4ed8); margin-bottom:8px;" onclick="openLoginScreen('sporcu')">🏃 Sporcu Girişi →</button>
+        <button class="btn-gold" style="background:linear-gradient(135deg, #eab308, #ca8a04); color:#000; font-weight:800; margin-bottom:8px;" onclick="openLoginScreen('sponsor')">💼 Sponsor Girişi →</button>
+        <button class="btn-s" style="background:rgba(99,57,255,0.15); border:1px solid rgba(99,57,255,0.3); color:#c084fc; margin-bottom:8px;" onclick="openLoginScreen('federasyon')">🏛️ Federasyon Girişi →</button>
+        <button class="btn-s" style="background:rgba(236,72,153,0.15); border:1px solid rgba(236,72,153,0.3); color:#f472b6; margin-bottom:8px;" onclick="openLoginScreen('kulup')">🛡️ Kulüp Girişi →</button>
+        <button class="btn-s" style="background:rgba(20,184,166,0.15); border:1px solid rgba(20,184,166,0.3); color:#2dd4bf; margin-bottom:8px;" onclick="openLoginScreen('temsilci')">🏙️ İl Temsilcisi Girişi →</button>
+      </div>
+      <!-- stats -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);background:var(--card2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:12px 6px;">
+        <div class="stat-card" style="background:transparent;border:none;"><div class="stat-val" id="sn1">2.847</div><div class="stat-lbl">Sporcu</div></div>
+        <div class="stat-card" style="background:transparent;border:none;"><div class="stat-val" id="sn2">184</div><div class="stat-lbl">Sponsor</div></div>
+        <div class="stat-card" style="background:transparent;border:none;"><div class="stat-val">64</div><div class="stat-lbl">Spor Dalı</div></div>
+        <div class="stat-card" style="background:transparent;border:none;"><div class="stat-val" id="sn3">78</div><div class="stat-lbl">İl</div></div>
+      </div>
+
+    </div>
+    <div class="bnav">
+      <button class="bni on" onclick="pg('pg1')"><span class="bni-icon">🏠</span><span class="bni-lbl">Ana Sayfa</span></button>
+      <button class="bni" onclick="pg('pg6')"><span class="bni-icon">💰</span><span class="bni-lbl">Piyasa</span></button>
+      <button class="bni" onclick="pg('pg7')"><span class="bni-icon">🏅</span><span class="bni-lbl">Sporcular</span></button>
+      <button class="bni" onclick="pg('pg8')"><span class="bni-icon">🏆</span><span class="bni-lbl">Spor Dalları</span></button>
+      <button class="bni" onclick="pg('pg27')"><span class="bni-icon">🔴</span><span class="bni-lbl">Canlı</span></button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       S3: UNIFIED LOGIN & REGISTRATION SYSTEM
+       ══════════════════════════════════════════ -->
+  <div class="screen" id="pg3">
+    <div class="topbar"><button class="back-btn" onclick="pg('pg1')">‹</button><div class="tb-title" id="loginScreenTitle">Giriş Yap</div></div>
+    <div class="scroll" style="padding:16px;">
+      
+      <!-- Icon & Heading -->
+      <div style="text-align:center; padding:15px 0 15px;">
+        <div style="font-size:42px; margin-bottom:6px;" id="loginRoleIcon">🏃</div>
+        <div style="color:#fff; font-size:18px; font-weight:800; margin-bottom:2px;" id="loginRoleTitle">Sporcu Giriş Paneli</div>
+        <div style="color:var(--muted); font-size:11px;" id="loginRoleSub">Ekosisteme güvenli erişim sağlayın</div>
+      </div>
+
+      <!-- Registration Additional Fields (Initially Hidden) -->
+      <div id="registerFields" style="display:none; margin-bottom:10px;">
+        <input class="inp" id="regName" placeholder="Adınız Soyadınız" style="margin-bottom:10px;">
+      </div>
+
+      <!-- Google Authentication Button -->
+      <button class="btn-s" style="display:flex; align-items:center; justify-content:center; gap:10px; background:#fff; color:#1a1a2e; font-weight:700;" id="googleLoginBtn" onclick="triggerGoogleAuth()">
+        Google ile Giriş Yap
+      </button>
+
+      <!-- Divider -->
+      <div style="display:flex; align-items:center; gap:10px; color:var(--dim); font-size:11px; margin:14px 0;">
+        <div style="flex:1; height:1px; background:var(--border);"></div>
+        <span>veya</span>
+        <div style="flex:1; height:1px; background:var(--border);"></div>
+      </div>
+
+      <!-- Phone Authentication -->
+      <div style="position:relative; margin-bottom:10px;">
+        <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:15px;">🇹🇷</span>
+        <input class="inp" id="loginPhone" style="padding-left:40px; margin-bottom:0;" placeholder="5XX XXX XX XX" type="tel">
+      </div>
+      <button class="btn-p" id="phoneAuthBtn" onclick="triggerPhoneAuth()">Doğrulama Kodu Gönder</button>
+
+      <!-- Toggle Sign Up / Sign In option -->
+      <div style="text-align:center; margin-top:14px; margin-bottom:16px;">
+        <span style="font-size:11.5px; color:var(--muted);" id="toggleModeText">Hesabınız yok mu?</span>
+        <span style="font-size:11.5px; color:#7c6fff; font-weight:700; cursor:pointer; margin-left:4px;" id="toggleModeBtn" onclick="toggleLoginMode()">Yeni Hesap Oluştur (Kaydol)</span>
+      </div>
+
+      <!-- KVKK Legal Framework Container -->
+      <div style="border-top:1px solid var(--border); padding-top:12px; margin-top:14px;">
+        <div style="font-size:10px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; display:flex; align-items:center; gap:4px;">
+          <span>⚖️</span> 6698 SAYILI KVKK HUKUKİ AYDINLATMA METNİ
+        </div>
+        
+        <!-- Legally robust lawyer-like scrollable box -->
+        <div style="background:rgba(255,255,255,0.01); border:1px solid var(--border); border-radius:10px; padding:10px; height:110px; overflow-y:auto; font-size:9.5px; line-height:1.45; color:var(--gray); text-align:justify; margin-bottom:10px; scrollbar-width:thin;">
+          <strong>VERİ SORUMLUSUNUN HUKUKİ AYDINLATMA BEYANI:</strong><br><br>
+          İşbu aydınlatma beyanı, 6698 sayılı Kişisel Verilerin Korunması Kanunu'nun ("Kanun") 10. maddesi ve Aydınlatma Yükümlülüğünün Yerine Getirilmesinde Uyulacak Usul ve Esaslar Hakkında Tebliğ uyarınca, <strong>Y SPORTS Akıllı Şehir Sporcu Ekosistemi</strong> ("Veri Sorumlusu") sıfatıyla platformumuzun veri işleme faaliyetlerine ilişkin yasal çerçeveyi tayin etmek amacıyla tanzim edilmiştir.<br><br>
+          <strong>1. VERİ İŞLEME AMAÇLARI VE HUKUKİ DAYANAK:</strong><br>
+          Kişisel verileriniz (Ad, soyad, telefon numarası, IP adresi, cihaz bilgileri ve Google kimlik doğrulama verileri); Kanun'un 5. maddesinin 2. fıkrasının (c) bendi uyarınca "sözleşmenin kurulması veya ifasıyla doğrudan doğruya ilgili olması", (ç) bendi uyarınca "veri sorumlusunun hukuki yükümlülüğünü yerine getirebilmesi" ve (f) bendi uyarınca "ilgili kişinin temel hak ve özgürlüklerine zarar vermemek kaydıyla, veri sorumlusunun meşru menfaatleri için veri işlenmesinin zorunlu olması" hukuki sebeplerine dayalı olarak tamamen otomatik yollarla işlenecektir.<br><br>
+          <strong>2. VERİ TRANSFERİ VE SINIRLARI:</strong><br>
+          Toplanan kişisel verileriniz, belediye teşvik fonlarının dağıtımı, sponsorluk tescilleri ve federasyon lisans kontrollerinin yapılması amacıyla sınırlı olmak kaydıyla; Kanun'un 8. ve 9. maddelerinde yer alan hukuki şartlar çerçevesinde yasal otoritelere, ilgili belediye iştiraklerine ve lisans kontrolleri için spor federasyonlarına güvenli protokoller vasıtasıyla aktarılabilecektir.<br><br>
+          <strong>3. HAKLARINIZ (KANUN'UN 11. MADDESİ):</strong><br>
+          Kişisel veri sahibi olarak Kanun'un 11. maddesi kapsamındaki haklarınızı (verilerinizin işlenme amacını öğrenme, düzeltilmesini, silinmesini veya yok edilmesini talep etme vb.) Veri Sorumlusu başvuru usullerine uygun şekilde her zaman kullanma hakkınız saklıdır.
+        </div>
+
+        <!-- Strict Consent Checkbox -->
+        <label style="display:flex; gap:8px; align-items:flex-start; cursor:pointer;">
+          <input type="checkbox" id="kvkkCheck" style="margin-top:2px; accent-color:var(--purple);">
+          <span style="font-size:9px; line-height:1.3; color:var(--muted);">
+            Kişisel verilerimin, 6698 sayılı Kanun kapsamında işlenmesini, yurt içi ve yurt dışı transferlerini yukarıdaki Aydınlatma Metni sınırları dairesinde <strong>açık rızamla</strong> kabul ediyorum.
+          </span>
+        </label>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       S4: SPORCU DASHBOARD (ÖMER YILMAZ)
+       ══════════════════════════════════════════ -->
+  <!-- ══════════════════════════════════════════
+       ONBOARDING WIZARD (DINAMİK BRANŞ PROFİLLEME)
+       ══════════════════════════════════════════ -->
+  <div class="screen" id="pgOnboarding">
+    <div style="padding:24px 16px; text-align:center;">
+      <div style="font-size:36px; margin-bottom:12px; filter:drop-shadow(0 0 10px #1a4fff);">🚀</div>
+      <div style="font-size:22px; font-weight:800; color:var(--text); margin-bottom:6px;">Profilini Tamamla</div>
+      <div style="font-size:11px; color:var(--muted); line-height:1.4;">Y SPORTS dünyasına hoş geldin! Seni daha iyi eşleştirmemiz için branşını ve atletik özelliklerini bilmemiz gerekiyor.</div>
+    </div>
+    
+    <div class="scroll" style="padding:0 16px 24px;">
+      <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:16px; padding:16px; margin-bottom:20px;">
+        <label style="display:block; font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; margin-bottom:8px;">Spor Branşın</label>
+        <select id="onboardingBranchSelect" class="inp" style="appearance:none; background-image:url('data:image/svg+xml;utf8,<svg fill=\'#8ba8d4\' viewBox=\'0 0 24 24\' width=\'24\' height=\'24\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/></svg>'); background-repeat:no-repeat; background-position:right 10px center; padding-right:30px;" onchange="renderDynamicOnboardingFields()">
+          <option value="">Seçiniz...</option>
+          <option value="Futbol">⚽ Futbol</option>
+          <option value="Basketbol">🏀 Basketbol</option>
+          <option value="Halter">🏋️ Halter</option>
+          <option value="Okçuluk">🏹 Okçuluk</option>
+          <option value="Yüzme">🏊 Yüzme</option>
+          <option value="E-Spor">🎮 E-Spor</option>
+          <option value="Karate">🥋 Karate</option>
+          <option value="Jimnastik">🤸 Jimnastik</option>
+          <option value="Diger">🌟 Diğer Branşlar...</option>
+        </select>
+      </div>
+
+      <div id="dynamicOnboardingContainer" style="display:none; transition:all 0.3s ease;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+          <div style="height:1px; flex:1; background:var(--border);"></div>
+          <div style="font-size:10px; font-weight:800; color:var(--blue); text-transform:uppercase; letter-spacing:1px;" id="dynTitle">BRANŞ BİYO-METRİKLERİ</div>
+          <div style="height:1px; flex:1; background:var(--border);"></div>
+        </div>
+        
+        <div id="dynamicFieldsArea" style="display:flex; flex-direction:column; gap:12px;">
+          <!-- JS tarafından doldurulacak -->
+        </div>
+
+        <button class="btn-p" style="margin-top:24px; box-shadow:0 8px 24px rgba(26,79,255,0.3);" onclick="completeOnboarding()">Sisteme Giriş Yap 🚀</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="pg4">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 18px 6px;flex-shrink:0;">
+      <div><div style="color:#fff;font-size:16px;font-weight:800;">Merhaba, Ömer! 👋</div><div style="color:var(--muted);font-size:11px;margin-top:2px;">Profesyonel Karateci</div></div>
+      <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;" onclick="pg('pg15')">🧑</div>
+    </div>
+    <div class="scroll" style="padding:0 16px 16px;">
+      <!-- profile card -->
+      <div class="card2" style="padding:12px;display:flex;gap:10px;align-items:center;margin-bottom:10px;" onclick="pg('pg15')">
+        <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🧑</div>
+        <div style="flex:1;">
+          <div style="color:#fff;font-size:13px;font-weight:700;">Ömer Yılmaz</div>
+          <div style="color:var(--muted);font-size:10px;margin-top:2px;">11 Yaş · Samsun · Karate</div>
+          <div style="display:flex;gap:5px;margin-top:4px;">
+            <span class="tag tag-gold" style="margin:0;padding:2px 8px;font-size:8px;">🥇 U12 Şampiyonu</span>
+            <span class="tag tag-blue" style="margin:0;padding:2px 8px;font-size:8px;">SGS: 85</span>
+          </div>
+        </div>
+        <div style="color:var(--dim);font-size:16px;">›</div>
+      </div>
+
+      <!-- Dijital Sözleşme Bildirim Banner'ı -->
+      <div style="background: linear-gradient(95deg, rgba(234, 179, 8, 0.12), rgba(99, 57, 255, 0.08)); border: 1px solid rgba(234, 179, 8, 0.25); border-radius: 12px; padding: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;" id="sporcuSozlesmeBanner">
+        <div style="flex:1; padding-right:8px;">
+          <div style="color:var(--gold2); font-size:11.5px; font-weight:800; display:flex; align-items:center; gap:4px;">📜 Dijital Sözleşmeniz Aktiftir</div>
+          <div style="color:var(--muted); font-size:9.5px; margin-top:2px;">Unicorn seviyesi yasal taahhütler ve hak edişleriniz aktiftir.</div>
+        </div>
+        <button class="btn-s" style="margin:0; width:auto; padding:5px 10px; font-size:9.5px; border-color:var(--gold); color:var(--gold2);" onclick="showRoleContractScreen()">İncele →</button>
+      </div>
+      <!-- stats -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;">
+        <div class="stat-card"><div class="stat-val" style="color:#4ade80;font-size:15px;" id="dashValDisplay">₺350K</div><div class="stat-lbl">Piyasa Değeri</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:#a78bfa;font-size:15px;">85</div><div class="stat-lbl">SGS Skoru</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--gold2);font-size:15px;">2</div><div class="stat-lbl">Aktif Sponsor</div></div>
+      </div>
+
+      <!-- Video Taahhüt Tracker -->
+      <div class="card" style="background:rgba(255,255,255,0.02); margin-bottom:10px;" onclick="pg('pg18')">
+        <div class="comm-widget">
+          <svg class="circle-svg">
+            <circle class="circle-bg" cx="30" cy="30" r="26"></circle>
+            <circle class="circle-fill" id="commCircle" cx="30" cy="30" r="26" stroke-dasharray="163.3" stroke-dashoffset="81.65"></circle>
+          </svg>
+          <div class="comm-info">
+            <div class="comm-title" id="commText">Aylık Video Yükleme: 1 / 2</div>
+            <div class="comm-sub" id="commSubText">Gecikme Cezası Riski: %0. Bu ay son video için <strong>5 gününüz</strong> kaldı.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 🔋 Biyo-Güç ve Cihaz Entegrasyon Merkezi -->
+      <div class="card" style="background:linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(5, 150, 105, 0.02)); border: 1px solid rgba(16, 185, 129, 0.25); margin-bottom: 10px; padding: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span style="font-size: 16px;">🔋</span>
+            <span style="font-size: 11.5px; font-weight: 700; color: #fff;">Biyo-Güç & Giyilebilir Cihaz</span>
+          </div>
+          <span id="wearableStatusBadge" class="tag tag-red" style="margin: 0; padding: 2px 6px; font-size: 8px; background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.25);">Cihaz Bağlı Değil</span>
+        </div>
+        
+        <!-- Connection Area (Visible when not connected) -->
+        <div id="wearableConnectArea" style="display: flex; flex-direction: column; align-items: center; padding: 10px 0; text-align: center;">
+          <p style="font-size: 9.5px; color: var(--muted); margin-bottom: 10px; line-height: 1.3;">Giyilebilir cihazını bağla; gücünü antrenmanda harca, ekstra kazanç ve madalya şansını yakala!</p>
+          <button class="btn-s" style="margin: 0; padding: 6px 14px; font-size: 10px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399;" onclick="openWearableModal()">🔌 Cihaz Bağlantısı Başlat</button>
+        </div>
+        
+        <!-- Tracking Area (Visible when connected, initially hidden) -->
+        <div id="wearableTrackingArea" style="display: none; align-items: center; gap: 12px; padding: 4px 0;">
+          <!-- Circular Calorie Progress -->
+          <div style="position: relative; width: 50px; height: 50px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+            <svg style="transform: rotate(-90deg); width: 50px; height: 50px;">
+              <circle cx="25" cy="25" r="22" stroke="rgba(255,255,255,0.05)" stroke-width="4" fill="transparent"></circle>
+              <circle id="calorieCircle" cx="25" cy="25" r="22" stroke="#10b981" stroke-width="4" fill="transparent" stroke-dasharray="138.2" stroke-dashoffset="138.2" style="transition: stroke-dashoffset 0.8s ease-in-out; filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.5));"></circle>
+            </svg>
+            <span id="caloriePercentText" style="position: absolute; font-size: 10px; font-weight: 700; color: #34d399;">%0</span>
+          </div>
+          
+          <div style="flex: 1; min-width: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+              <span id="connectedDeviceName" style="font-size: 10.5px; font-weight: 700; color: #fff;">Cihaz Bağlı</span>
+              <span style="font-size: 8px; color: var(--muted);" id="calorieTargetText">Hedef: 1000 kcal</span>
+            </div>
+            <div style="font-size: 11px; font-weight: 800; color: var(--gold2); display: flex; align-items: baseline; gap: 3px;">
+              <span id="burntCaloriesDisplay" style="font-size: 14px;">0</span> <span style="font-size: 9px; font-weight: 600; color: var(--muted);">kcal</span>
+            </div>
+            
+            <!-- Dynamic biopower prompt -->
+            <div id="biopowerPrompt" style="background: rgba(255,255,255,0.02); border-left: 2px solid #10b981; padding: 4px 6px; font-size: 8.5px; line-height: 1.2; color: #34d399; margin-top: 4px; border-radius: 0 4px 4px 0; font-weight: 600;">
+              Biyo-Güç toplanıyor... Ne kadar çok güç, o kadar iyi kazanç ve madalya! 🏅
+            </div>
+          </div>
+        </div>
+        
+        <!-- Simulation & Conversion buttons -->
+        <div id="wearableSimButtons" style="display: none; grid-template-columns: 1fr 1.2fr; gap: 6px; margin-top: 10px;">
+          <button class="btn-s" style="margin:0; padding:6px; font-size:9.5px; background:rgba(255,255,255,0.03);" onclick="simulateAntrenmanCalorie()">🏋️‍♂️ Antrenman Yap (Simüle)</button>
+          <button id="btnConvertCalorie" class="btn-p" style="margin:0; padding:6px; font-size:9.5px; background:linear-gradient(135deg, #10b981, #059669); color:#fff; font-weight:700; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);" onclick="convertCaloriesToEarnings()">🔋 Gücü Değere Dönüştür</button>
+        </div>
+      </div>
+
+      <!-- aktif sponsorluk -->
+      <div class="sec-hdr"><span class="sec-title">AKTİF SPONSOR</span></div>
+      <div class="card" style="padding:10px;" onclick="pg('pg20')">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="av-sq" style="width:36px;height:36px;background:rgba(26, 79, 255, 0.15);font-size:16px;">💻</div>
+          <div style="flex:1;"><div style="color:#fff;font-size:12px;font-weight:700;">Yalçın Perik Yazılım</div><div style="color:var(--muted);font-size:10px;margin-top:2px;">Ana Sponsor · ₺25.000/ay</div></div>
+          <span class="tag tag-green" style="margin:0;padding:2px 8px;font-size:8px;">Aktif</span>
+        </div>
+      </div>
+      <!-- hızlı linkler -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1.1fr;gap:6px;margin-top:8px;">
+        <button class="btn-s" style="margin:0;padding:8px;font-size:10px;" onclick="pg('pg18')">🎬 Medya</button>
+        <button class="btn-s" style="margin:0;padding:8px;font-size:10px;" onclick="pg('pg6')">💰 Değerim</button>
+        <button class="btn-s" style="margin:0;padding:8px;font-size:10px;border-color:rgba(16, 185, 129, 0.3);color:#34d399;" onclick="showRoleContractScreen()">📄 Sözleşmem</button>
+      </div>
+    </div>
+    <div class="bnav">
+      <button class="bni on" onclick="pg('pg4')"><span class="bni-icon">🏠</span><span class="bni-lbl">Ana Sayfa</span></button>
+      <button class="bni" onclick="pg('pg6')"><span class="bni-icon">💰</span><span class="bni-lbl">Piyasa</span></button>
+      <button class="bni" onclick="pg('pg7')"><span class="bni-icon">🏅</span><span class="bni-lbl">Sporcular</span></button>
+      <button class="bni" onclick="pg('pg8')"><span class="bni-icon">🏆</span><span class="bni-lbl">Spor Dalları</span></button>
+      <button class="bni" onclick="pg('pg27')"><span class="bni-icon">🔴</span><span class="bni-lbl">Canlı</span></button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       S6: PİYASA VE DEĞERLEME (CALCULATOR & SPONSORSHIP MARKET)
+       ══════════════════════════════════════════ -->
+  <div class="screen" id="pg6">
+    <div class="topbar"><button class="back-btn" onclick="back()">‹</button><div class="tb-title">💰 Piyasa & Sponsorluk</div></div>
+    
+    <!-- SUB-TABS (Değerleme vs Sponsorluk Pazarı) -->
+    <div style="display:flex;border-bottom:1px solid var(--border);background:var(--navy);flex-shrink:0;">
+      <div class="step-tab active" id="bt0" onclick="switchBorsaTab(0)" style="flex:1; text-align:center;">🧮 Değerleme</div>
+      <div class="step-tab" id="bt1" onclick="switchBorsaTab(1)" style="flex:1; text-align:center;">💼 Sponsorluk Pazarı</div>
+    </div>
+
+    <div class="scroll" style="padding:12px;">
+      
+      <!-- TAB 0: CALCULATOR SLIDERS -->
+      <div id="borsaTab0">
+        <div class="val-hero" style="padding:14px; margin-bottom:10px;">
+          <div class="val-hero-lbl">AI Hesaplanan Değer</div>
+          <div class="val-hero-num" id="slideSgdDisplay" style="font-size:36px;">350.000 TL</div>
+          <div class="val-hero-sub" id="slideSgdLabel">★ Olimpiyat Seviyesi</div>
+        </div>
+
+        <div class="slider-wrap">
+          <div class="slider-hdr"><span class="slider-lbl">📊 SGS Performansı</span><span class="slider-v" id="slSgsVal">85</span></div>
+          <input type="range" id="slSgs" min="0" max="100" value="85" oninput="recalcSgdSim()">
+        </div>
+
+        <div class="slider-wrap">
+          <div class="slider-hdr"><span class="slider-lbl">🎂 Yaş</span><span class="slider-v" id="slYasVal">11</span></div>
+          <input type="range" id="slYas" min="5" max="35" value="11" oninput="recalcSgdSim()">
+        </div>
+
+        <div class="slider-wrap">
+          <div class="slider-hdr"><span class="slider-lbl">🏅 Madalya</span><span class="slider-v" id="slMedalVal">6</span></div>
+          <input type="range" id="slMedal" min="0" max="30" value="6" oninput="recalcSgdSim()">
+        </div>
+
+        <div class="slider-wrap">
+          <div class="slider-hdr"><span class="slider-lbl">📱 Medya Yönetimi</span><span class="slider-v" id="slMediaVal">42K</span></div>
+          <input type="range" id="slMedia" min="0" max="100" value="42" oninput="recalcSgdSim()">
+        </div>
+
+
+      </div>
+
+      <!-- TAB 1: SPONSORSHIP MARKETPLACE -->
+      <div id="borsaTab1" style="display:none;">
+        <div style="font-size:10px; color:var(--gray); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Aktif Sporcu Piyasa Değerleri</div>
+        <div id="borsaListMobile"></div>
+
+        <!-- ACTIVE SPONSORSHIP OFFER FLOW -->
+        <div class="card" style="padding:10px; margin-top:10px;">
+          <div class="card-h2" style="font-size:11px; margin-bottom:6px;">📋 Gelen Sponsorluk Teklifleri</div>
+          <div id="orderBookMobile"></div>
+        </div>
+
+        <button class="btn-p" style="margin-top:10px;" onclick="openTradeModalMobile()">Sponsorluk Anlaşması Başlat</button>
+      </div>
+
+    </div>
+
+    <div class="bnav">
+      <button class="bni" onclick="pg('pg1')"><span class="bni-icon">🏠</span><span class="bni-lbl">Ana Sayfa</span></button>
+      <button class="bni on" onclick="pg('pg6')"><span class="bni-icon">💰</span><span class="bni-lbl">Piyasa</span></button>
+      <button class="bni" onclick="pg('pg7')"><span class="bni-icon">🏅</span><span class="bni-lbl">Sporcular</span></button>
+      <button class="bni" onclick="pg('pg8')"><span class="bni-icon">🏆</span><span class="bni-lbl">Spor Dalları</span></button>
+      <button class="bni" onclick="pg('pg27')"><span class="bni-icon">🔴</span><span class="bni-lbl">Canlı</span></button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       S7: SPORCULAR (ATHLETES DIRECT LIST)
+       ══════════════════════════════════════════ -->
+  <div class="screen" id="pg7">
+    <div class="topbar"><button class="back-btn" onclick="back()">‹</button><div class="tb-title">🏅 Sporcular</div></div>
+    <div class="scroll" style="padding:12px;">
+      
+      <!-- Athlete Search Box -->
+      <div style="margin-bottom:12px;">
+        <input class="inp" id="searchAthletesMob" placeholder="Sporcu adı, il veya branş ara..." oninput="filterAthletesMob(this.value)" style="margin-bottom:0;">
+      </div>
+
+      <!-- Dynamic Athletes Grid/List -->
+      <div id="athletesListMobContainer">
+        <!-- JS dynamically renders athletes list -->
+      </div>
+
+    </div>
+    <div class="bnav">
+      <button class="bni" onclick="pg('pg1')"><span class="bni-icon">🏠</span><span class="bni-lbl">Ana Sayfa</span></button>
+      <button class="bni" onclick="pg('pg6')"><span class="bni-icon">💰</span><span class="bni-lbl">Piyasa</span></button>
+      <button class="bni on" onclick="pg('pg7')"><span class="bni-icon">🏅</span><span class="bni-lbl">Sporcular</span></button>
+      <button class="bni" onclick="pg('pg8')"><span class="bni-icon">🏆</span><span class="bni-lbl">Spor Dalları</span></button>
+      <button class="bni" onclick="pg('pg27')"><span class="bni-icon">🔴</span><span class="bni-lbl">Canlı</span></button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       S8: SPOR DALLARI (63 BRANŞ)
+       ══════════════════════════════════════════ -->
+  <div class="screen" id="pg8">
+    <div class="topbar"><button class="back-btn" onclick="back()">‹</button><div class="tb-title">🏆 Spor Dalları</div></div>
+    <div class="scroll" style="padding:12px;">
+      
+      <!-- Search Box -->
+      <div style="margin-bottom:12px;">
+        <input class="inp" id="searchSportsMob" placeholder="Spor dalı ara..." oninput="filterSportsMob(this.value)" style="margin-bottom:0;">
+      </div>
+
+      <!-- Categories & Accordions -->
+      <div id="sportsListMobContainer">
+        <!-- JS renders 63 sports branches dynamically -->
+      </div>
+
+      <!-- Selected Sports Athletes list -->
+      <div id="sportsSelectedAthletesContainer" style="display:none; margin-top:14px;">
+        <div class="sec-hdr"><span class="sec-title" id="selBrTitle">Sporcular</span><span class="sec-link" onclick="resetBranchFilterMob()">Tümünü Göster</span></div>
+        
+        <!-- Premium Branch Analysis Card -->
+        <div id="branchSpecCard" style="background: linear-gradient(135deg, rgba(20, 24, 33, 0.95), rgba(13, 17, 23, 0.98)); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 16px; padding: 14px; margin-bottom: 14px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 0 12px rgba(59, 130, 246, 0.1);">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+            <div>
+              <span id="brSpecOlimpikBadge" class="tag tag-blue" style="margin-left:0; margin-bottom: 4px; font-size: 8px;">🏅 OLİMPİK BRANŞ</span>
+              <h3 id="brSpecName" style="color: #fff; font-size: 14px; font-weight: 800; margin: 0; margin-top:2px;">Branş Analizi</h3>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 9px; color: var(--muted); display: block; margin-bottom: 1px;">Belediye Teşvik Fonu</span>
+              <span id="brSpecBudget" style="font-family: 'Bebas Neue'; font-size: 18px; color: var(--gold); text-shadow: 0 0 8px rgba(234, 179, 8, 0.3);">₺0</span>
+            </div>
+          </div>
+          
+          <!-- Specs Grid -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; font-size: 10.5px;">
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 8px;">
+              <span style="color: var(--muted); font-size: 9px; display: block; margin-bottom: 2px;">Gerekli Lisans</span>
+              <span id="brSpecLicence" style="color: #fff; font-weight: 600; font-size: 10px; line-height: 1.2;">Resmi Lisans</span>
+            </div>
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 8px;">
+              <span style="color: var(--muted); font-size: 9px; display: block; margin-bottom: 2px;">AI Popülarite Skoru</span>
+              <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
+                <div style="flex: 1; height: 5px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+                  <div id="brSpecPopBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #3b82f6, #6366f1); border-radius: 3px;"></div>
+                </div>
+                <span id="brSpecPopVal" style="color: #60a5fa; font-weight: 700; font-size: 10px;">%0</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Requirements Section -->
+          <div>
+            <span style="color: var(--muted); font-size: 9px; display: block; margin-bottom: 4px;">Branş Gereksinimleri (Yapay Zeka Analizi)</span>
+            <div id="brSpecReqs" style="display: flex; flex-wrap: wrap; gap: 4px;">
+              <!-- JS renders badges -->
+            </div>
+          </div>
+        </div>
+        
+        <div id="brAthleteListMob"></div>
+      </div>
+
+    </div>
+    <div class="bnav">
+      <button class="bni" onclick="pg('pg1')"><span class="bni-icon">🏠</span><span class="bni-lbl">Ana Sayfa</span></button>
+      <button class="bni" onclick="pg('pg6')"><span class="bni-icon">💰</span><span class="bni-lbl">Piyasa</span></button>
+      <button class="bni" onclick="pg('pg7')"><span class="bni-icon">🏅</span><span class="bni-lbl">Sporcular</span></button>
+      <button class="bni on" onclick="pg('pg8')"><span class="bni-icon">🏆</span><span class="bni-lbl">Spor Dalları</span></button>
+      <button class="bni" onclick="pg('pg27')"><span class="bni-icon">🔴</span><span class="bni-lbl">Canlı</span></button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       S18: SPORCU MEDYA MERKEZİ (UPLOAD & SCAN)
+       ══════════════════════════════════════════ -->
+  <div class="screen" id="pg18">
+    <div class="topbar"><button class="back-btn" onclick="pg('pg4')">‹</button><div class="tb-title">🎬 Medya Merkezi</div></div>
+    <div class="scroll" style="padding:16px;">
+      
+      <!-- AI SCANNING LOADER -->
+      <div id="aiScanWidget">
+        <div class="comm-title" style="color:var(--pur-light); font-size:11.5px;">🤖 AI Video Taahhüt Analizi</div>
+        <div class="scan-bar"><div class="scan-fill" id="scanBarFill"></div></div>
+        <div style="font-size:10px; display:flex; flex-direction:column; gap:4px;" id="scanCheckItems">
+          <div id="scChk1">⚪ Süre Doğrulanıyor (Min 15 Saniye)...</div>
+          <div id="scChk2">⚪ Sponsor Marka Varlığı Aranıyor...</div>
+          <div id="scChk3" style="font-weight:700;">⚪ Sonuç: Bekleniyor...</div>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <label class="btn-p" style="display:block; text-align:center; cursor:pointer;">
+        + Yeni Taahhüt Videosu Yükle
+        <input type="file" accept="video/*" style="display:none;" onchange="triggerMobileScan(event)">
+      </label>
+
+      <div style="color:var(--muted);font-size:11px;text-align:center;margin-bottom:14px;">Aylık en az <strong style="color:#a78bfa">2 video</strong> yükümlülüğünüz var</div>
+      
+      <!-- Video Archive list -->
+      <div id="mobileVideoGrid">
+        <div class="card" style="overflow:hidden;padding:0;margin-bottom:10px;" onclick="t('Video oynatılıyor...')">
+          <div style="height:110px;background:linear-gradient(135deg,#1a2440,#0d1117);display:flex;align-items:center;justify-content:center;font-size:36px;position:relative;">🥋<div style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.75);color:#fff;font-size:10px;padding:2px 7px;border-radius:6px;font-weight:700;">0:35</div><div style="position:absolute;top:8px;left:8px;background:rgba(0,200,140,.9);border-radius:6px;padding:2px 8px;font-size:9px;font-weight:700;color:#fff;">AI ONAYLANDI ✓</div></div>
+          <div style="padding:10px 12px;"><div style="color:#fff;font-size:12px;font-weight:700;">Karate Kata Temel Çalışma Seansı</div><div style="display:flex;gap:8px;margin-top:4px;"><span style="color:var(--muted);font-size:10px;">12 Mayıs 2026</span><span style="color:var(--muted);font-size:10px;">👁 1.2K</span></div></div>
+        </div>
+      </div>
+
+      <!-- 📱 GİZLİLİK DOSTU AI SOSYAL MEDYA ETİKET DOĞRULAYICI -->
+      <div class="card" style="background:linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(79, 70, 229, 0.02)); border:1px solid rgba(99, 102, 241, 0.25); margin-top:14px; padding:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-size:16px;">📱</span>
+            <span style="font-size:11.5px; font-weight:700; color:#fff;">AI Sosyal Medya Doğrulayıcı</span>
+          </div>
+          <span class="tag tag-blue" style="margin:0; font-size:8px;">Gizlilik Dostu</span>
+        </div>
+        
+        <p style="font-size:9.5px; color:var(--muted); margin-bottom:10px; line-height:1.35;">Hesabınızı bağlamanıza gerek yok! Instagram veya TikTok gönderinizde <strong>@ysports</strong> etiketini veya hashtag'ini kullanın, gönderinin açık linkini aşağıya yapıştırın.</p>
+        
+        <div style="display:flex; gap:6px; margin-bottom:10px;">
+          <input class="inp" id="socialLinkInput" placeholder="https://www.instagram.com/p/..." style="margin-bottom:0; font-size:10px; flex:1; padding:8px 10px;">
+          <button class="btn-p" style="margin:0; padding:8px 12px; font-size:10px; background:linear-gradient(135deg, #6366f1, #4f46e5); color:#fff; font-weight:700; flex-shrink:0;" onclick="triggerSocialLinkScan()">AI Doğrula</button>
+        </div>
+        
+        <!-- AI scanning status simulator (Initially hidden) -->
+        <div id="socialScanStatus" style="display:none; background:rgba(0,0,0,0.2); border-radius:10px; padding:10px; border:1px solid rgba(255,255,255,0.03); margin-top:6px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+            <span style="font-size:9px; font-weight:700; color:#818cf8;" id="socialScanText">Instagram Linki Taranıyor...</span>
+            <div id="socialScanSpinner" style="width:12px; height:12px; border:1.5px solid #818cf8; border-top-color:transparent; border-radius:50%; animation:spin 0.6s infinite linear;"></div>
+          </div>
+          
+          <div style="font-size:8.5px; display:flex; flex-direction:column; gap:3px; line-height:1.2;">
+            <div id="socChk1" style="color:var(--muted);">⚪ Gönderi açık verileri çekiliyor...</div>
+            <div id="socChk2" style="color:var(--muted);">⚪ @ysports etiket veya hashtag araması...</div>
+            <div id="socChk3" style="color:var(--muted);">⚪ Vision AI: Logo & Yüz tanıma...</div>
+            <div id="socChk4" style="color:var(--muted); font-weight:700;">⚪ Durum: Bekleniyor...</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="bnav">
+      <button class="bni" onclick="pg('pg4')"><span class="bni-icon">🏠</span><span class="bni-lbl">Ana Sayfa</span></button>
+      <button class="bni" onclick="pg('pg6')"><span class="bni-icon">💰</span><span class="bni-lbl">Piyasa</span></button>
+      <button class="bni" onclick="pg('pg7')"><span class="bni-icon">🏅</span><span class="bni-lbl">Sporcular</span></button>
+      <button class="bni" onclick="pg('pg8')"><span class="bni-icon">🏆</span><span class="bni-lbl">Spor Dalları</span></button>
+      <button class="bni" onclick="pg('pg27')"><span class="bni-icon">🔴</span><span class="bni-lbl">Canlı</span></button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       S27: SPOR NETFLIX (CANLI YAYIN & REELS HIGHLIGHTS)
+       ══════════════════════════════════════════ -->
+  <div class="screen" id="pg27">
+    <div class="topbar"><button class="back-btn" onclick="back()">‹</button><div class="tb-title">🔴 Canlı Yayın</div></div>
+    <div class="scroll" style="padding:12px;">
+      
+      <!-- Video Player Stream -->
+      <div class="card" style="overflow:hidden; padding:0; margin-bottom:12px; position:relative; background:#000; height:180px; display:flex; align-items:center; justify-content:center;">
+        <span style="font-size:42px; opacity:0.65; cursor:pointer;" onclick="T('Canlı yayın başlatılıyor...')">▶</span>
+        <div style="position:absolute; top:10px; left:10px; background:red; color:#fff; font-size:8px; font-weight:800; padding:2px 6px; border-radius:4px; animation:blink 1s infinite;">CANLI</div>
+        <div style="position:absolute; bottom:10px; left:10px; font-size:11px; font-weight:700;">Samsun U12 Karate Şampiyonası Finalleri</div>
+      </div>
+
+      <div class="sec-hdr"><span class="sec-title">Öne Çıkan Sporcu Hikayeleri</span></div>
+      
+      <div class="card" style="overflow:hidden;padding:0;margin-bottom:10px;" onclick="t('Video oynatılıyor...')">
+        <div style="height:100px;background:linear-gradient(135deg,#1f1a40,#0d1117);display:flex;align-items:center;justify-content:center;font-size:32px;position:relative;">🥋<div style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.75);color:#fff;font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;">1:12</div></div>
+        <div style="padding:8px 10px;"><div style="color:#fff;font-size:11.5px;font-weight:700;">Ömer Yılmaz Denge Sparring Highlights</div></div>
+      </div>
+
+      <div class="card" style="overflow:hidden;padding:0;margin-bottom:10px;" onclick="t('Video oynatılıyor...')">
+        <div style="height:100px;background:linear-gradient(135deg,#1a3040,#0d1117);display:flex;align-items:center;justify-content:center;font-size:32px;position:relative;">🤸<div style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.75);color:#fff;font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;">0:56</div></div>
+        <div style="padding:8px 10px;"><div style="color:#fff;font-size:11.5px;font-weight:700;">Yusra Su Perik Jimnastik Turnuva Serisi</div></div>
+      </div>
+
+    </div>
+    <div class="bnav">
+      <button class="bni" onclick="pg('pg1')"><span class="bni-icon">🏠</span><span class="bni-lbl">Ana Sayfa</span></button>
+      <button class="bni" onclick="pg('pg6')"><span class="bni-icon">💰</span><span class="bni-lbl">Piyasa</span></button>
+      <button class="bni" onclick="pg('pg7')"><span class="bni-icon">🏅</span><span class="bni-lbl">Sporcular</span></button>
+      <button class="bni" onclick="pg('pg8')"><span class="bni-icon">🏆</span><span class="bni-lbl">Spor Dalları</span></button>
+      <button class="bni on" onclick="pg('pg27')"><span class="bni-icon">🔴</span><span class="bni-lbl">Canlı</span></button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       S10: SPONSOR DASHBOARD
+       ══════════════════════════════════════════ -->
+  <div class="screen" id="pg9">
+    <div class="topbar"><button class="back-btn" onclick="pg('pg1')">‹</button><div class="tb-title">Sponsor Portalı</div></div>
+    <div class="scroll" style="padding:16px;">
+      
+      <!-- Brand overview stats -->
+      <div style="background: linear-gradient(135deg, rgba(6,182,212,0.1), rgba(99,57,255,0.05)); border:1px solid var(--border); border-radius:16px; padding:14px; margin-bottom:12px;">
+        <div style="font-size:10px; color:var(--muted); text-transform:uppercase;">Yalçın Perik Yazılım</div>
+        <h3 style="font-size:18px; margin-top:2px;">Sponsor Kontrol Paneli</h3>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; font-size:11.5px;">
+          <div><span style="color:var(--gray);">Destek:</span> <strong>1 Sporcu</strong></div>
+          <div><span style="color:var(--gray);">Bütçe:</span> <strong>25K TL/ay</strong></div>
+        </div>
+      </div>
+
+      <!-- Dijital Sözleşme Bildirim Banner'ı -->
+      <div style="background: linear-gradient(95deg, rgba(234, 179, 8, 0.12), rgba(26, 79, 255, 0.08)); border: 1px solid rgba(234, 179, 8, 0.25); border-radius: 12px; padding: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;" id="sponsorSozlesmeBanner">
+        <div style="flex:1; padding-right:8px;">
+          <div style="color:var(--gold2); font-size:11.5px; font-weight:800; display:flex; align-items:center; gap:4px;">📜 Sponsorluk Yatırım Protokolü</div>
+          <div style="color:var(--muted); font-size:9.5px; margin-top:2px;">Akıllı yatırımlar ve biyo-veri kullanım hakları.</div>
+        </div>
+        <button class="btn-s" style="margin:0; width:auto; padding:5px 10px; font-size:9.5px; border-color:var(--gold); color:var(--gold2);" onclick="showRoleContractScreen()">İncele →</button>
+      </div>
+
+      <!-- AI athlete suggestion -->
+      <div class="card glow" style="padding:12px; background:rgba(99,57,255,0.05); border-color:var(--border-glow);">
+        <div style="font-size:10px; color:var(--pur-light); font-weight:700; margin-bottom:6px;">🤖 AI AKILLI SPONSOR EŞLEŞME ÖNERİSİ</div>
+        <p style="font-size:11px; line-height:1.5; color:var(--muted); margin-bottom:8px;">
+          Yazılım/Teknoloji sektörünüz için Samsun olimpik karate sporcusu <strong>Ömer Yılmaz (%96)</strong> eşleşmiştir.
+        </p>
+        <button class="btn-p" style="margin-bottom:0; padding:6px 12px; font-size:11px;" onclick="t('Sponsorluk Teklifi Ömer Yılmaz\'a iletildi!')">Eşleşme Teklifi Gönder</button>
+      </div>
+
+      <!-- Sponsored video compliance tracking -->
+      <div class="sec-hdr"><span class="sec-title">SPORCU VİDEO YÜKÜMLÜLÜK TAKİBİ</span></div>
+      
+      <div class="card2" style="padding:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:6px; margin-bottom:6px;">
+          <span style="font-size:12px; font-weight:700;">Ömer Yılmaz</span>
+          <span class="tag tag-blue" style="margin:0; font-size:8.5px; padding:2px 8px;">Karate</span>
+        </div>
+        <div style="font-size:11px; display:flex; flex-direction:column; gap:4px;">
+          <div style="display:flex; justify-content:space-between;"><span>1. Video Durumu:</span><span style="color:var(--green); font-weight:700;">✓ AI Doğrulandı</span></div>
+          <div style="display:flex; justify-content:space-between;" id="sponVideo2Status"><span>2. Video Durumu:</span><span style="color:var(--gold2); font-weight:700;">⏳ Bekleniyor</span></div>
+        </div>
+      </div>
+
+    </div>
+    <div class="bnav">
+      <button class="bni" onclick="pg('pg1')"><span class="bni-icon">🏠</span><span class="bni-lbl">Çıkış</span></button>
+      <button class="bni on"><span class="bni-icon">💼</span><span class="bni-lbl">Sponsor</span></button>
+      <button class="bni" onclick="showRoleContractScreen()"><span class="bni-icon">📄</span><span class="bni-lbl">Sözleşme</span></button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       S13: BELEDİYE / TEMSİLCİ PANELİ
+       ══════════════════════════════════════════ -->
+  <div class="screen" id="pg12">
+    <div class="topbar"><button class="back-btn" onclick="pg('pg1')">‹</button><div class="tb-title" id="temsilciTitle">Belediye & İl Temsilcisi</div></div>
+    <div class="scroll" style="padding:16px;">
+      
+      <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:16px; padding:14px; margin-bottom:12px;">
+        <div style="font-size:9.5px; color:var(--muted); text-transform:uppercase;" id="temsilciSubTop">Samsun Belediyesi</div>
+        <h3 style="font-size:17px; margin-top:2px;" id="temsilciPortalTitle">Akıllı Şehir Spor Portalı</h3>
+        <div style="font-size:12px; margin-top:4px; color:var(--muted);" id="temsilciNameBox">İl Temsilcisi: <strong>Mehmet Perik</strong></div>
+      </div>
+
+      <!-- Dijital Sözleşme Bildirim Banner'ı -->
+      <div style="background: linear-gradient(95deg, rgba(234, 179, 8, 0.12), rgba(20, 184, 166, 0.08)); border: 1px solid rgba(234, 179, 8, 0.25); border-radius: 12px; padding: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;" id="temsilciSozlesmeBanner">
+        <div style="flex:1; padding-right:8px;">
+          <div style="color:var(--gold2); font-size:11.5px; font-weight:800; display:flex; align-items:center; gap:4px;" id="temsilciBannerTitle">📜 Bölgesel Yetki Protokolü</div>
+          <div style="color:var(--muted); font-size:9.5px; margin-top:2px;" id="temsilciBannerSub">Denetim, lisans onayları ve teşvik koordinasyonu yetkileri.</div>
+        </div>
+        <button class="btn-s" style="margin:0; width:auto; padding:5px 10px; font-size:9.5px; border-color:var(--gold); color:var(--gold2);" onclick="showRoleContractScreen()">İncele →</button>
+      </div>
+
+      <!-- Facility digitization list -->
+      <div class="sec-hdr"><span class="sec-title">TESİS DİJİTALLEŞME (DOLULUK)</span></div>
+      
+      <div class="fac-row">
+        <div style="display:flex; justify-content:space-between; font-size:11.5px;"><span>Atatürk Spor Salonu</span><span style="color:var(--green); font-weight:700;">%84 Aktif</span></div>
+        <div class="fac-progress"><div class="fac-fill" style="width:84%; background:var(--green);"></div></div>
+      </div>
+
+      <div class="fac-row">
+        <div style="display:flex; justify-content:space-between; font-size:11.5px;"><span>Belediye Atletizm Pisti</span><span style="color:var(--teal); font-weight:700;">%62 Aktif</span></div>
+        <div class="fac-progress"><div class="fac-fill" style="width:62%; background:var(--teal);"></div></div>
+      </div>
+
+      <div class="fac-row">
+        <div style="display:flex; justify-content:space-between; font-size:11.5px;"><span>Kapalı Olimpik Yüzme Havuzu</span><span style="color:var(--gold2); font-weight:700;">%91 Dolu</span></div>
+        <div class="fac-progress"><div class="fac-fill" style="width:91%; background:var(--gold2);"></div></div>
+      </div>
+
+      <!-- Teşvik fonu -->
+      <div class="card2" style="padding:12px; margin-top:12px;">
+        <div class="card-h2" style="font-size:11px; margin-bottom:6px;">💰 Belediye Sporcu Teşvik Fonu</div>
+        <div style="font-size:24px; font-family:'Bebas Neue'; color:#fff; letter-spacing:1px;">1.850.000 TL</div>
+        <p style="font-size:10px; color:var(--muted); line-height:1.5; margin-top:4px;">
+          Fonlar Samsunlu 47 lisanslı sporcuya başarı (SGS) puanlarına göre dağıtılmaktadır.
+        </p>
+      </div>
+
+    </div>
+    <div class="bnav">
+      <button class="bni" onclick="pg('pg1')"><span class="bni-icon">🏠</span><span class="bni-lbl">Çıkış</span></button>
+      <button class="bni on"><span class="bni-icon">🏛️</span><span class="bni-lbl">Belediye</span></button>
+      <button class="bni" onclick="showRoleContractScreen()"><span class="bni-icon">📄</span><span class="bni-lbl">Sözleşme</span></button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       S_SOZLESME: PLATFORM DIJITAL SOZLESME VE ONAY ALANI
+       ══════════════════════════════════════════ -->
+  <div class="screen" id="pgSozlesme">
+    <div class="topbar">
+      <button class="back-btn" onclick="back()">‹</button>
+      <div class="tb-title" id="sozlesmeTitle">📄 Dijital Sözleşme</div>
+    </div>
+    <div class="scroll" style="padding:16px;">
+      
+      <!-- Premium Contract Wrapper -->
+      <div style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.99)); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 18px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); line-height: 1.6;">
+        
+        <!-- Document Seal Header -->
+        <div style="text-align: center; border-bottom: 2px dashed rgba(255,255,255,0.06); padding-bottom: 14px; margin-bottom: 16px;">
+          <div style="font-size: 28px; margin-bottom: 6px;">🛡️</div>
+          <div style="color: var(--gold); font-family: 'Bebas Neue'; font-size: 20px; letter-spacing: 1px; text-shadow: 0 0 12px rgba(234, 179, 8, 0.2);" id="sozlesmeDocType">Y SPORTS OFFICIAL CONTRACT</div>
+          <div style="color: var(--muted); font-size: 8px; text-transform: uppercase; margin-top: 2px;" id="sozlesmeDocId">DOCID: YS-2026-9482X</div>
+        </div>
+        
+        <!-- Scrollable contract text content -->
+        <div id="sozlesmeTextContent" style="font-size: 10.5px; color: #e2e8f0; height: 310px; overflow-y: auto; padding-right: 8px; text-align: justify; line-height: 1.65; font-family: monospace;">
+          <!-- JS dynamic contract load -->
+        </div>
+        
+        <!-- Acceptance Badge footer -->
+        <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: space-between; font-size: 9px;">
+          <span style="color: var(--muted);">Hukuki Yürürlük Durumu:</span>
+          <span class="tag tag-green" style="margin: 0; padding: 2px 8px; font-weight: 700;" id="sozlesmeStatusBadge">AKTİF & ONAYLANDI ✓</span>
+        </div>
+      </div>
+      
+    </div>
+    <!-- Bottom nav consistent bar -->
+    <div class="bnav" id="sozlesmeBnav">
+      <button class="bni" onclick="pg('pg1')"><span class="bni-icon">🏠</span><span class="bni-lbl">Çıkış</span></button>
+      <button class="bni on"><span class="bni-icon">📄</span><span class="bni-lbl">Sözleşme</span></button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       S15: SPORCU PROFİLİ (P15 PROFILE PAGE)
+       ══════════════════════════════════════════ -->
+  <div class="screen" id="pg15">
+    <div class="topbar"><button class="back-btn" onclick="pg('pg4')">‹</button><div class="tb-title">👤 Profil Ayarları</div></div>
+    <div class="scroll" style="padding:16px;">
+      <div style="text-align:center; margin-bottom:14px;">
+        <div style="width:70px; height:70px; border-radius:50%; background:linear-gradient(135deg, var(--blue), var(--purple)); font-size:36px; display:flex; align-items:center; justify-content:center; margin:0 auto 8px;" id="mobProfilePic">🧑</div>
+        <label class="btn-s" style="display:inline-block; padding:4px 10px; font-size:10px; width:auto; margin:0;">
+          Resim Değiştir
+          <input type="file" accept="image/*" style="display:none;" onchange="simProfileImageMob(event)">
+        </label>
+      </div>
+
+      <div class="field"><label>Ad</label><input class="inp" id="mobProfAd" value="Ömer"></div>
+      <div class="field"><label>Soyad</label><input class="inp" id="mobProfSoyad" value="Yılmaz"></div>
+      <div class="field"><label>Yaş</label><input class="inp" type="number" id="mobProfYas" value="11"></div>
+      <div class="field"><label>Şehir</label><input class="inp" id="mobProfSehir" value="Samsun"></div>
+      <div class="field"><label>Branş</label><input class="inp" id="mobProfBrans" value="Karate"></div>
+
+      <button class="btn-p" style="margin-top:10px;" onclick="saveProfileMob()">Kaydet ve Profil Güncelle</button>
+    </div>
+  </div>
+
+  <!-- MOBILE SPONSORSHIP OFFER INITIATION MODAL -->
+  <div class="modal-bg" id="tradeModalMobile">
+    <div class="modal-box">
+      <h3>SPONSORLUK ANLAŞMASI BAŞLAT</h3>
+      <p>Akıllı Şehir Sporcu Ekosistemi sponsorluk eşleşmesi.</p>
+      
+      <div style="margin-bottom:10px;">
+        <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">Desteklenecek Sporcu</label>
+        <select class="inp" id="mSelectAthlete" onchange="mobModalPriceUpdate(this.value)">
+          <option value="Yalçın">Yalçın Perik (₺500K)</option>
+          <option value="Ömer" selected>Ömer Yılmaz (₺350K)</option>
+          <option value="Eyüp">Eyüp Perik (₺340K)</option>
+          <option value="Yusra">Yusra Perik (₺200K)</option>
+          <option value="Hanen">Hanene Perik (₺175K)</option>
+        </select>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:10px; margin-bottom:14px; font-size:11.5px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+          <span style="color:var(--muted);">Sponsorluk Değeri (SGD):</span><strong id="mModalBirimFiyat">350.000 TL</strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-weight:700; border-top:1px solid var(--border); padding-top:4px; margin-top:2px;">
+          <span>Aylık Hak Ediş:</span><span style="color:var(--pur-light);" id="mModalTotalSum">25.000 TL</span>
+        </div>
+      </div>
+
+      <button class="btn-p" style="margin-bottom:0; background:linear-gradient(135deg, var(--green), #059669);" onclick="executeTradeMob()">SPONSORLUK ANLAŞMASINI BAŞLAT</button>
+      <button class="btn-s" style="margin-top:8px; margin-bottom:0; padding:8px;" onclick="closeTradeModalMobile()">İPTAL</button>
+    </div>
+  </div>
+
+  <!-- GOOGLE ACC MODAL -->
+  <div class="gmodal-bg" id="googleModal">
+    <div class="gmodal">
+      <div class="gmodal-header">
+        <div class="gmodal-logo">🌐</div>
+        <div>
+          <h3>Hesap Seçin</h3>
+          <p>Y SPORTS Giriş Portalı</p>
+        </div>
+      </div>
+      <div class="google-acc" onclick="selectGoogleAccMob('omer.yilmaz@gmail.com')">
+        <div class="ga-av" style="background:#4ade80; color:#fff;">Ö</div>
+        <div>
+          <div class="ga-name">Ömer Yılmaz</div>
+          <div class="ga-email">omer.yilmaz@gmail.com</div>
+        </div>
+      </div>
+      <div class="google-acc" onclick="selectGoogleAccMob('yalcin.perik@gmail.com')">
+        <div class="ga-av" style="background:#8b2fff; color:#fff;">Y</div>
+        <div>
+          <div class="ga-name">Yalçın Perik</div>
+          <div class="ga-email">yalcin.perik@gmail.com</div>
+        </div>
+      </div>
+      <button class="btn-s" style="margin-bottom:0; margin-top:10px; padding:8px;" onclick="closeGoogleModal()">İptal</button>
+    </div>
+  </div>
+
+  <!-- SMS VERIFICATION MODAL -->
+  <div class="sms-modal-bg" id="smsModal">
+    <div class="sms-modal">
+      <div style="text-align:center;">
+        <div style="font-size:36px; margin-bottom:8px;">📱</div>
+        <h3>SMS Doğrulama</h3>
+        <p id="smsPhoneLabel" style="font-size:11px; color:var(--muted); margin-top:2px;">Telefonunuza gönderilen 4 haneli kodu girin</p>
+      </div>
+      <div class="sms-dots">
+        <input class="sms-dot-inp" id="s1" type="tel" maxlength="1" oninput="smsInpNext(this,'s2')">
+        <input class="sms-dot-inp" id="s2" type="tel" maxlength="1" oninput="smsInpNext(this,'s3')">
+        <input class="sms-dot-inp" id="s3" type="tel" maxlength="1" oninput="smsInpNext(this,'s4')">
+        <input class="sms-dot-inp" id="s4" type="tel" maxlength="1" oninput="smsInpVerify()">
+      </div>
+      <div style="text-align:center; font-size:11px; color:var(--muted); margin-bottom:12px;">Demo doğrulama kodu: <strong style="color:var(--pur-light);">1234</strong></div>
+      <button class="btn-s" style="margin-bottom:0; padding:8px;" onclick="closeSmsModal()">İptal</button>
+    </div>
+  </div>
+
+  <!-- GİYİLEBİLİR CİHAZ EŞLEŞTİRME MODALİ -->
+  <div class="sms-modal-bg" id="wearableModal" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:999; border-radius:44px; overflow:hidden;">
+    <div style="background:#0f172a; border:1px solid rgba(16, 185, 129, 0.3); border-radius:24px; padding:20px; width:85%; max-width:280px; box-shadow:0 12px 40px rgba(0,0,0,0.5);">
+      <div style="text-align:center; margin-bottom:14px;">
+        <div style="font-size:32px; margin-bottom:4px;">🔌</div>
+        <h3 style="color:#fff; font-size:14px; font-weight:800; margin:0;">Giyilebilir Cihazını Bağla</h3>
+        <p style="font-size:10px; color:var(--muted); margin-top:2px; line-height:1.3;">Y SPORTS ekosistemine bağlanacak biyo-veriyi üreten cihazı seçin.</p>
+      </div>
+      
+      <!-- Device List -->
+      <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;" id="wearableDevicesList">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; cursor:pointer; transition:all 0.2s;" onclick="startWearableSimConnection('Apple Watch', '⌚ Apple Watch')">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:16px;">⌚</span>
+            <span style="color:#fff; font-size:11px; font-weight:700;">Apple Watch</span>
+          </div>
+          <span style="font-size:10px; color:var(--muted);">Bağla →</span>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; cursor:pointer; transition:all 0.2s;" onclick="startWearableSimConnection('WHOOP', '🔴 WHOOP Band')">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:16px;">🔴</span>
+            <span style="color:#fff; font-size:11px; font-weight:700;">WHOOP Band</span>
+          </div>
+          <span style="font-size:10px; color:var(--muted);">Bağla →</span>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; cursor:pointer; transition:all 0.2s;" onclick="startWearableSimConnection('Garmin', '🧭 Garmin Watch')">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:16px;">🧭</span>
+            <span style="color:#fff; font-size:11px; font-weight:700;">Garmin Watch</span>
+          </div>
+          <span style="font-size:10px; color:var(--muted);">Bağla →</span>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; cursor:pointer; transition:all 0.2s;" onclick="startWearableSimConnection('Fitbit', '🔋 Fitbit Tracker')">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:16px;">🔋</span>
+            <span style="color:#fff; font-size:11px; font-weight:700;">Fitbit Tracker</span>
+          </div>
+          <span style="font-size:10px; color:var(--muted);">Bağla →</span>
+        </div>
+      </div>
+      
+      <!-- Simulating Connection Status (Initially hidden) -->
+      <div id="wearableConnectingStatus" style="display:none; text-align:center; padding:16px 0;">
+        <div style="width:24px; height:24px; border:2px solid #10b981; border-top-color:transparent; border-radius:50%; animation:spin 0.8s infinite linear; margin:0 auto 10px;"></div>
+        <div id="wearableConnectingText" style="font-size:11px; font-weight:700; color:#34d399;">Cihaz ile güvenli el sıkışma yapılıyor...</div>
+      </div>
+      
+      <button class="btn-s" style="margin-bottom:0; padding:8px; background:rgba(255,255,255,0.03);" onclick="closeWearableModal()">İptal</button>
+    </div>
+  </div>
+
+</div><!-- /screen-wrap -->
+</div><!-- /phone -->
+</div><!-- /app-frame -->
+
+<!-- TOAST CONTAINER -->
+<div id="toast"></div>
+
+<!-- ============================================
+     JAVASCRIPT CONTROLS
+     ============================================ -->
+<script>
+// 0. DYNAMIC ONBOARDING MODELS
+const BRANCH_REQUIREMENTS = {
+  "Futbol": [
+    { id: "stamina", label: "Max VO2 Kapasitesi", type: "number", placeholder: "Örn: 55" },
+    { id: "sprint", label: "30m Sprint Süresi (Sn)", type: "number", placeholder: "Örn: 4.1" },
+    { id: "position", label: "Mevki", type: "select", options: ["Forvet", "Orta Saha", "Defans", "Kaleci"] }
+  ],
+  "Basketbol": [
+    { id: "vertical", label: "Dikey Sıçrama (Cm)", type: "number", placeholder: "Örn: 85" },
+    { id: "wingspan", label: "Kulaç Uzunluğu (Cm)", type: "number", placeholder: "Örn: 205" }
+  ],
+  "Halter": [
+    { id: "squat", label: "Maksimum Squat (KG)", type: "number", placeholder: "Örn: 180" },
+    { id: "clean", label: "Clean & Jerk (KG)", type: "number", placeholder: "Örn: 140" },
+    { id: "bodyweight", label: "Vücut Ağırlığı Kategorisi", type: "select", options: ["61kg", "73kg", "89kg", "102kg", "+109kg"] }
+  ],
+  "Okçuluk": [
+    { id: "vision", label: "Görme Keskinliği", type: "select", options: ["20/20", "20/15 (Elit)", "Miyop/Astigmat Destekli"] },
+    { id: "focus", label: "Statik Odak Süresi (Dk)", type: "number", placeholder: "Örn: 45" }
+  ],
+  "Yüzme": [
+    { id: "lung", label: "Akciğer Kapasitesi (Litre)", type: "number", placeholder: "Örn: 6.5" },
+    { id: "stroke", label: "Ana Stil", type: "select", options: ["Serbest", "Kelebek", "Sırtüstü", "Kurbağalama"] }
+  ],
+  "E-Spor": [
+    { id: "apm", label: "APM (Dakika Başı İşlem)", type: "number", placeholder: "Örn: 350" },
+    { id: "reaction", label: "Görsel Reaksiyon (Ms)", type: "number", placeholder: "Örn: 150" }
+  ],
+  "Karate": [
+    { id: "flexibility", label: "Esneklik Derecesi", type: "select", options: ["Düşük", "Orta", "Yüksek", "Elit"] },
+    { id: "reaction_time", label: "Reaksiyon Hızı (Ms)", type: "number", placeholder: "Örn: 200" }
+  ],
+  "Jimnastik": [
+    { id: "balance", label: "Statik Denge Süresi (Sn)", type: "number", placeholder: "Örn: 120" },
+    { id: "flex_index", label: "Esneklik İndeksi (1-10)", type: "number", placeholder: "Örn: 9" }
+  ]
+};
+
+function renderDynamicOnboardingFields() {
+  const branch = document.getElementById('onboardingBranchSelect').value;
+  const container = document.getElementById('dynamicOnboardingContainer');
+  const area = document.getElementById('dynamicFieldsArea');
+  
+  if(!branch) {
+    container.style.display = 'none';
+    return;
+  }
+  
+  container.style.display = 'block';
+  let html = '';
+  
+  const reqs = BRANCH_REQUIREMENTS[branch];
+  if(reqs) {
+    reqs.forEach(r => {
+      html += `<div style="text-align:left;">
+        <label style="display:block; font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; margin-bottom:6px;">${r.label}</label>`;
+      
+      if(r.type === 'select') {
+        html += `<select class="inp" id="dyn_${r.id}" style="margin-bottom:0; appearance:none; background:var(--card);"><option value="">Seçiniz...</option>`;
+        r.options.forEach(o => html += `<option value="${o}">${o}</option>`);
+        html += `</select>`;
+      } else {
+        html += `<input class="inp" id="dyn_${r.id}" type="${r.type}" placeholder="${r.placeholder}" style="margin-bottom:0; background:var(--card);">`;
+      }
+      html += `</div>`;
+    });
+  } else {
+    // AI Fallback Generator
+    html += `
+      <div style="background:rgba(99,57,255,0.1); border:1px solid rgba(99,57,255,0.3); border-radius:12px; padding:12px; text-align:left;">
+        <div style="font-size:10px; color:var(--pur-light); font-weight:700; margin-bottom:8px;">🤖 AI Biyo-Metrik Üreteci Devrede</div>
+        <p style="font-size:11px; color:var(--muted); margin-bottom:12px;">Bu branş için özel parametreler Y SPORTS AI tarafından dinamik olarak atanacaktır.</p>
+        <label style="display:block; font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; margin-bottom:6px;">Genel Dayanıklılık Puanı (1-100)</label>
+        <input class="inp" type="number" placeholder="Örn: 85" style="margin-bottom:0; background:var(--card);">
+      </div>
+    `;
+  }
+  
+  area.innerHTML = html;
+}
+
+function completeOnboarding() {
+  t('🚀 Biyo-metriklerin başarıyla analiz edildi!');
+  setTimeout(() => {
+    pg('pg4');
+  }, 1000);
+}
+
+// 1. DATA MODELS
+const ATHLETES_MOB = [
+  { name: 'Yalçın Perik', code: 'YP', branch: '💻 Yazılım', city: 'Samsun', baseVal: 500000, price: 500000, monthlyPay: 35000, sgs: 95, spark: [460,470,480,485,492,500], bg: 'linear-gradient(135deg, var(--blue), var(--purple))', av: '💻', status: '✓ Sponsor Aktif' },
+  { name: 'Ömer Yılmaz', code: 'ÖY', branch: '🥋 Karate', city: 'Samsun', baseVal: 350000, price: 350000, monthlyPay: 25000, sgs: 85, spark: [310,320,332,341,348,350], bg: 'linear-gradient(135deg, #c9a227, #ffd700)', av: '🥋', status: '✓ Sponsor Aktif' },
+  { name: 'Eyüp Perik', code: 'EP', branch: '🥊 Kick Boks', city: 'Samsun', baseVal: 340000, price: 340000, monthlyPay: 24000, sgs: 76, spark: [320,325,328,334,336,340], bg: 'linear-gradient(135deg, #dc2626, #ef4444)', av: '🥊', status: '⏳ Sponsor Aranıyor' },
+  { name: 'Yusra Perik', code: 'YP', branch: '🤸 Jimnastik', city: 'Samsun', baseVal: 200000, price: 200000, monthlyPay: 14000, sgs: 68, spark: [210,208,205,203,201,200], bg: 'linear-gradient(135deg, #06b6d4, #00c88c)', av: '🤸', status: '⏳ Sponsor Aranıyor' },
+  { name: 'Hanene Perik', code: 'HP', branch: '🥋 Karate', city: 'Samsun', baseVal: 175000, price: 175000, monthlyPay: 12000, sgs: 65, spark: [140,148,152,160,171,175], bg: 'linear-gradient(135deg, #a78bff, #6339ff)', av: '🥋', status: '⏳ Sponsor Aranıyor' }
+];
+
+const SPORTS_LIST = [
+  { name: 'Karate', count: 12, color: '#f59e0b' },
+  { name: 'Yüzme', count: 8, color: '#3b82f6' },
+  { name: 'Atletizm', count: 15, color: '#ef4444' },
+  { name: 'Jimnastik', count: 6, color: '#8b5cf6' }
+];
+
+const PDF_RAW_DATA = {
+  s: "JVBERi0xLjQKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2Up...", // Base64 simulated
+  t: "JVBERi0xLjQKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2Up...",
+  sp: "JVBERi0xLjQKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2Up..."
+};
+
+// 2. STATE STACK
+const historyStack = [];
+let currentScreenId = 'pg1';
+let mobUploadCount = 1;
+let bourseSubTab = 0;
+
+// Dynamic Login & Registration States
+let activeLoginRole = 'sporcu';
+let isRegisterMode = false;
+
+function openLoginScreen(role) {
+  activeLoginRole = role;
+  isRegisterMode = false;
+  
+  // Reset fields
+  document.getElementById('regName').value = '';
+  document.getElementById('loginPhone').value = '';
+  document.getElementById('kvkkCheck').checked = false;
+  document.getElementById('registerFields').style.display = 'none';
+  
+  // Set texts according to role
+  const icon = document.getElementById('loginRoleIcon');
+  const title = document.getElementById('loginRoleTitle');
+  const sub = document.getElementById('loginRoleSub');
+  
+  let iconChar = '🏃';
+  let titleText = 'Sporcu Giriş Paneli';
+  let subText = 'Y SPORTS akıllı sporcu sistemine güvenli erişim sağlayın.';
+  
+  if (role === 'sporcu') {
+    iconChar = '🏃';
+    titleText = 'Sporcu Giriş Paneli';
+    subText = 'Lisans, SGD değerleme ve video taahhüt takibi.';
+  } else if (role === 'sponsor') {
+    iconChar = '💼';
+    titleText = 'Sponsor Giriş Paneli';
+    subText = 'Sporcu sponsorluk pazarı, yatırım ve AI eşleşme.';
+  } else if (role === 'federasyon') {
+    iconChar = '🏛️';
+    titleText = 'Federasyon Giriş Paneli';
+    subText = 'Federasyon yetki doğrulama ve lisans tescil kontrolü.';
+  } else if (role === 'kulup') {
+    iconChar = '🛡️';
+    titleText = 'Kulüp Giriş Paneli';
+    subText = 'Spor kulübü üye veri tabanı ve teşvik entegrasyonu.';
+  } else if (role === 'temsilci') {
+    iconChar = '🏙️';
+    titleText = 'İl Temsilcisi Giriş Paneli';
+    subText = 'Akıllı Şehir koordinasyon, denetleme ve spor teşvik fonları.';
+  }
+  
+  icon.textContent = iconChar;
+  title.textContent = titleText;
+  sub.textContent = subText;
+  
+  // Set buttons text
+  document.getElementById('loginScreenTitle').textContent = 'Giriş Yap';
+  document.getElementById('googleLoginBtn').textContent = 'Google ile Giriş Yap';
+  document.getElementById('phoneAuthBtn').textContent = 'Doğrulama Kodu Gönder';
+  document.getElementById('toggleModeText').textContent = 'Hesabınız yok mu?';
+  document.getElementById('toggleModeBtn').textContent = 'Yeni Hesap Oluştur (Kaydol)';
+  
+  pg('pg3');
+}
+
+function toggleLoginMode() {
+  isRegisterMode = !isRegisterMode;
+  
+  const regFields = document.getElementById('registerFields');
+  const screenTitle = document.getElementById('loginScreenTitle');
+  const googleBtn = document.getElementById('googleLoginBtn');
+  const phoneBtn = document.getElementById('phoneAuthBtn');
+  const toggleText = document.getElementById('toggleModeText');
+  const toggleBtn = document.getElementById('toggleModeBtn');
+  const roleTitle = document.getElementById('loginRoleTitle');
+  
+  // Format dynamic role title based on register mode
+  let rolePrefix = 'Sporcu';
+  if (activeLoginRole === 'sponsor') rolePrefix = 'Sponsor';
+  else if (activeLoginRole === 'federasyon') rolePrefix = 'Federasyon';
+  else if (activeLoginRole === 'kulup') rolePrefix = 'Kulüp';
+  else if (activeLoginRole === 'temsilci') rolePrefix = 'İl Temsilcisi';
+
+  if (isRegisterMode) {
+    regFields.style.display = 'block';
+    screenTitle.textContent = 'Yeni Kayıt Ol';
+    roleTitle.textContent = rolePrefix + ' Üye Kayıt Paneli';
+    googleBtn.textContent = 'Google ile Kayıt Ol';
+    phoneBtn.textContent = 'Kayıt Ol ve Doğrula';
+    toggleText.textContent = 'Zaten hesabınız var mı?';
+    toggleBtn.textContent = 'Giriş Yapın';
+  } else {
+    regFields.style.display = 'none';
+    screenTitle.textContent = 'Giriş Yap';
+    roleTitle.textContent = rolePrefix + ' Giriş Paneli';
+    googleBtn.textContent = 'Google ile Giriş Yap';
+    phoneBtn.textContent = 'Doğrulama Kodu Gönder';
+    toggleText.textContent = 'Hesabınız yok mu?';
+    toggleBtn.textContent = 'Yeni Hesap Oluştur (Kaydol)';
+  }
+}
+
+function triggerGoogleAuth() {
+  // Check KVKK Checkbox
+  if (!document.getElementById('kvkkCheck').checked) {
+    t('⚠️ Giriş yapmak için KVKK Aydınlatma Metnini onaylamanız hukuken mecburidir.');
+    return;
+  }
+  
+  if (isRegisterMode) {
+    const name = document.getElementById('regName').value.trim();
+    if (!name) {
+      t('⚠️ Lütfen Ad Soyad bilginizi eksiksiz yazın.');
+      return;
+    }
+  }
+  
+  // Determine target screen based on activeLoginRole
+  let target = 'pgOnboarding';
+  if (activeLoginRole === 'sporcu') target = 'pgOnboarding';
+  else if (activeLoginRole === 'sponsor') target = 'pg9';
+  else if (activeLoginRole === 'federasyon') target = 'pg12';
+  else if (activeLoginRole === 'kulup') target = 'pg12';
+  else if (activeLoginRole === 'temsilci') target = 'pg12';
+  
+  openGoogleModal(activeLoginRole, target);
+}
+
+function triggerPhoneAuth() {
+  // Check KVKK Checkbox
+  if (!document.getElementById('kvkkCheck').checked) {
+    t('⚠️ İşleme devam etmek için KVKK Açık Rıza Beyanını onaylamanız gerekmektedir.');
+    return;
+  }
+  
+  const phone = document.getElementById('loginPhone').value.trim();
+  if (phone.length < 10) {
+    t('⚠️ Lütfen geçerli bir telefon numarası girin.');
+    return;
+  }
+  
+  if (isRegisterMode) {
+    const name = document.getElementById('regName').value.trim();
+    if (!name) {
+      t('⚠️ Lütfen Ad Soyad giriniz.');
+      return;
+    }
+  }
+
+  // Determine target screen based on activeLoginRole
+  let target = 'pgOnboarding';
+  if (activeLoginRole === 'sporcu') target = 'pgOnboarding';
+  else if (activeLoginRole === 'sponsor') target = 'pg9';
+  else if (activeLoginRole === 'federasyon') target = 'pg12';
+  else if (activeLoginRole === 'kulup') target = 'pg12';
+  else if (activeLoginRole === 'temsilci') target = 'pg12';
+  
+  openSmsModal(target);
+}
+
+// 3. TOAST TRIGGER
+let toastTimeout;
+function t(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// 4. ROUTER pg(id)
+function pg(id){
+  const cur = document.querySelector('.screen.active');
+  if(cur && cur.id !== id) historyStack.push(cur.id);
+  
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById(id);
+  if(!target) { t('Ekran bulunamadı: ' + id); return; }
+  
+  target.classList.add('active');
+  currentScreenId = id;
+
+  // Active Bottom Nav Highlight
+  document.querySelectorAll('.bni').forEach(btn => btn.classList.remove('on'));
+  const highlightTab = (tabIdx) => {
+    document.querySelectorAll('.bnav').forEach(nav => {
+      if(nav.children[tabIdx]) nav.children[tabIdx].classList.add('on');
+    });
+  };
+  
+  if(id === 'pg1' || id === 'pg4' || id === 'pg18') highlightTab(0);
+  else if(id === 'pg6') highlightTab(1);
+  else if(id === 'pg7') highlightTab(2);
+  else if(id === 'pg8') highlightTab(3);
+  else if(id === 'pg27') highlightTab(4);
+
+  // Dinamik Belediye & Federasyon & Kulüp Dashboard Yönetimi
+  if (id === 'pg12') {
+    const role = activeLoginRole;
+    const profBrans = document.getElementById('mobProfBrans') ? document.getElementById('mobProfBrans').value.trim() : 'Karate';
+    const profSehir = document.getElementById('mobProfSehir') ? document.getElementById('mobProfSehir').value.trim() : 'Samsun';
+    
+    if (role === 'federasyon') {
+      document.getElementById('temsilciTitle').textContent = '🏛️ Federasyon Paneli';
+      document.getElementById('temsilciSubTop').textContent = `Türkiye ${profBrans} Federasyonu`;
+      document.getElementById('temsilciPortalTitle').textContent = `${profSehir} İl Temsilciliği / Hakem Kurulu`;
+      document.getElementById('temsilciNameBox').innerHTML = `Resmi Denetçi: <strong>Dr. Yalçın Perik</strong>`;
+      
+      document.getElementById('temsilciBannerTitle').textContent = `📜 Resmi Federasyon Entegrasyon Protokolü`;
+      document.getElementById('temsilciBannerSub').textContent = `Y SPORTS lisans doğrulama ve teknik branş katsayı onay yetkisi.`;
+    } else if (role === 'kulup') {
+      document.getElementById('temsilciTitle').textContent = '🛡️ Kulüp Paneli';
+      document.getElementById('temsilciSubTop').textContent = `${profSehir} ${profBrans} İhtisas Kulübü`;
+      document.getElementById('temsilciPortalTitle').textContent = `Altyapı & Yetenek Gelişim Portalı`;
+      document.getElementById('temsilciNameBox').innerHTML = `Kulüp Başkanı: <strong>Eyüp Perik</strong>`;
+      
+      document.getElementById('temsilciBannerTitle').textContent = `📜 Kulüp Altyapı & Tesis Paylaşım Sözleşmesi`;
+      document.getElementById('temsilciBannerSub').textContent = `Yetenek teşvik fonları ve IoT salon doluluk entegrasyonu.`;
+    } else {
+      // temsilci
+      document.getElementById('temsilciTitle').textContent = 'Belediye & İl Temsilcisi';
+      document.getElementById('temsilciSubTop').textContent = `${profSehir} Belediyesi`;
+      document.getElementById('temsilciPortalTitle').textContent = `Akıllı Şehir Spor Portalı`;
+      document.getElementById('temsilciNameBox').innerHTML = `İl Temsilcisi: <strong>Mehmet Perik</strong>`;
+      
+      document.getElementById('temsilciBannerTitle').textContent = `📜 İl Temsilcisi Sorumluluk Sözleşmesi`;
+      document.getElementById('temsilciBannerSub').textContent = `Bölgesel koordinasyon, KVKK denetimi ve yasal onay yetkisi.`;
+    }
+  }
+
+  // Trigger builders
+  if(id === 'pg6') { buildBourseMobile(); buildOrderBookMobile(); recalcSgdSim(); }
+  else if(id === 'pg7') { buildAthletesListMob(); }
+  else if(id === 'pg8') { renderSportsMob(); }
+}
+
+function back(){
+  if(historyStack.length) pg(historyStack.pop());
+  else pg('pg1');
+}
+
+// 5. LIVE SPONSORSHIP MATCH NOTIFICATIONS (TICKER)
+function buildTicker(){
+  const inner = document.getElementById('tickerInner');
+  const notifications = [
+    "✓ Yalçın Perik Yazılım, Ömer Yılmaz'a sponsor oldu! (350.000 TL)",
+    "🆕 Samsun Gıda, Eyüp Perik ile eşleşme görüşmelerine başladı! (340.000 TL)",
+    "🆕 Turkcell Yıldızlar, Yusra Perik'e sponsorluk teklifi iletti! (200.000 TL)",
+    "✓ Vestel, Yalçın Perik'e teknoloji sponsoru oldu! (500.000 TL)"
+  ];
+  let html = '';
+  notifications.forEach(n => {
+    html += `
+      <span class="tick-item">
+        <span style="color:var(--pur-light); font-size:10px;">★</span>
+        <span>${n}</span>
+      </span>
+    `;
+  });
+  inner.innerHTML = html + html;
+}
+
+// 6. SPORCU BOURSE TAB TOGGLE
+function switchBorsaTab(idx){
+  bourseSubTab = idx;
+  document.getElementById('bt0').classList.toggle('active', idx===0);
+  document.getElementById('bt1').classList.toggle('active', idx===1);
+  document.getElementById('borsaTab0').style.display = idx===0 ? 'block' : 'none';
+  document.getElementById('borsaTab1').style.display = idx===1 ? 'block' : 'none';
+}
+
+function buildBourseMobile(){
+  const container = document.getElementById('borsaListMobile');
+  if(!container) return;
+  let html = '';
+  ATHLETES_MOB.forEach(s => {
+    const isAraniyor = s.status.includes('Aranıyor');
+    const monthlyPay = Math.round(s.baseVal / 14); // monthly sponsor payout
+    
+    html += `
+      <div class="athlete-item" style="padding: 10px; background:var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 6px; display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="openTradeModalWithNameMobile('${s.name}')">
+        <div style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;font-size:16px;">${s.av}</div>
+        <div style="flex:1; margin-left:10px; min-width:0;">
+          <div style="font-size:11.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${s.name}</div>
+          <div style="font-size:9px; color:var(--muted); margin-top:2px;">${s.branch} · SGS: ${s.sgs}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:'Bebas Neue'; font-size:16px; color:var(--gold);">${s.baseVal.toLocaleString('tr-TR')} TL</div>
+          <div style="font-size:9px; font-weight:700; color:${isAraniyor?'var(--red)':'var(--green)'};">${s.status}</div>
+        </div>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
+
+function buildOrderBookMobile(){
+  const container = document.getElementById('orderBookMobile');
+  if(!container) return;
+  
+  const offers = [
+    { brand: 'Yalçın Perik Yazılım', athlete: 'Ömer Yılmaz', offer: '350.000 TL', status: '✓ Aktif Sözleşme', color: 'var(--green)' },
+    { brand: 'Samsun Gıda Dağıtım', athlete: 'Eyüp Perik', offer: '340.000 TL', status: '⏳ Yanıt Bekleniyor', color: 'var(--gold2)' },
+    { brand: 'Turkcell Yıldızlar', athlete: 'Yusra Perik', offer: '200.000 TL', status: '⏳ İncelemede', color: 'var(--pur-light)' }
+  ];
+  
+  let html = '';
+  offers.forEach(o => {
+    html += `
+      <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:10px; padding:8px; margin-bottom:6px; font-size:10px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
+          <span style="font-weight:700; color:#fff;">${o.brand}</span>
+          <span style="color:${o.color}; font-weight:700;">${o.status}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; color:var(--muted);">
+          <span>Sporcu: ${o.athlete}</span>
+          <span>Sponsorluk Değeri: ${o.offer}</span>
+        </div>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
+
+// Recalculates SGD dynamic valuation based on sliders
+function recalcSgdSim(){
+  const sgs = parseInt(document.getElementById('slSgs').value);
+  const yas = parseInt(document.getElementById('slYas').value);
+  const medal = parseInt(document.getElementById('slMedal').value);
+  const media = parseInt(document.getElementById('slMedia').value);
+
+  document.getElementById('slSgsVal').textContent = sgs;
+  document.getElementById('slYasVal').textContent = yas;
+  document.getElementById('slMedalVal').textContent = medal;
+  document.getElementById('slMediaVal').textContent = media + 'K';
+
+  // Sgd math formulas
+  const ageFactor = yas <= 12 ? 1.8 : yas <= 18 ? 1.4 : 1.0;
+  const base = (sgs * 2000) + (medal * 5000) + (media * 1200);
+  const finalVal = Math.round(base * ageFactor / 5000) * 5000;
+
+  document.getElementById('slideSgdDisplay').textContent = finalVal.toLocaleString('tr-TR') + ' TL';
+  
+  let label = 'Amatör';
+  if(finalVal >= 500000) label = '★ Elit Yıldız Seviyesi';
+  else if(finalVal >= 250000) label = '★ Olimpiyat Seviyesi';
+  else if(finalVal >= 100000) label = '★ Gelişen Seviye';
+  else label = '★ Temel Seviye';
+  
+  document.getElementById('slideSgdLabel').textContent = label;
+
+
+
+  // Home Screen display update
+  const homeDisplay = document.getElementById('dashValDisplay');
+  if(homeDisplay) homeDisplay.textContent = '₺' + Math.round(finalVal / 1000) + 'K';
+}
+
+// Circular progress commitment updater
+function updateMobileComm(){
+  const circle = document.getElementById('commCircle');
+  const text = document.getElementById('commText');
+  const sub = document.getElementById('commSubText');
+
+  if(!circle) return;
+
+  if(mobUploadCount === 0){
+    circle.setAttribute('stroke-dashoffset', '163.3'); // 0%
+    text.textContent = 'Aylık Video Yükleme: 0 / 2';
+    sub.innerHTML = 'Gecikme Cezası Riski: <span style="color:var(--red); font-weight:700;">%50</span>. Bu ay 2 video yüklenmelidir.';
+  } else if(mobUploadCount === 1){
+    circle.setAttribute('stroke-dashoffset', '81.65'); // 50%
+    text.textContent = 'Aylık Video Yükleme: 1 / 2';
+    sub.innerHTML = 'Gecikme Cezası Riski: %0. Bu ay son video için <strong>5 gününüz</strong> kaldı.';
+  } else {
+    circle.setAttribute('stroke-dashoffset', '0'); // 100%
+    text.textContent = 'Aylık Video Yükleme: 2 / 2 (TAMAMLANDI ✓)';
+    sub.innerHTML = '<span style="color:var(--green); font-weight:700;">Tebrikler!</span> Bu ayki sponsorluk taahhüdünüzü başarıyla tamamladınız.';
+  }
+}
+
+// ----------------------- REVENUE SPLIT -----------------------
+// Calculates the distribution of a total amount based on predefined percentages.
+// Athlete: 75%, Federation: 5%, Representative (İl Temsilcisi): 5%, Club: 5%, Platform: 5%
+function calculateRevenueSplit(totalAmount) {
+  const percentages = {
+    athlete: 0.75,
+    federation: 0.05,
+    representative: 0.05,
+    club: 0.05,
+    platform: 0.05
+  };
+  const split = {};
+  let allocated = 0;
+  for (const [role, pct] of Object.entries(percentages)) {
+    split[role] = Math.round(totalAmount * pct);
+    allocated += split[role];
+  }
+  // Adjust for rounding errors to ensure total == totalAmount
+  const diff = totalAmount - allocated;
+  if (diff !== 0) {
+    // Add the remainder to the athlete share (largest share)
+    split.athlete += diff;
+  }
+  return split;
+}
+
+function showRevenueSplit(amount) {
+  const split = calculateRevenueSplit(amount);
+  const info = `🟢 Sporcu: ${split.athlete.toLocaleString('tr-TR')} TL\n🔵 Federasyon: ${split.federation.toLocaleString('tr-TR')} TL\n🟠 İl Temsilcisi: ${split.representative.toLocaleString('tr-TR')} TL\n🟣 Kulüp: ${split.club.toLocaleString('tr-TR')} TL\n⚪ Platform: ${split.platform.toLocaleString('tr-TR')} TL`;
+  alert(info);
+}
+
+function openTradeModalWithNameMobile(name) {
+  const athlete = ATHLETES_MOB.find(a => a.name === name);
+  if (athlete) {
+    const amount = athlete.baseVal;
+    showRevenueSplit(amount);
+  }
+  // Existing modal opening logic should follow here (omitted for brevity)
+}
+// Duplicate pg function removed (original pg retained)
+function updateMobileComm(){
+  const circle = document.getElementById('commCircle');
+  const text = document.getElementById('commText');
+  const sub = document.getElementById('commSubText');
+
+  if(!circle) return;
+
+  if(mobUploadCount === 0){
+    circle.setAttribute('stroke-dashoffset', '163.3'); // 0%
+    text.textContent = 'Aylık Video Yükleme: 0 / 2';
+    sub.innerHTML = 'Gecikme Cezası Riski: <span style="color:var(--red); font-weight:700;">%50</span>. Bu ay 2 video yüklenmelidir.';
+  } else if(mobUploadCount === 1){
+    circle.setAttribute('stroke-dashoffset', '81.65'); // 50%
+    text.textContent = 'Aylık Video Yükleme: 1 / 2';
+    sub.innerHTML = 'Gecikme Cezası Riski: %0. Bu ay son video için <strong>5 gününüz</strong> kaldı.';
+  } else {
+    circle.setAttribute('stroke-dashoffset', '0'); // 100%
+    text.textContent = 'Aylık Video Yükleme: 2 / 2 (TAMAMLANDI ✓)';
+    sub.innerHTML = '<span style="color:var(--green); font-weight:700;">Tebrikler!</span> Bu ayki sponsorluk taahhüdünüzü başarıyla tamamladınız.';
+    
+    // Also update Sponsor view video counter
+    const sponStatus = document.getElementById('sponVideo2Status');
+    if(sponStatus) sponStatus.innerHTML = '<span>2. Video Durumu:</span><span style="color:var(--green); font-weight:700;">✓ AI Doğrulandı</span>';
+  }
+}
+
+// 7. AI VIDEO SCANNER PROCESS
+function triggerMobileScan(event){
+  const file = event.target.files[0];
+  if(!file) return;
+
+  const widget = document.getElementById('aiScanWidget');
+  const fill = document.getElementById('scanBarFill');
+  const c1 = document.getElementById('scChk1');
+  const c2 = document.getElementById('scChk2');
+  const c3 = document.getElementById('scChk3');
+
+  widget.style.display = 'block';
+  fill.style.width = '0%';
+  c1.innerHTML = '⚪ Süre Doğrulanıyor (Min 15 Saniye)...';
+  c2.innerHTML = '⚪ Sponsor Marka Varlığı Aranıyor...';
+  c3.innerHTML = '⚪ Sonuç: Bekleniyor...';
+
+  setTimeout(() => fill.style.width = '100%', 50);
+
+  // 1. Duration check
+  setTimeout(() => {
+    c1.innerHTML = '<span style="color:var(--green);">✓</span> Süre Doğrulandı (35 Saniye)';
+  }, 900);
+
+  // 2. Brand Detection
+  setTimeout(() => {
+    c2.innerHTML = '<span style="color:var(--green);">✓</span> Sponsor Markası (Yalçın Perik Yazılım) Tespit Edildi';
+  }, 1800);
+
+  // 3. Finalization
+  setTimeout(() => {
+    c3.innerHTML = '<span style="color:var(--green); font-weight:700;">✓ AI Taahhüt Onayı: BAŞARILI</span>';
+    t('📹 Video başarıyla yüklendi ve AI tarafından doğrulandı! ✓');
+
+    // Add to video listing in pg18
+    const grid = document.getElementById('mobileVideoGrid');
+    grid.innerHTML += `
+      <div class="card" style="overflow:hidden;padding:0;margin-bottom:10px;" onclick="t('Video oynatılıyor...')">
+        <div style="height:110px;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:36px;position:relative;">💪<div style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.75);color:#fff;font-size:10px;padding:2px 7px;border-radius:6px;font-weight:700;">0:35</div><div style="position:absolute;top:8px;left:8px;background:rgba(0,200,140,.9);border-radius:6px;padding:2px 8px;font-size:9px;font-weight:700;color:#fff;">AI ONAYLANDI ✓</div></div>
+        <div style="padding:10px 12px;"><div style="color:#fff;font-size:12px;font-weight:700;">Sponsorluk Katılım ve Tanıtım Seansı</div><div style="display:flex;gap:8px;margin-top:4px;"><span style="color:var(--muted);font-size:10px;">Bugün</span><span style="color:var(--muted);font-size:10px;">👁 Canlı</span></div></div>
+      </div>
+    `;
+
+    mobUploadCount = 2;
+    updateMobileComm();
+  }, 2700);
+}
+
+// 8. BOURSE TRADE MODALS MOB
+function openTradeModalMobile(){
+  document.getElementById('tradeModalMobile').classList.add('op');
+  mobModalTotalUpdate();
+}
+function openTradeModalWithNameMobile(name){
+  const select = document.getElementById('mSelectAthlete');
+  for(let i=0; i<select.options.length; i++){
+    if(select.options[i].text.includes(name)){
+      select.selectedIndex = i;
+      break;
+    }
+  }
+  mobModalPriceUpdate(select.value);
+  openTradeModalMobile();
+}
+function closeTradeModalMobile(){
+  document.getElementById('tradeModalMobile').classList.remove('op');
+}
+function mobModalPriceUpdate(val){
+  let price = 350000;
+  if(val === 'Yalçın') price = 500000;
+  else if(val === 'Ömer') price = 350000;
+  else if(val === 'Eyüp') price = 340000;
+  else if(val === 'Yusra') price = 200000;
+  else if(val === 'Hanen') price = 175000;
+  document.getElementById('mModalBirimFiyat').textContent = price.toLocaleString('tr-TR') + ' TL';
+  mobModalTotalUpdate();
+}
+function mobModalTotalUpdate(){
+  const selectVal = document.getElementById('mSelectAthlete').value;
+  let price = 350000;
+  if(selectVal === 'Yalçın') price = 500000;
+  else if(selectVal === 'Ömer') price = 350000;
+  else if(selectVal === 'Eyüp') price = 340000;
+  else if(selectVal === 'Yusra') price = 200000;
+  else if(selectVal === 'Hanen') price = 175000;
+
+  const monthly = Math.round(price / 14);
+  document.getElementById('mModalTotalSum').textContent = monthly.toLocaleString('tr-TR') + ' TL/ay';
+}
+function executeTradeMob(){
+  const select = document.getElementById('mSelectAthlete');
+  const name = select.options[select.selectedIndex].text.split('(')[0].trim();
+  const val = select.value;
+  let price = 350000;
+  if(val === 'Yalçın') price = 500000;
+  else if(val === 'Ömer') price = 350000;
+  else if(val === 'Eyüp') price = 340000;
+  else if(val === 'Yusra') price = 200000;
+  else if(val === 'Hanen') price = 175000;
+
+  t(`✓ ${name} için ${price.toLocaleString('tr-TR')} TL değerli sponsorluk anlaşması başlatıldı ve teklif gönderildi!`);
+  closeTradeModalMobile();
+}
+
+// 9. GOOGLE LOGIN MOBILE
+let _gTarget = 'pg4';
+function openGoogleModal(userType, target){
+  _gTarget = target;
+  document.getElementById('googleModal').classList.add('show');
+}
+function closeGoogleModal(){
+  document.getElementById('googleModal').classList.remove('show');
+}
+function selectGoogleAccMob(email){
+  closeGoogleModal();
+  t('Hesap doğrulandı: ' + email);
+  setTimeout(() => pg(_gTarget), 500);
+}
+
+// 10. SMS DOĞRULAMA MOB
+let _sTarget = 'pg4';
+function openSmsModal(target){
+  _sTarget = target;
+  document.getElementById('smsPhoneLabel').textContent = 'Kodu Girin: 1234';
+  ['s1', 's2', 's3', 's4'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('smsModal').classList.add('show');
+  setTimeout(() => document.getElementById('s1').focus(), 150);
+}
+function closeSmsModal(){
+  document.getElementById('smsModal').classList.remove('show');
+}
+function smsInpNext(el, nextId){
+  if(el.value.length === 1){
+    document.getElementById(nextId).focus();
+  }
+}
+function smsInpVerify(){
+  const code = ['s1', 's2', 's3', 's4'].map(id => document.getElementById(id).value).join('');
+  if(code === '1234'){
+    closeSmsModal();
+    t('✓ Telefon doğrulandı!');
+    setTimeout(() => pg(_sTarget), 500);
+  } else {
+    t('Hatalı kod. 1234 yazın.');
+  }
+}
+
+// 11. PROFILE SETTINGS
+function saveProfileMob(){
+  const ad = document.getElementById('mobProfAd').value;
+  const soyad = document.getElementById('mobProfSoyad').value;
+  const sehir = document.getElementById('mobProfSehir').value;
+  const brans = document.getElementById('mobProfBrans').value;
+  const yas = document.getElementById('mobProfYas').value;
+
+  t('✓ Profil kaydedildi!');
+  pg('pg4');
+}
+
+function simProfileImageMob(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('mobProfilePic').innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+    t('✓ Profil resmi güncellendi!');
+  };
+  reader.readAsDataURL(file);
+}
+
+// 12. GEOLOCATION POSITIONER
+function openMaps(){
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(pos => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
+        .then(r => r.json())
+        .then(d => {
+          const city = d.address.city || d.address.town || d.address.state || 'Samsun';
+          document.getElementById('cityName').textContent = city;
+          t('📍 Konum güncellendi: ' + city);
+        }).catch(() => {});
+    });
+  }
+}
+
+// 13. PDF SIM DOWNLOADER
+function G20PDF(type){
+  t('📄 PDF hazırlanıyor ve indiriliyor...');
+  setTimeout(() => {
+    const link = document.createElement('a');
+    link.href = 'data:application/pdf;base64,' + PDF_RAW_DATA.s;
+    link.download = type==='sp' ? 'Y_SPORTS_Sponsor_Sözleşmesi.pdf' : 'Y_SPORTS_Temsilci_Sözleşmesi.pdf';
+    link.click();
+    t('✓ Sözleşme başarıyla indirildi!');
+  }, 1000);
+}
+
+// 15. DYNAMIC TURKEY SPORTS BRANCHES (63 BRANŞ) LIST & CONTROLLER
+const CATS_MOB = [
+  { id:'bireysel', icon:'🏅', label:'Bireysel Sporlar', cls:'bireysel', sports:[
+    {e:'🏹',n:'Okçuluk'},{e:'🧭',n:'Oryantiring'},{e:'🏃',n:'Atletizm'},
+    {e:'🏸',n:'Badminton'},{e:'🥊',n:'Boks'},{e:'🤸',n:'Cimnastik'},
+    {e:'⚔️',n:'Eskrim'},{e:'⛳',n:'Golf'},{e:'🤼',n:'Güreş'},
+    {e:'🏋️',n:'Halter'},{e:'🥋',n:'Judo'},{e:'🥋',n:'Karate'},
+    {e:'🦵',n:'Kick Boks'},{e:'🧘',n:'Muay Thai'},{e:'🏓',n:'Masa Tenisi'},
+    {e:'🎾',n:'Tenis'},{e:'🏊',n:'Triatlon'},{e:'💪',n:'Vücut Geliştirme'},
+    {e:'🎯',n:'Pentatlon'},{e:'🔫',n:'Atıcılık'},{e:'🧗',n:'Dağcılık'},
+  ]},
+  { id:'takim', icon:'👥', label:'Takım Sporları', cls:'takim', sports:[
+    {e:'🏀',n:'Basketbol'},{e:'🏐',n:'Voleybol'},{e:'🤾',n:'Hentbol'},
+    {e:'🏉',n:'Ragbi'},{e:'🤽',n:'Sutopu'},{e:'🏑',n:'Hokey'},
+    {e:'🏒',n:'Buz Hokeyi'},
+  ]},
+  { id:'su', icon:'🌊', label:'Su & Deniz Sporları', cls:'su', sports:[
+    {e:'🏊',n:'Yüzme'},{e:'🤿',n:'Sualtı'},
+    {e:'🚣',n:'Kürek'},{e:'🛶',n:'Kano'},{e:'⛵',n:'Yelken'},
+  ]},
+  { id:'motor', icon:'🚗', label:'Motor Sporları', cls:'motor', sports:[
+    {e:'🏎️',n:'Otomobil'},{e:'🏍️',n:'Motorsiklet'},
+  ]},
+  { id:'kis', icon:'❄️', label:'Kış & Buz Sporları', cls:'kis', sports:[
+    {e:'⛷️',n:'Kayak'},{e:'⛸️',n:'Buz Pateni'},{e:'🥌',n:'Curling'},
+  ]},
+  { id:'geleneksel', icon:'🏹', label:'Geleneksel Sporlar', cls:'geleneksel', sports:[
+    {e:'🏹',n:'Geleneksel Okçuluk'},{e:'🐎',n:'Atlı Sporlar'},
+    {e:'🤼',n:'Karakucak Güreşi'},{e:'💃',n:'Halk Oyunları'},
+    {e:'🎽',n:'Geleneksel Sporlar'},
+  ]},
+  { id:'wushu', icon:'🥋', label:'Dövüş Sanatları', cls:'wushu', sports:[
+    {e:'🥋',n:'Taekwondo'},{e:'🥋',n:'Wushu Kungfu'},
+  ]},
+  { id:'engelli', icon:'♿', label:'Engelli Sporları', cls:'engelli', sports:[
+    {e:'♿',n:'Bedensel Engelliler'},{e:'👁️',n:'Görme Engelliler'},
+    {e:'👂',n:'İşitme Engelliler'},{e:'⭐',n:'Özel Sporcular'},
+  ]},
+  { id:'diger', icon:'🎯', label:'Diğer & Gelişen', cls:'diger', sports:[
+    {e:'🎮',n:'E-Spor'},{e:'🛹',n:'Kaykay'},{e:'🪂',n:'Hava Sporları'},
+    {e:'🧭',n:'İzcilik'},{e:'💃',n:'Dans'},{e:'🎳',n:'Bocce Bowling'},
+    {e:'🎱',n:'Bilardo'},{e:'🏇',n:'Binicilik'},{e:'🚴',n:'Bisiklet'},
+    {e:'♟️',n:'Satranç'},{e:'🎓',n:'Üniversite Sporları'},{e:'🤝',n:'Herkes İçin Spor'},
+    {e:'🃏',n:'Briç'},{e:'🏊',n:'Gelişen Branşlar'},
+  ]},
+];
+
+let openCatsMob = new Set(['bireysel']);
+let searchSportsQ = '';
+
+function renderSportsMob(){
+  const container = document.getElementById('sportsListMobContainer');
+  if(!container) return;
+  
+  const q = searchSportsQ.toLowerCase();
+  let html = '';
+  
+  CATS_MOB.forEach(cat => {
+    const filtered = q ? cat.sports.filter(s => s.n.toLowerCase().includes(q)) : cat.sports;
+    if(!filtered.length) return;
+    
+    const isOpen = openCatsMob.has(cat.id) || q.length > 0;
+    
+    html += `
+      <div class="cat-section" style="margin-bottom:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:12px; padding:10px 12px; cursor:pointer;" onclick="toggleCatMob('${cat.id}')">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:16px;">${cat.icon}</span>
+            <span style="font-size:12.5px; font-weight:700; color:#fff;">${cat.label}</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="background:rgba(99,57,255,0.15); border-radius:10px; padding:2px 8px; font-size:9.5px; color:var(--pur-light); font-weight:700;">${filtered.length}</span>
+            <span style="color:var(--dim); font-size:12px; transform:${isOpen?'rotate(90deg)':'rotate(0deg)'}; transition:transform 0.2s; display:inline-block;">›</span>
+          </div>
+        </div>
+    `;
+    
+    if(isOpen){
+      html += `
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-top:6px;">
+      `;
+      filtered.forEach(s => {
+        html += `
+          <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:8px 4px; text-align:center; cursor:pointer; transition:transform 0.1s;" onclick="selectBranchMob('${s.n}')">
+            <div style="font-size:18px; margin-bottom:3px;">${s.e}</div>
+            <div style="font-size:9.5px; color:#c8d8ff; font-weight:600; line-height:1.2;">${s.n}</div>
+          </div>
+        `;
+      });
+      html += `</div>`;
+    }
+    
+    html += `</div>`;
+  });
+  
+  container.innerHTML = html;
+}
+
+function toggleCatMob(id){
+  if(openCatsMob.has(id)) openCatsMob.delete(id);
+  else openCatsMob.add(id);
+  renderSportsMob();
+}
+
+function filterSportsMob(val){
+  searchSportsQ = val;
+  renderSportsMob();
+}
+
+// 64 Spor Dalı İçin Özel Nitelik Veritabanı ve Akıllı Üreteç
+function getBranchSpecs(branchName) {
+  // Popüler olimpik ve ulusal branşların el yapımı premium tanımlamaları
+  const customSpecs = {
+    'Okçuluk': {
+      olimpik: true,
+      pop: 88,
+      butce: 180000,
+      reqs: ['Odak & Konsantrasyon', 'Zihinsel İstikrar', 'Üst Vücut Gücü'],
+      lic: 'Resmi TOF Okçuluk Lisansı'
+    },
+    'Atletizm': {
+      olimpik: true,
+      pop: 95,
+      butce: 250000,
+      reqs: ['Hız & Patlayıcı Güç', 'Kas Dayanıklılığı', 'Kardiyovasküler Kapasite'],
+      lic: 'TAF Atletizm Sporcu Lisansı'
+    },
+    'Boks': {
+      olimpik: true,
+      pop: 91,
+      butce: 200000,
+      reqs: ['Refleks & Reaksiyon', 'Kondisyon', 'Taktik Zeka'],
+      lic: 'Türkiye Boks Federasyonu Lisansı'
+    },
+    'Karate': {
+      olimpik: false,
+      pop: 89,
+      butce: 160000,
+      reqs: ['Esneklik & Denge', 'Disiplin & Odak', 'Hızlı Reaksiyon'],
+      lic: 'TKF Karate-Do Sporcu Lisansı'
+    },
+    'Tenis': {
+      olimpik: true,
+      pop: 94,
+      butce: 240000,
+      reqs: ['Çeviklik & Koordinasyon', 'El-Göz Koordinasyonu', 'Aerobik Güç'],
+      lic: 'TTF Tenis Oyuncu Lisansı'
+    },
+    'Basketbol': {
+      olimpik: true,
+      pop: 96,
+      butce: 220000,
+      reqs: ['Dikey Sıçrama & Güç', 'Takım Taktik Bilgisi', 'El-Göz Koordinasyonu'],
+      lic: 'TBF Altyapı Sporcu Lisansı'
+    },
+    'Voleybol': {
+      olimpik: true,
+      pop: 97,
+      butce: 230000,
+      reqs: ['Reaksiyon Hızı', 'Esneklik & Sıçrama', 'Takım Uyumu'],
+      lic: 'TVF Resmi Sporcu Lisansı'
+    },
+    'Yüzme': {
+      olimpik: true,
+      pop: 93,
+      butce: 210000,
+      reqs: ['Tüm Vücut Kondisyonu', 'Akciğer Kapasitesi', 'Kas Dayanıklılığı'],
+      lic: 'TYF Yüzme Sporcu Vizeli Lisansı'
+    },
+    'E-Spor': {
+      olimpik: false,
+      pop: 92,
+      butce: 150000,
+      reqs: ['APM (Reaksiyon Hızı)', 'Stratejik Planlama', 'Bilişsel Odak'],
+      lic: 'TÜSFED Dijital Sporcu Lisansı'
+    },
+    'Satranç': {
+      olimpik: false,
+      pop: 85,
+      butce: 110000,
+      reqs: ['Derin Hesaplama', 'Zihinsel Dayanıklılık', 'Stratejik Öngörü'],
+      lic: 'TSF Resmi Satranç Sporcu Lisansı'
+    }
+  };
+
+  // Eğer branş özel olarak tanımlanmışsa onu dön
+  if (customSpecs[branchName]) {
+    return customSpecs[branchName];
+  }
+
+  // Diğer branşlar için deterministik akıllı üreteç (Branş isminin hash'ine göre)
+  let hash = 0;
+  for (let i = 0; i < branchName.length; i++) {
+    hash = branchName.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  hash = Math.abs(hash);
+
+  const isOlimpik = (hash % 3) !== 0;
+  const popularity = 70 + (hash % 23);
+  const budget = Math.round((45000 + (hash % 13) * 10000) / 5000) * 5000;
+
+  const reqPool = [
+    'Dayanıklılık', 'Reaksiyon Hızı', 'Kondisyon', 'Odak & Sabır', 
+    'Esneklik', 'Çeviklik', 'Denge & Stabilite', 'Taktik Zeka', 
+    'Stratejik Düşünce', 'El-Göz Koordinasyonu', 'Patlayıcı Güç',
+    'Akciğer Kapasitesi', 'Bilişsel Odak', 'Zihinsel Dayanıklılık'
+  ];
+  const reqs = [];
+  const reqIdx1 = hash % reqPool.length;
+  const reqIdx2 = (hash + 5) % reqPool.length;
+  const reqIdx3 = (hash + 11) % reqPool.length;
+  reqs.push(reqPool[reqIdx1]);
+  if (reqIdx2 !== reqIdx1) reqs.push(reqPool[reqIdx2]);
+  if (reqIdx3 !== reqIdx1 && reqIdx3 !== reqIdx2 && reqs.length < 3) reqs.push(reqPool[reqIdx3]);
+
+  const license = `Türkiye ${branchName} Federasyonu Resmi Lisansı`;
+
+  return {
+    olimpik: isOlimpik,
+    pop: popularity,
+    butce: budget,
+    reqs: reqs,
+    lic: license
+  };
+}
+
+function selectBranchMob(branchName){
+  document.getElementById('sportsSelectedAthletesContainer').style.display = 'block';
+  document.getElementById('selBrTitle').textContent = `🏃 ${branchName} Branşındaki Sporcular`;
+  
+  // Fetch branch specs
+  const specs = getBranchSpecs(branchName);
+  
+  // Fill specifications card
+  document.getElementById('brSpecName').textContent = `📊 ${branchName} Branş Analizi`;
+  
+  const budgetEl = document.getElementById('brSpecBudget');
+  budgetEl.textContent = '₺' + specs.butce.toLocaleString('tr-TR');
+  
+  const olimpikBadge = document.getElementById('brSpecOlimpikBadge');
+  if(specs.olimpik) {
+    olimpikBadge.textContent = '🏅 OLİMPİK BRANŞ';
+    olimpikBadge.style.background = 'rgba(59,130,246,0.15)';
+    olimpikBadge.style.color = '#60a5fa';
+    olimpikBadge.style.border = '1px solid rgba(59,130,246,0.3)';
+  } else {
+    olimpikBadge.textContent = '🎗️ ULUSAL BRANŞ';
+    olimpikBadge.style.background = 'rgba(192,132,252,0.15)';
+    olimpikBadge.style.color = '#c084fc';
+    olimpikBadge.style.border = '1px solid rgba(192,132,252,0.3)';
+  }
+  
+  document.getElementById('brSpecLicence').textContent = specs.lic;
+  document.getElementById('brSpecPopVal').textContent = `%${specs.pop}`;
+  document.getElementById('brSpecPopBar').style.width = `${specs.pop}%`;
+  
+  // Render requirements badges
+  const reqsContainer = document.getElementById('brSpecReqs');
+  let reqsHtml = '';
+  specs.reqs.forEach(req => {
+    reqsHtml += `<span class="tag tag-blue" style="margin: 0; padding: 2px 6px; font-size: 8.5px; background: rgba(99,57,255,0.15); color: var(--pur-light); border: 1px solid rgba(99,57,255,0.25);">${req}</span>`;
+  });
+  reqsContainer.innerHTML = reqsHtml;
+
+  // Filter athletes
+  const filtered = ATHLETES_MOB.filter(a => a.branch.includes(branchName));
+  const container = document.getElementById('brAthleteListMob');
+  
+  if(filtered.length === 0){
+    container.innerHTML = `
+      <div style="background:rgba(255,255,255,0.02); border:1px dashed rgba(234, 179, 8, 0.4); border-radius:14px; padding:16px; text-align:center; color:var(--muted); font-size:11px; margin-top:8px;">
+        <span style="font-size:24px; display:block; margin-bottom:6px;">💪</span>
+        <strong style="color:var(--gold); display:block; margin-bottom:4px;">Bu Branşta Yeni Yetenekler Aranıyor!</strong>
+        Samsun Belediyesi Teşvik Fonu desteğiyle (<strong>₺${specs.butce.toLocaleString('tr-TR')} bütçe aktif</strong>) sporcu kaydı yapmak için profil ayarlarından branşınızı güncelleyin.
+      </div>
+    `;
+  } else {
+    let html = '';
+    filtered.forEach(a => {
+      const isAraniyor = a.status.includes('Aranıyor');
+      html += `
+        <div class="athlete-item" style="padding: 10px; background:var(--card); border: 1px solid var(--border); border-radius: 12px; margin-top: 6px; display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="openTradeModalWithNameMobile('${a.name}')">
+          <div style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;font-size:16px;">${a.av}</div>
+          <div style="flex:1; margin-left:10px; min-width:0;">
+            <div style="font-size:11.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${a.name}</div>
+            <div style="font-size:9px; color:var(--muted); margin-top:2px;">SGS: ${a.sgs} · Samsun</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-family:'Bebas Neue'; font-size:16px; color:var(--gold);">${a.baseVal.toLocaleString('tr-TR')} TL</div>
+            <div style="font-size:9px; font-weight:700; color:${isAraniyor?'var(--red)':'var(--green)'};">${a.status}</div>
+          </div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+  }
+  
+  // Scroll to show results
+  setTimeout(() => {
+    document.getElementById('sportsSelectedAthletesContainer').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 100);
+}
+
+function resetBranchFilterMob(){
+  document.getElementById('sportsSelectedAthletesContainer').style.display = 'none';
+  t('Tüm branş filtreleri sıfırlandı.');
+}
+
+// 13.5 ATHLETE DIRECT LIST & SEARCH FOR PG7
+let searchAthleteQ = '';
+function buildAthletesListMob() {
+  const container = document.getElementById('athletesListMobContainer');
+  if(!container) return;
+  
+  const q = searchAthleteQ.toLowerCase().trim();
+  let html = '';
+  
+  const filtered = ATHLETES_MOB.filter(a => {
+    return a.name.toLowerCase().includes(q) || 
+           a.branch.toLowerCase().includes(q) || 
+           a.city.toLowerCase().includes(q);
+  });
+  
+  if(filtered.length === 0) {
+    html = `
+      <div style="background:rgba(255,255,255,0.02); border:1px dashed var(--border); border-radius:14px; padding:24px; text-align:center; color:var(--muted); font-size:11px; margin-top:10px;">
+        🔍 Arama kriterlerine uygun sporcu bulunamadı.
+      </div>
+    `;
+  } else {
+    filtered.forEach(a => {
+      const isAraniyor = a.status.includes('Aranıyor');
+      html += `
+        <div class="athlete-item" style="padding:10px; background:var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 6px; display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="openTradeModalWithNameMobile('${a.name}')">
+          <div style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;font-size:16px;">${a.av}</div>
+          <div style="flex:1; margin-left:10px; min-width:0;">
+            <div style="font-size:11.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+              ${a.name}
+              <span class="tag tag-blue" style="margin:0 0 0 6px; font-size:8px; padding:1px 5px;">SGS: ${a.sgs}</span>
+            </div>
+            <div style="font-size:9px; color:var(--muted); margin-top:2px;">${a.branch} · ${a.city}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-family:'Bebas Neue'; font-size:16px; color:var(--gold);">${a.baseVal.toLocaleString('tr-TR')} TL</div>
+            <div style="font-size:9px; font-weight:700; color:${isAraniyor ? 'var(--red)' : 'var(--green)'}; margin-top:2px;">${a.status}</div>
+          </div>
+        </div>
+      `;
+    });
+  }
+  container.innerHTML = html;
+}
+
+function filterAthletesMob(val) {
+  searchAthleteQ = val;
+  buildAthletesListMob();
+}
+
+// ============================================
+// 15. GİYİLEBİLİR CİHAZ & BİYO-GÜÇ SİMÜLASYONU
+// ============================================
+let isWearableConnected = false;
+let connectedDevice = '';
+let burntCalories = 0;
+let calorieGoal = 1000;
+let isCalorieConverted = false;
+
+function openWearableModal() {
+  const modal = document.getElementById('wearableModal');
+  if(!modal) return;
+  modal.style.display = 'flex';
+  document.getElementById('wearableDevicesList').style.display = 'flex';
+  document.getElementById('wearableConnectingStatus').style.display = 'none';
+}
+
+function closeWearableModal() {
+  const modal = document.getElementById('wearableModal');
+  if(modal) modal.style.display = 'none';
+}
+
+function startWearableSimConnection(deviceKey, deviceLabel) {
+  document.getElementById('wearableDevicesList').style.display = 'none';
+  const statusDiv = document.getElementById('wearableConnectingStatus');
+  statusDiv.style.display = 'block';
+  
+  const textDiv = document.getElementById('wearableConnectingText');
+  textDiv.textContent = `${deviceKey} ile şifreli biyometrik veri kanalı açılıyor...`;
+  
+  setTimeout(() => {
+    textDiv.textContent = `Kalori ve aktif antrenman verileri senkronize ediliyor...`;
+    
+    setTimeout(() => {
+      isWearableConnected = true;
+      connectedDevice = deviceLabel;
+      burntCalories = 0;
+      isCalorieConverted = false;
+      
+      // Update UI
+      document.getElementById('wearableStatusBadge').textContent = 'Eşleşti ✓';
+      document.getElementById('wearableStatusBadge').className = 'tag tag-green';
+      document.getElementById('wearableStatusBadge').style.background = 'rgba(16, 185, 129, 0.15)';
+      document.getElementById('wearableStatusBadge').style.color = '#34d399';
+      document.getElementById('wearableStatusBadge').style.borderColor = 'rgba(16, 185, 129, 0.3)';
+      
+      document.getElementById('wearableConnectArea').style.display = 'none';
+      document.getElementById('wearableTrackingArea').style.display = 'flex';
+      document.getElementById('wearableSimButtons').style.display = 'grid';
+      
+      document.getElementById('connectedDeviceName').textContent = deviceLabel;
+      document.getElementById('burntCaloriesDisplay').textContent = '0';
+      document.getElementById('caloriePercentText').textContent = '%0';
+      document.getElementById('calorieCircle').style.strokeDashoffset = '138.2';
+      
+      document.getElementById('biopowerPrompt').innerHTML = `🔋 Biyo-Güç toplanıyor... Ne kadar çok güç, o kadar iyi kazanç ve madalya! 🏅`;
+      document.getElementById('biopowerPrompt').style.color = '#34d399';
+      document.getElementById('biopowerPrompt').style.borderLeftColor = '#10b981';
+      
+      document.getElementById('btnConvertCalorie').style.opacity = '1';
+      document.getElementById('btnConvertCalorie').disabled = false;
+      
+      closeWearableModal();
+      t(`✓ ${deviceKey} başarıyla entegre edildi!`);
+    }, 1000);
+  }, 1000);
+}
+
+function simulateAntrenmanCalorie() {
+  if(!isWearableConnected) return;
+  if(isCalorieConverted) {
+    t('⚠️ Kaloriler zaten dönüştürüldü! Yeni antrenman seansı için cihazı yeniden bağlayın.');
+    return;
+  }
+  
+  if(burntCalories >= calorieGoal) {
+    t('🔥 Günlük maksimum Biyo-Güç limitine ulaştınız! Gücü hemen dönüştürebilirsiniz.');
+    return;
+  }
+  
+  // Add deterministic random calories
+  const inc = Math.round(150 + Math.random() * 100);
+  burntCalories = Math.min(burntCalories + inc, calorieGoal);
+  
+  // Update UI Calorie display
+  document.getElementById('burntCaloriesDisplay').textContent = burntCalories;
+  
+  const pct = Math.round((burntCalories / calorieGoal) * 100);
+  document.getElementById('caloriePercentText').textContent = `%${pct}`;
+  
+  // Update SVG dashoffset
+  const offset = 138.2 - (138.2 * pct) / 100;
+  document.getElementById('calorieCircle').style.strokeDashoffset = offset;
+  
+  // Update prompts with dynamic messages
+  const promptEl = document.getElementById('biopowerPrompt');
+  if(burntCalories >= calorieGoal) {
+    promptEl.innerHTML = `🌟 <strong>Efsanevi Güç Limiti!</strong> Kazanç ve Madalya Çarpanı Aktif! 🏋️‍♂️`;
+    promptEl.style.color = '#eab308';
+    promptEl.style.borderLeftColor = '#eab308';
+    t('✓ Maksimum enerji hedefine ulaşıldı! Gücü kazanca dönüştürmeye hazırsınız!');
+  } else if(pct >= 80) {
+    promptEl.innerHTML = `⚡ <strong>Hadi biraz daha az kaldı!</strong> Hedefe çok yaklaştın! (Kalan: ${calorieGoal - burntCalories} kcal)`;
+    promptEl.style.color = '#3b82f6';
+    promptEl.style.borderLeftColor = '#3b82f6';
+  } else if(pct >= 50) {
+    promptEl.innerHTML = `🏃 <strong>Güç = Kazanç ve Madalya!</strong> Isınma bitti, tempoyu arttır! 🏅`;
+    promptEl.style.color = '#a78bfa';
+    promptEl.style.borderLeftColor = '#a78bfa';
+  } else {
+    promptEl.innerHTML = `🔋 Biyo-Güç toplanıyor... Ne kadar çok güç, o kadar iyi kazanç ve madalya! 🏅`;
+    promptEl.style.color = '#34d399';
+    promptEl.style.borderLeftColor = '#10b981';
+  }
+  
+  t(`🏃 Antrenman yapıldı: +${inc} kcal yakıldı!`);
+}
+
+function convertCaloriesToEarnings() {
+  if(!isWearableConnected) return;
+  if(isCalorieConverted) return;
+  if(burntCalories === 0) {
+    t('⚠️ Dönüştürecek biyo-güç (kalori) bulunmuyor. Önce biraz antrenman yapmalısınız!');
+    return;
+  }
+  
+  isCalorieConverted = true;
+  
+  // Read dynamic performance variables
+  const sgs = parseInt(document.getElementById('slSgs').value) || 85;
+  const medals = parseInt(document.getElementById('slMedal').value) || 6;
+  const media = parseInt(document.getElementById('slMedia').value) || 42;
+  const videoFactor = mobUploadCount >= 2 ? 1.5 : 1.0;
+  
+  // Active sport branch specific multiplier (Karate = 1.5)
+  const multiplier = 1.5; 
+  
+  // Calculate Performans Değer Artış Puanı (TL/Nakit para içermeyen saf değerleme endeksi)
+  const valueIndexBonus = Math.round(burntCalories * multiplier * (sgs / 100) * (1 + medals * 0.1) * (1 + media / 100) * videoFactor);
+  
+  // Organic Reputational SGS Increase (Maç Puanı Artışı - Max 100)
+  const sgsIncrease = Math.min(10, 100 - sgs);
+  const newSgs = sgs + sgsIncrease;
+  
+  // Update SGS Slider & Recalculate SGD
+  document.getElementById('slSgs').value = newSgs;
+  document.getElementById('slSgsVal').textContent = newSgs;
+  
+  // Recalculate displays
+  recalcSgdSim();
+  buildAthletesListMob();
+  
+  // Disable conversion button
+  const btn = document.getElementById('btnConvertCalorie');
+  btn.style.opacity = '0.5';
+  btn.disabled = true;
+  
+  // Update status badge to "Doğrulandı"
+  document.getElementById('wearableStatusBadge').textContent = 'Doğrulandı ✓';
+  document.getElementById('wearableStatusBadge').style.background = 'rgba(16, 185, 129, 0.15)';
+  document.getElementById('wearableStatusBadge').style.color = '#34d399';
+  document.getElementById('wearableStatusBadge').style.borderColor = 'rgba(16, 185, 129, 0.3)';
+  
+  document.getElementById('biopowerPrompt').innerHTML = `📈 <strong>Performans Değer Endeksi Artışı: +${valueIndexBonus.toLocaleString('tr-TR')} Puan!</strong> Biyo-Güç, Paylaşım Videoları, Maç Puanları ve Sosyal Medya Etkileşimi başarıyla doğrulandı! Maç Puanı (SGS): <strong>+${sgsIncrease} puan eklendi!</strong> 🏅`;
+  document.getElementById('biopowerPrompt').style.color = '#34d399';
+  document.getElementById('biopowerPrompt').style.borderLeftColor = '#10b981';
+  
+  t(`🏆 DEĞER ARTIŞI DOĞRULANDI! \nBiyo-Performans Endeksi: +${valueIndexBonus.toLocaleString('tr-TR')} Puan! \nMaç Puanı (SGS) Artışı: +${sgsIncrease}`);
+}
+
+// ============================================
+// 16. GİZLİLİK DOSTU AI SOSYAL MEDYA TAKİPÇİSİ
+// ============================================
+let isSocialScanned = false;
+
+function triggerSocialLinkScan() {
+  const url = document.getElementById('socialLinkInput').value.trim();
+  if(!url) {
+    t('⚠️ Lütfen doğrulamak istediğiniz Instagram veya TikTok gönderi linkini girin!');
+    return;
+  }
+  
+  if(isSocialScanned) {
+    t('⚠️ Bu paylaşım zaten doğrulandı ve Medya Yönetimi katsayınız güncellendi!');
+    return;
+  }
+  
+  // Reset elements
+  document.getElementById('socialScanStatus').style.display = 'block';
+  document.getElementById('socialScanSpinner').style.display = 'block';
+  document.getElementById('socialScanText').textContent = 'Gönderi Linki Analiz Ediliyor...';
+  
+  const soc1 = document.getElementById('socChk1');
+  const soc2 = document.getElementById('socChk2');
+  const soc3 = document.getElementById('socChk3');
+  const soc4 = document.getElementById('socChk4');
+  
+  soc1.innerHTML = `⚪ Gönderi açık verileri çekiliyor...`;
+  soc1.style.color = 'var(--muted)';
+  soc2.innerHTML = `⚪ @ysports etiket veya hashtag araması...`;
+  soc2.style.color = 'var(--muted)';
+  soc3.innerHTML = `⚪ Vision AI: Logo & Yüz tanıma...`;
+  soc3.style.color = 'var(--muted)';
+  soc4.innerHTML = `⚪ Durum: Bekleniyor...`;
+  soc4.style.color = 'var(--muted)';
+  
+  // Step 1: Fetching metadata
+  setTimeout(() => {
+    soc1.innerHTML = `🟢 Gönderi açık verileri başarıyla çekildi (Gizlilik Dostu) ✓`;
+    soc1.style.color = '#34d399';
+    document.getElementById('socialScanText').textContent = 'AI Metin Analizi Yapılıyor...';
+    
+    // Step 2: NLP search for Y SPORTS tags
+    setTimeout(() => {
+      soc2.innerHTML = `🟢 Açıklamada @ysports etiketi başarıyla doğrulandı ✓`;
+      soc2.style.color = '#34d399';
+      document.getElementById('socialScanText').textContent = 'Vision AI Görsel Tarama Yapılıyor...';
+      
+      // Step 3: Vision AI Logo detection
+      setTimeout(() => {
+        soc3.innerHTML = `🟢 Vision AI: Görseldeki Y SPORTS logoları başarıyla eşleşti ✓`;
+        soc3.style.color = '#34d399';
+        document.getElementById('socialScanText').textContent = 'Doğrulama Sonuçlandırılıyor...';
+        
+        // Step 4: Finalize
+        setTimeout(() => {
+          isSocialScanned = true;
+          document.getElementById('socialScanSpinner').style.display = 'none';
+          document.getElementById('socialScanText').textContent = 'Paylaşım Başarıyla Doğrulandı!';
+          
+          soc4.innerHTML = `🏆 Sonuç: %100 DOĞRULANDI! Medya Yönetimi Puanı Arttı!`;
+          soc4.style.color = '#eab308';
+          
+          // Organic Media Score Increase (+15)
+          const currentMedia = parseInt(document.getElementById('slMedia').value) || 42;
+          const mediaIncrease = Math.min(15, 100 - currentMedia);
+          const newMedia = currentMedia + mediaIncrease;
+          
+          document.getElementById('slMedia').value = newMedia;
+          document.getElementById('slMediaVal').textContent = newMedia + 'K';
+          
+          // Trigger recalculations
+          recalcSgdSim();
+          buildAthletesListMob();
+          
+          t(`🏆 SOSYAL ETKİLEŞİM DOĞRULANDI! \nMedya Yönetimi Puanı: +${mediaIncrease} puan! \nSponsorluk Değer Endeksiniz yükseldi!`);
+        }, 1500);
+      }, 1500);
+    }, 1500);
+  }, 1500);
+}
+
+// ============================================
+// 17. UNICORN SEVİYESİ DİJİTAL SÖZLEŞME MODÜLÜ
+// ============================================
+// ============================================
+// 17. UNICORN SEVİYESİ DİJİTAL SÖZLEŞME MODÜLÜ
+// ============================================
+function getDynamicContractText(role) {
+  // Aktif sporcuyu bul (varsayılan Ömer Yılmaz)
+  let activeAthlete = ATHLETES_MOB[1];
+  
+  // Eğer profil ayarlarında isim güncellendiyse onu yansıt
+  const profAd = document.getElementById('mobProfAd') ? document.getElementById('mobProfAd').value.trim() : 'Ömer';
+  const profSoyad = document.getElementById('mobProfSoyad') ? document.getElementById('mobProfSoyad').value.trim() : 'Yılmaz';
+  const profBrans = document.getElementById('mobProfBrans') ? document.getElementById('mobProfBrans').value.trim() : 'Karate';
+  const profSehir = document.getElementById('mobProfSehir') ? document.getElementById('mobProfSehir').value.trim() : 'Samsun';
+  const profYas = document.getElementById('mobProfYas') ? document.getElementById('mobProfYas').value : '11';
+  
+  const athleteName = profAd + " " + profSoyad;
+  const athleteBranch = profBrans;
+  const athleteCity = profSehir;
+  const athleteAge = profYas;
+  
+  // Branşa uygun federasyon adı
+  const federationName = `Türkiye ${athleteBranch} Federasyonu`;
+  
+  // Branşa uygun kulüp adı
+  const clubName = `Samsun ${athleteBranch} İhtisas Spor Kulübü`;
+  
+  // SGS ve SGD değerleri
+  const sgs = document.getElementById('slSgs') ? document.getElementById('slSgs').value : activeAthlete.sgs;
+  const sgd = document.getElementById('slideSgdDisplay') ? document.getElementById('slideSgdDisplay').textContent : (activeAthlete.baseVal.toLocaleString('tr-TR') + ' TL');
+  
+  // Sponsor adı
+  const sponsorName = "Yalçın Perik Yazılım A.Ş.";
+  
+  if (role === 'sporcu') {
+    return {
+      title: `🏃 ${athleteName} - Profesyonel Sporcu Sözleşmesi`,
+      docType: `YS-${athleteBranch.toUpperCase()}-ATHLETE-AGREEMENT`,
+      docId: `DOCID: YS-2026-${athleteBranch.substring(0,3).toUpperCase()}-ATH-${sgs}S`,
+      text: `<b>Y SPORTS AKILLI ŞEHİR SPORCU GELİŞİM VE SPONSORLUK ANLAŞMASI</b><br><br>
+<b>TARAFLAR:</b><br>
+İşbu sözleşme, bir tarafta Y SPORTS Gelişim ve Değerleme Platformu (bundan böyle "Platform" olarak anılacaktır) ile diğer tarafta biyo-performans verileri doğrulanmış Lisanslı Amatör Sporcu <b>${athleteName}</b> (bundan böyle "Sporcu" olarak anılacaktır) arasında aşağıdaki şartlar çerçevesinde akdedilmiştir.<br><br>
+<b>MADDE 1 - SÖZLEŞMENİN AMACI:</b><br>
+Sözleşmenin amacı, Sporcu'nun Platform üzerindeki doğrulanabilir antrenman, biyo-güç (aktif kalori) ve sosyal etkileşim verilerini Y SPORTS standartlarına uygun olarak sunması karşılığında; Platform tarafından sağlanan AI Akıllı Eşleştirme Sistemi aracılığıyla profesyonel sponsorluk ve belediye altyapı teşvik fonlarına (güncel <b>SGD Piyasa Değeri: ${sgd}</b> ve <b>SGS Gelişim Skoru: ${sgs}</b> kapsamında) erişim hakkı kazanmasıdır.<br><br>
+<b>MADDE 2 - SPORCUNUN YÜKÜMLÜLÜKLERİ:</b><br>
+2.1. <b>Video Taahhüt Koşulu:</b> Sporcu, Platform'un Medya Merkezi modülüne her takvim ayı içerisinde en az 2 (iki) adet doğrulanmış teknik antrenman videosu yüklemekle yükümlüdür. Videolar en az 15 saniye uzunluğunda olmalı ve sponsor marka görünürlük kriterlerini taşımalıdır.<br>
+2.2. <b>Biyo-Veri Doğruluğu:</b> Sporcu, antrenman esnasında giyilebilir cihaz (Apple Watch, WHOOP, Garmin, Fitbit vb.) entegrasyonunu aktif tutarak aktif kalori ve kardiyovasküler performans verilerini eksiksiz Platform'a iletecektir.<br>
+2.3. <b>Sosyal Medya Etkileşimi:</b> Sporcu, herkese açık sosyal medya paylaşımlarında Y SPORTS platformunu ve sponsor logolarını (@ysports) etiketleyerek dijital büyüme ekosistemine katkı sunacaktır.<br>
+2.4. <b>Lisans ve Vize Durumu:</b> Resmi <b>${federationName}</b> vizeli sporcu lisansının güncelliğini korumak sporcunun asli görevidir.<br><br>
+<b>MADDE 3 - CEZAİ VE YAPTIRIM KOŞULLARI:</b><br>
+Video taahhüdünün eksik kalması, sahte veri beyanı veya etiketleme kurallarına uyulmaması durumunda Sporcu'nun SGS (Sporcu Gelişim Skoru) puanı kalıcı olarak düşürülür ve SGD sponsorluk hak ediş katsayısı askıya alınır.<br><br>
+<i>İşbu dijital sözleşme, 6698 sayılı KVKK açık rıza beyanının kabulü ve cihaz eşleştirmesinin tamamlanmasıyla elektronik olarak imza altına alınmış ve yürürlüğe girmiştir.</i>`
+    };
+  }
+  
+  if (role === 'sponsor') {
+    return {
+      title: `💼 ${sponsorName} - Profesyonel Sponsor Sözleşmesi`,
+      docType: `YS-${sponsorName.substring(0,3).toUpperCase()}-SPONSORSHIP-PROT`,
+      docId: `DOCID: YS-2026-SPN-492Y`,
+      text: `<b>Y SPORTS SPONSORLUK VE BİYO-VERİ KULLANIM ANLAŞMASI</b><br><br>
+<b>TARAFLAR:</b><br>
+İşbu sözleşme, bir tarafta Y SPORTS Sporcu Gelişim ve Değerleme Platformu ile diğer tarafta doğrulanmış biyo-performans verilerine karşılık akıllı sponsorluk bütçesini fonlayan <b>${sponsorName}</b> (bundan böyle "Sponsor" olarak anılacaktır) arasında akdedilmiştir.<br><br>
+<b>MADDE 1 - ANLAŞMANIN KAPSAMI:</b><br>
+Sponsor, Platform'un tescilli yapay zeka (AI) eşleştirme algoritmaları tarafından sektörel uyumluluk analizi tamamlanmış olan ve en az %90 eşleşme oranı sağlanan <b>${athleteCity}</b> bölgesindeki lisanslı sporcu <b>${athleteName}</b>'a, belirlenen <b>SGD Değeri: ${sgd}</b> piyasa değer endeksi bazında aylık sponsorluk bütçe desteği sağlamayı taahhüt eder.<br><br>
+<b>MADDE 2 - SPONSORUN HAK VE YÜKÜMLÜLÜKLERİ:</b><br>
+2.1. <b>Bütçe Taahhüdü:</b> Sponsor, atanan sporcunun aylık hak ediş ve biyo-performans ödemelerini zamanında karşılamakla yükümlüdür.<br>
+2.2. <b>Veri Erişim Hakkı:</b> Sponsor, desteklediği sporcunun antrenman yoğunluğu (kalori, nabız, toparlanma) ve doğrulanmış antrenman arşiv videolarını Y SPORTS arayüzü üzerinden canlı ve sınırsız izleme hakkına sahiptir.<br>
+2.3. <b>Pazarlama Hakları:</b> Sponsor, doğrulanmış biyo-verileri ve sporcunun turnuva performans metriklerini kendi kurumsal pazarlama kampanyalarında, Y SPORTS logolarıyla birlikte referans olarak kullanabilir.<br><br>
+<b>MADDE 3 - FİKRİ MÜLKİYET VE GİZLİLİK:</b><br>
+Platform tarafından sunulan biyo-değerleme (SGD) algoritmaları ve sporcu performans tahmin modelleri Y SPORTS'un fikri mülkiyetindedir, üçüncü şahıslarla paylaşılamaz.<br><br>
+<i>İşbu protokol, Sponsor Giriş paneli üzerinden Google ve SMS dijital doğrulamasıyla elektronik ortamda imzalanarak hukuken yürürlüğe girmiştir.</i>`
+    };
+  }
+  
+  if (role === 'federasyon') {
+    return {
+      title: `🏛️ ${federationName} Entegrasyon Protokolü`,
+      docType: `YS-FEDERATION-${athleteBranch.toUpperCase()}-PROT`,
+      docId: `DOCID: YS-2026-FED-${athleteBranch.substring(0,3).toUpperCase()}-112Z`,
+      text: `<b>Y SPORTS SPOR FEDERASYONU LİSANS VE DENETİM PROTOKOLÜ</b><br><br>
+<b>TARAFLAR:</b><br>
+İşbu protokol, Y SPORTS Dijital Sporcu Ekosistemi ile ilgili resmi <b>${federationName}</b> (bundan böyle "Federasyon" olarak anılacaktır) arasında yetenek keşfi ve branş gelişim standartlarını dijitalleştirmek amacıyla akdedilmiştir.<br><br>
+<b>MADDE 1 - İŞBİRLİĞİNİN AMACI:</b><br>
+Federasyon bünyesindeki resmi hakemler ve antrenörler tarafından sporcu <b>${athleteName}</b>'a verilen müsabaka puanlarının ve lisans vizelerinin doğruluğunun Y SPORTS SGS (Sporcu Gelişim Skoru: ${sgs}) veri tabanına pürüzsüz entegrasyonu ve denetimidir.<br><br>
+<b>MADDE 2 - FEDERASYONUN YÜKÜMLÜLÜKLERİ:</b><br>
+2.1. <b>Lisans Doğrulama:</b> Federasyon, sistemde aktif olan sporcuların resmi lisans ve sağlık vizesi durumlarını haftalık periyotlarla dijital veri tabanı üzerinden otomatik doğrulamayı kabul eder.<br>
+2.2. <b>Branş Katsayıları Onayı:</b> Federasyon, <b>${athleteBranch}</b> branşının biyo-performans kalori çarpanlarını ve antrenman zorluk katsayılarını Y SPORTS teknik kuruluna onaylatacaktır.<br>
+2.3. <b>Belediye Teşvik Denetimi:</b> Belediye sporcu teşvik fonlarının branş bazında hakkaniyetli dağılımını izlemek üzere bir denetçi atamayı taahhüt eder.<br><br>
+<b>MADDE 3 - VERİ PAYLAŞIMI:</b><br>
+Tüm veri alışverişi 6698 sayılı KVKK mevzuatına tam uyumlu şekilde, resmi entegrasyon anahtarları (API) üzerinden şifreli olarak gerçekleştirilecektir.<br><br>
+<i>İşbu protokol dijital olarak imzalanmış ve yürürlüğe alınmıştır.</i>`
+    };
+  }
+  
+  if (role === 'kulup') {
+    return {
+      title: `🛡️ ${clubName} Altyapı Sözleşmesi`,
+      docType: `YS-CLUB-${athleteBranch.toUpperCase()}-AGR`,
+      docId: `DOCID: YS-2026-CLB-${athleteBranch.substring(0,3).toUpperCase()}-753W`,
+      text: `<b>Y SPORTS SPOR KULÜBÜ ALTYAPI VE SPORCU PAYLAŞIM SÖZLEŞMESİ</b><br><br>
+<b>TARAFLAR:</b><br>
+İşbu sözleşme, Y SPORTS Akıllı Şehir Sporcu Ekosistemi ile tescilli <b>${clubName}</b> (bundan böyle "Kulüp" olarak anılacaktır) arasında altyapı yetenek yönetimi ve tesis paylaşım esaslarını düzenlemek üzere akdedilmiştir.<br><br>
+<b>MADDE 1 - SÖZLEŞMENİN AMACI:</b><br>
+Kulüp altyapısında yetişen yetenekli amatör sporcuların, özellikle ${athleteBranch} branşındaki <b>${athleteName}</b> gibi sporcuların Y SPORTS platformuna kazandırılması, antrenör gözetiminde SGS puan girişlerinin yapılması ve kulüp spor tesislerinin dijitalleşme sürecinin koordine edilmesidir.<br><br>
+<b>MADDE 2 - KULÜBÜN HAK VE YÜKÜMLÜLÜKLERİ:</b><br>
+2.1. <b>Tesis Dijitalleşme:</b> Kulüp, bünyesindeki antrenman salonlarının anlık doluluk oranlarını Y SPORTS IoT modülleri yardımıyla şeffaf olarak dijitalleştirmeyi kabul eder.<br>
+2.2. <b>Sporcu Hakları ve Teşvik:</b> Altyapı sporcusu <b>${athleteName}</b>'ın sponsorluk (SGD) değer artışlarından elde edilen bölgesel tesis teşvik payları doğrudan kulüp tesislerinin modernizasyonunda kullanılmak üzere bloke edilir.<br>
+2.3. <b>Antrenör Sorumluluğu:</b> Kulüp antrenörleri, sporcuların antrenman disiplinini ve veri girişlerini haftalık olarak doğrulamakla mükelleftir.<br><br>
+<i>İşbu altyapı gelişim sözleşmesi tarafların karşılıklı dijital onayıyla resmiyet kazanmıştır.</i>`
+    };
+  }
+  
+  if (role === 'temsilci') {
+    return {
+      title: `🏙️ İl Temsilcisi Sorumluluk Sözleşmesi`,
+      docType: `YS-REP-REGIONAL-${athleteCity.toUpperCase()}`,
+      docId: `DOCID: YS-2026-REP-${athleteCity.substring(0,3).toUpperCase()}-910A`,
+      text: `<b>Y SPORTS BÖLGESEL KOORDİNATÖRLÜK VE BÖLGE TEMSİLCİSİ SÖZLEŞMESİ</b><br><br>
+<b>TARAFLAR:</b><br>
+İşbu sözleşme, Y SPORTS Yönetim Kurulu ile Samsun Bölge Temsilcisi <b>Mehmet Perik</b> (bundan böyle "İl Temsilcisi" olarak anılacaktır) arasında bölgesel koordinasyon, lisans doğrulama ve tesis denetim yetki/sorumluluklarını belirlemek amacıyla akdedilmiştir.<br><br>
+<b>MADDE 1 - İL TEMSİLCİSİNİN GÖREV VE SORUMLULUKLARI:</b><br>
+İl Temsilcisi, atanmış olduğu coğrafi bölge (<b>${athleteCity} İli ve İlçeleri</b>) sınırları içerisinde aşağıdaki görevleri eksiksiz yerine getirmeyi kabul ve taahhüt eder:<br><br>
+1.1. <b>Bölgesel Tesis Denetimi:</b> ${athleteCity} ili sınırları içerisindeki Atatürk Spor Salonu, Belediye Atletizm Pisti ve Kapalı Olimpik Yüzme Havuzu gibi resmi tesislerin doluluk oranlarını haftalık olarak yerinde denetlemek, veri doğruluğunu sisteme girmek.<br>
+1.2. <b>Resmi Vize ve Lisans Onayı:</b> Bölgesindeki <b>${athleteName}</b> gibi sporcuların sisteme yüklediği resmi <b>${federationName}</b> lisans belgelerini ve sporcu sağlık raporlarını yerinde/dijitalde inceleyerek ilk hukuki onayı (vizeyi) vermek.<br>
+1.3. <b>Belediye Spor Teşvik Fonu Koordinasyonu:</b> Samsun Belediyesi tarafından ayrılan ₺1.850.000 tutarındaki Sporcu Teşvik Fonu'nun sporculara SGS başarı puanlarına göre adil ve KVK mevzuatına uygun dağıtılmasını koordine etmek.<br>
+1.4. <b>Hukuki KVKK Sorumluluğu:</b> Sporcuların ve velilerinin 6698 sayılı Kanun kapsamında hazırlanan *Aydınlatma ve Açık Rıza Metinlerini* manuel veya dijital olarak eksiksiz onaylamalarını denetlemek ve veri güvenliğini bölge bazında sağlamak.<br><br>
+<b>MADDE 2 - YETKİ SINIRLARI VE GİZLİLİK:</b><br>
+İl Temsilcisi, sporculara ait hassas nitelikli biyo-verileri ve kişisel dosyaları Y SPORTS güvenlik politikaları haricinde hiçbir üçüncü parti şahıs veya kurumla paylaşamaz. Aksi takdirde 6698 sayılı Kanun kapsamında doğrudan cezai sorumluluk İl Temsilcisi'ne aittir.<br><br>
+<i>İşbu sorumluluk ve yetkilendirme sözleşmesi dijital imza ve SMS onayıyla tescil edilmiştir.</i>`
+    };
+  }
+}
+
+function showRoleContractScreen() {
+  const role = activeLoginRole || 'sporcu';
+  const template = getDynamicContractText(role);
+  
+  // Set content
+  document.getElementById('sozlesmeTitle').textContent = template.title;
+  document.getElementById('sozlesmeDocType').textContent = template.docType;
+  document.getElementById('sozlesmeDocId').textContent = template.docId;
+  document.getElementById('sozlesmeTextContent').innerHTML = template.text;
+  
+  // Setup correct bottom navigation back transition
+  const bnav = document.getElementById('sozlesmeBnav');
+  let exitHtml = '';
+  if (role === 'sporcu') {
+    exitHtml = `<button class="bni" onclick="pg('pg4')"><span class="bni-icon">🏠</span><span class="bni-lbl">Panel</span></button>`;
+  } else if (role === 'sponsor') {
+    exitHtml = `<button class="bni" onclick="pg('pg9')"><span class="bni-icon">🏠</span><span class="bni-lbl">Panel</span></button>`;
+  } else {
+    exitHtml = `<button class="bni" onclick="pg('pg12')"><span class="bni-icon">🏠</span><span class="bni-lbl">Panel</span></button>`;
+  }
+  bnav.innerHTML = `
+    ${exitHtml}
+    <button class="bni on"><span class="bni-icon">📄</span><span class="bni-lbl">Sözleşme</span></button>
+  `;
+  
+  // Open screen
+  pg('pgSozlesme');
+  t('📄 Dijital sözleşmeniz başarıyla yüklendi!');
+}
+
+// 14. INITIALIZER
+function initApp() {
+  buildTicker();
+  updateMobileComm();
+  recalcSgdSim();
+  renderSportsMob();
+  buildAthletesListMob();
+}
+
+document.addEventListener('DOMContentLoaded', initApp);
+</script>
+</body>
+</html>
