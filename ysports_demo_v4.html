@@ -262,6 +262,36 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 /* ── TRANSITIONS ── */
 #toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(80px);background:rgba(74,63,255,.95);color:#fff;font-size:11.5px;padding:9px 18px;border-radius:20px;transition:transform .25s;z-index:9999;pointer-events:none;white-space:nowrap;}
 #toast.show{transform:translateX(-50%) translateY(0);}
+
+/*  SPLASH SCREEN  */
+#splash-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #090b11;
+  z-index: 999999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.8s ease-in-out, visibility 0.8s;
+}
+#splash-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+.splash-logo {
+  width: 200px;
+  max-width: 70%;
+  object-fit: contain;
+  animation: splashPulse 2s infinite alternate;
+}
+@keyframes splashPulse {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  100% { transform: scale(1.05); opacity: 1; }
+}
 </style>
 </head>
 <body>
@@ -271,6 +301,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 <div class="phone">
 <div class="screen-wrap">
   
+  <!-- SPLASH SCREEN -->
+  <div id="splash-screen">
+    <img src="logo_splash.png" class="splash-logo" alt="Y SPORTS">
+    <div style="margin-top: 20px; font-size: 14px; font-weight: 700; color: var(--gold); letter-spacing: 2px; animation: blink 1.5s infinite;">YÜKLENİYOR...</div>
+  </div>
+
   <div class="notch"><div class="notch-pill"></div></div>
   <div class="statusbar"><span>9:41</span><span>5G 🔋</span></div>
 
@@ -2786,6 +2822,15 @@ function initApp() {
   recalcSgdSim();
   renderSportsMob();
   buildAthletesListMob();
+  
+  // Hide Splash Screen after 2.5 seconds
+  setTimeout(() => {
+    const splash = document.getElementById('splash-screen');
+    if (splash) {
+      splash.classList.add('hidden');
+      setTimeout(() => splash.style.display = 'none', 800); // remove from DOM flow after fade
+    }
+  }, 2500);
 }
 
 // --- 64 BRANŞ KVKK & BİYOMETRİK VERİ TABANI ---
