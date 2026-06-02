@@ -9,7 +9,7 @@ export default function MainScreen({ route }) {
   const uid  = route?.params?.uid  || '';
 
   const [assets] = useAssets([require('../../assets/app_bundle.html')]);
-  const [html, setHtml] = useState('');
+  const [fileUri, setFileUri] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -23,10 +23,16 @@ export default function MainScreen({ route }) {
 
   useEffect(() => {
     if (!assets || !assets[0]) return;
-    const uri = assets[0].localUri || assets[0].uri;
-    FileSystem.readAsStringAsync(uri)
-      .then(content => setHtml(content))
-      .catch(err => setError(err.message));
+    // HTML string olarak geçmek Android Binder 1MB limitini aşıyor (1.4MB dosya).
+    // Dosyayı documentDirectory'e kopyalayıp URI ile yükle.
+    const destUri = FileSystem.documentDirectory + 'app_bundle.html';
+    const srcUri  = assets[0].localUri || assets[0].uri;
+    FileSystem.copyAsync({ from: srcUri, to: destUri })
+      .then(() => setFileUri(destUri))
+      .catch(() => {
+        // Kopyalama başarısız — doğrudan asset URI'yi dene
+        setFileUri(srcUri);
+      });
   }, [assets]);
 
   const injectedJS = `
@@ -47,7 +53,7 @@ export default function MainScreen({ route }) {
     );
   }
 
-  if (!html) {
+  if (!fileUri) {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" color="#1a4fff" />
@@ -59,14 +65,15 @@ export default function MainScreen({ route }) {
   return (
     <View style={styles.container}>
       <WebView
-        source={{ html, baseUrl: '' }}
+        source={{ uri: fileUri }}
         style={styles.webview}
-        injectedJavaScript={injectedJS}
+        injectedJavaScriptBeforeContentLoaded={injectedJS}
         javaScriptEnabled={true}
         domStorageEnabled={true}
         originWhitelist={['*']}
         allowFileAccess={true}
         allowUniversalAccessFromFileURLs={true}
+        allowFileAccessFromFileURLs={true}
         mixedContentMode="always"
         mediaPlaybackRequiresUserAction={false}
         bounces={false}
