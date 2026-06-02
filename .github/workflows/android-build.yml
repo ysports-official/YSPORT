@@ -30,6 +30,12 @@ jobs:
         working-directory: ./ysports-mobile
         run: npm install --legacy-peer-deps
 
+      - name: Fix native package versions for Expo SDK 56 + RN 0.85
+        working-directory: ./ysports-mobile
+        run: |
+          npx expo install react-native-screens react-native-safe-area-context react-native-gesture-handler react-native-webview
+          npm install --legacy-peer-deps
+
       - name: Run Expo Prebuild
         working-directory: ./ysports-mobile
         run: npx expo prebuild --platform android --clean --no-install
