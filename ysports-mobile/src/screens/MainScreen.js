@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ActivityIndicator, Text } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, Text, PermissionsAndroid, Platform } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { useAssets } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
@@ -11,6 +11,15 @@ export default function MainScreen({ route }) {
   const [assets] = useAssets([require('../../assets/app_bundle.html')]);
   const [html, setHtml] = useState('');
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+      ]).catch(() => {});
+    }
+  }, []);
 
   useEffect(() => {
     if (!assets || !assets[0]) return;
@@ -59,6 +68,7 @@ export default function MainScreen({ route }) {
         allowFileAccess={true}
         allowUniversalAccessFromFileURLs={true}
         mixedContentMode="always"
+        mediaPlaybackRequiresUserAction={false}
         bounces={false}
         overScrollMode="never"
         onMessage={() => {}}

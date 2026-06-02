@@ -648,6 +648,15 @@ input:checked + .slider:before { transform: translateX(20px); background-color: 
         <button class="btn-s" style="margin:0;padding:8px;font-size:10px;" onclick="pg('pg6')">💰 Değerim</button>
         <button class="btn-s" style="margin:0;padding:8px;font-size:10px;border-color:rgba(16, 185, 129, 0.3);color:#34d399;" onclick="showRoleContractScreen()">📄 Sözleşmem</button>
       </div>
+      <!-- AI KAMERA HIZLI ERİŞİM -->
+      <button onclick="pg('pg50')" style="margin-top:8px;width:100%;padding:14px 16px;background:linear-gradient(135deg,rgba(26,79,255,0.15),rgba(139,47,255,0.15));border:1px solid rgba(139,47,255,0.4);border-radius:16px;color:#fff;display:flex;align-items:center;gap:10px;cursor:pointer;font-family:inherit;">
+        <div style="width:40px;height:40px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🤖</div>
+        <div style="text-align:left;flex:1;">
+          <div style="font-size:12px;font-weight:800;color:#fff;">AI Kamera — Anlık Performans</div>
+          <div style="font-size:9.5px;color:var(--muted);margin-top:2px;">Vuruş hızı · Kuvvet · SGS puanı · Sponsor video</div>
+        </div>
+        <span style="font-size:18px;color:var(--purple);">→</span>
+      </button>
     
       <!-- AI INSIGHT & QUEST HOOK -->
       <div style="margin-top: 20px; background: linear-gradient(135deg, rgba(30,58,138,0.3), rgba(88,28,135,0.3)); border: 1px solid rgba(139,92,246,0.3); border-radius: 16px; padding: 14px; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
@@ -1775,6 +1784,10 @@ function pg(id){
   else if(id === 'pg7') highlightTab(2);
   else if(id === 'pg8') highlightTab(3);
   else if(id === 'pg27') highlightTab(4);
+  else if(id === 'pg50') highlightTab(1);
+
+  // AI kamera: sayfadan çıkınca durdur
+  if (id !== 'pg50' && typeof _aiRunning !== 'undefined' && _aiRunning) stopAiSession();
 
   // Dinamik Belediye & Federasyon & Kulüp Dashboard Yönetimi
   if (id === 'pg12') {
@@ -3242,6 +3255,241 @@ if (c) {
   c.addEventListener('touchcancel', endDraw);
 }
 
+// ═══════════════════════════════════════════════════════
+// AI KAMERA — MediaPipe Pose + Boks/Spor Performans Analizi
+// ═══════════════════════════════════════════════════════
+let _aiStream = null;
+let _aiRunning = false;
+let _aiAnimFrame = null;
+let _aiCtx = null;
+let _aiPose = null;
+let _aiPoseReady = false;
+let _mpLoaded = false;
+
+// Metrikler
+let _punchCount = 0, _punchCountL = 0, _punchCountR = 0;
+let _maxWristSpeed = 0, _totalWristSpeed = 0, _speedSamples = 0;
+let _prevLW = null, _prevRW = null, _prevFrameTime = null;
+let _punchCooldown = 0;
+let _sessionStart = null;
+let _sessionData = null;
+
+function _aiFormatTime(sec) {
+  const m = Math.floor(sec / 60), s = sec % 60;
+  return m + ':' + (s < 10 ? '0' : '') + s;
+}
+
+function _loadScript(src) {
+  return new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+}
+
+async function _loadMediaPipe() {
+  if (_mpLoaded) return;
+  await _loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js');
+  _mpLoaded = true;
+}
+
+async function _initPose() {
+  await _loadMediaPipe();
+  _aiPose = new window.Pose({
+    locateFile: f => 'https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/' + f
+  });
+  _aiPose.setOptions({ modelComplexity: 0, smoothLandmarks: true, enableSegmentation: false, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
+  _aiPose.onResults(_onPoseResults);
+  await _aiPose.initialize();
+  _aiPoseReady = true;
+}
+
+function _onPoseResults(results) {
+  const canvas = document.getElementById('aiCanvas');
+  if (!canvas || !_aiCtx) return;
+  _aiCtx.clearRect(0, 0, canvas.width, canvas.height);
+  if (!results.poseLandmarks) return;
+
+  const lms = results.poseLandmarks;
+  const W = canvas.width, H = canvas.height;
+
+  // Skeleton
+  const conns = [[11,13],[13,15],[12,14],[14,16],[11,12],[23,24],[11,23],[12,24],[23,25],[25,27],[24,26],[26,28]];
+  _aiCtx.strokeStyle = 'rgba(26,79,255,0.75)';
+  _aiCtx.lineWidth = 2.5;
+  conns.forEach(([a, b]) => {
+    if (lms[a] && lms[b] && lms[a].visibility > 0.4 && lms[b].visibility > 0.4) {
+      _aiCtx.beginPath();
+      _aiCtx.moveTo(lms[a].x * W, lms[a].y * H);
+      _aiCtx.lineTo(lms[b].x * W, lms[b].y * H);
+      _aiCtx.stroke();
+    }
+  });
+
+  // Keypoints
+  [11,12,13,14,15,16,23,24].forEach(i => {
+    if (lms[i] && lms[i].visibility > 0.4) {
+      _aiCtx.beginPath();
+      _aiCtx.arc(lms[i].x * W, lms[i].y * H, i === 15 || i === 16 ? 6 : 4, 0, 2 * Math.PI);
+      _aiCtx.fillStyle = (i === 15 || i === 16) ? '#ffd700' : '#1a4fff';
+      _aiCtx.fill();
+    }
+  });
+
+  // Wrist velocity → punch detection
+  const now = performance.now();
+  const lw = lms[15], rw = lms[16];
+  if (_prevFrameTime && _prevFrameTime > 0) {
+    const dt = Math.max((now - _prevFrameTime) / 1000, 0.001);
+    let speedL = 0, speedR = 0;
+    if (_prevLW && lw && lw.visibility > 0.4) {
+      const dx = (lw.x - _prevLW.x) * W, dy = (lw.y - _prevLW.y) * H;
+      speedL = Math.sqrt(dx * dx + dy * dy) / (H * 0.5) / dt;
+    }
+    if (_prevRW && rw && rw.visibility > 0.4) {
+      const dx = (rw.x - _prevRW.x) * W, dy = (rw.y - _prevRW.y) * H;
+      speedR = Math.sqrt(dx * dx + dy * dy) / (H * 0.5) / dt;
+    }
+    const maxSpd = Math.max(speedL, speedR);
+    if (maxSpd > 0.1) { _totalWristSpeed += maxSpd; _speedSamples++; }
+    if (maxSpd > _maxWristSpeed) _maxWristSpeed = maxSpd;
+
+    // Punch: hız eşiği aşılınca sayım
+    if (_punchCooldown <= 0 && maxSpd > 2.5) {
+      _punchCount++;
+      if (speedL > speedR) _punchCountL++; else _punchCountR++;
+      _punchCooldown = 8;
+      const flash = document.getElementById('aiPunchFlash');
+      if (flash) { flash.style.display = 'block'; setTimeout(() => { flash.style.display = 'none'; }, 110); }
+    }
+    if (_punchCooldown > 0) _punchCooldown--;
+
+    // Canlı metrikler
+    const elapsed = Math.max((Date.now() - _sessionStart) / 1000, 1);
+    const pr = (_punchCount / elapsed).toFixed(1);
+    const forceEst = Math.round(maxSpd * 15);
+    const el = id => document.getElementById(id);
+    if (el('aiPunchRateDisp')) el('aiPunchRateDisp').textContent = pr;
+    if (el('aiSpeedDisp')) el('aiSpeedDisp').textContent = maxSpd.toFixed(1);
+    if (el('aiForceDisp')) el('aiForceDisp').textContent = forceEst;
+  }
+
+  _prevLW = lw ? { x: lw.x, y: lw.y } : _prevLW;
+  _prevRW = rw ? { x: rw.x, y: rw.y } : _prevRW;
+  _prevFrameTime = now;
+}
+
+async function startAiSession() {
+  if (_aiRunning) return;
+  const el = id => document.getElementById(id);
+  el('aiStartBtn').disabled = true;
+  el('aiStartBtn').textContent = '⏳ Yükleniyor...';
+  el('aiStatusBadge').textContent = '📡 Kamera açılıyor...';
+  el('aiResultsPanel').style.display = 'none';
+
+  _punchCount = _punchCountL = _punchCountR = 0;
+  _maxWristSpeed = _totalWristSpeed = _speedSamples = _punchCooldown = 0;
+  _prevLW = _prevRW = _prevFrameTime = null;
+
+  try {
+    _aiStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 640 }, height: { ideal: 480 } },
+      audio: false
+    });
+    const video = el('aiVideo');
+    video.srcObject = _aiStream;
+    await new Promise(res => { video.onloadedmetadata = res; });
+    await video.play();
+
+    const canvas = el('aiCanvas');
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    _aiCtx = canvas.getContext('2d');
+
+    el('aiStatusBadge').textContent = '🧠 MediaPipe yükleniyor...';
+    await _initPose();
+
+    _aiRunning = true;
+    _sessionStart = Date.now();
+    el('aiLiveMetrics').style.display = 'block';
+    el('aiStopBtn').disabled = false;
+    el('aiStopBtn').style.opacity = '1';
+    el('aiStatusBadge').textContent = '🟢 AI Aktif — Hareket Et!';
+
+    const timerInterval = setInterval(() => {
+      if (!_aiRunning) { clearInterval(timerInterval); return; }
+      const sec = Math.floor((Date.now() - _sessionStart) / 1000);
+      const timerEl = el('aiTimer');
+      if (timerEl) timerEl.textContent = _aiFormatTime(sec);
+    }, 1000);
+
+    async function frameLoop() {
+      if (!_aiRunning) return;
+      const v = el('aiVideo');
+      if (_aiPoseReady && _aiPose && v && v.readyState >= 2) {
+        try { await _aiPose.send({ image: v }); } catch(e) {}
+      }
+      _aiAnimFrame = requestAnimationFrame(frameLoop);
+    }
+    frameLoop();
+
+  } catch (err) {
+    el('aiStatusBadge').textContent = '❌ Kamera hatası: ' + (err.message || String(err));
+    el('aiStartBtn').disabled = false;
+    el('aiStartBtn').textContent = '📷 Kamera Başlat';
+  }
+}
+
+function stopAiSession() {
+  if (!_aiRunning && !_aiStream) return;
+  _aiRunning = false;
+  if (_aiAnimFrame) { cancelAnimationFrame(_aiAnimFrame); _aiAnimFrame = null; }
+  if (_aiStream) { _aiStream.getTracks().forEach(t => t.stop()); _aiStream = null; }
+  if (_aiPose) { try { _aiPose.close(); } catch(e){} _aiPose = null; _aiPoseReady = false; }
+
+  const el = id => document.getElementById(id);
+  const video = el('aiVideo');
+  if (video) video.srcObject = null;
+  if (el('aiStartBtn')) { el('aiStartBtn').disabled = false; el('aiStartBtn').textContent = '📷 Kamera Başlat'; }
+  if (el('aiStopBtn')) { el('aiStopBtn').disabled = true; el('aiStopBtn').style.opacity = '0.5'; }
+  if (el('aiStatusBadge')) el('aiStatusBadge').textContent = '✅ Seans Tamamlandı';
+  if (el('aiLiveMetrics')) el('aiLiveMetrics').style.display = 'none';
+
+  const dur = Math.floor((Date.now() - (_sessionStart || Date.now())) / 1000);
+  const avgSpd = _speedSamples > 0 ? (_totalWristSpeed / _speedSamples).toFixed(1) : '0.0';
+  const maxForce = Math.round(_maxWristSpeed * 15);
+  const sgsGain = Math.min(50, Math.floor(_punchCount * 0.5 + _maxWristSpeed * 3));
+  const sport = el('aiSportSelect') ? el('aiSportSelect').value : 'boks';
+  const weakSide = (_punchCountL + _punchCountR) > 0
+    ? (_punchCountL < _punchCountR ? '⚠️ Zayıf Taraf: Sol el — Sol el vuruşlarını geliştir!' : '⚠️ Zayıf Taraf: Sağ el — Sağ el vuruşlarını geliştir!')
+    : '⚠️ Yeterli vuruş verisi yok. Daha aktif hareket gerekiyor.';
+
+  if (el('resPunchCount')) el('resPunchCount').textContent = _punchCount;
+  if (el('resMaxSpeed')) el('resMaxSpeed').textContent = _maxWristSpeed.toFixed(1);
+  if (el('resMaxForce')) el('resMaxForce').textContent = maxForce;
+  if (el('resSgsGain')) el('resSgsGain').textContent = '+' + sgsGain;
+  if (el('resWeakSide')) el('resWeakSide').textContent = weakSide;
+  if (el('aiResultsPanel')) el('aiResultsPanel').style.display = 'block';
+
+  _sessionData = { sport, dur, punchCount: _punchCount, maxSpeed: parseFloat(_maxWristSpeed.toFixed(1)), avgSpeed: parseFloat(avgSpd), maxForce, sgsGain, weakSide, timestamp: new Date().toISOString() };
+}
+
+async function saveAiSession() {
+  if (!_sessionData) return;
+  const uid = window.ysportsNativeUser && window.ysportsNativeUser.uid;
+  if (!uid || !window._db) { t('Önce giriş yapın.'); return; }
+  try {
+    await window._db.collection('sporcular').doc(uid).collection('performans').add(_sessionData);
+    const userRef = window._db.collection('users').doc(uid);
+    const snap = await userRef.get();
+    const cur = (snap.exists && snap.data().sgsPuani) || 50;
+    await userRef.set({ sgsPuani: Math.min(100, cur + _sessionData.sgsGain) }, { merge: true });
+    t('🏆 Kaydedildi! SGS Puanın +' + _sessionData.sgsGain + ' arttı!');
+    document.getElementById('aiResultsPanel').style.display = 'none';
+    _sessionData = null;
+  } catch(err) { t('Kayıt hatası: ' + err.message); }
+}
+
 document.addEventListener('DOMContentLoaded', initApp);
 
 function fillAiProgress() {
@@ -3255,5 +3503,110 @@ function fillAiProgress() {
   }
 }
 </script>
+
+<!-- ══════════════════════════════════════════
+     PG50: AI KAMERA — PERFORMANS ANALİZİ
+     ══════════════════════════════════════════ -->
+<div class="screen" id="pg50">
+  <div class="topbar">
+    <button class="back-btn" onclick="pg('pg4')">‹</button>
+    <div class="tb-title">🤖 AI Performans Analizi</div>
+    <div style="width:32px;"></div>
+  </div>
+
+  <!-- Spor seçici + zamanlayıcı -->
+  <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;background:var(--card);border-bottom:1px solid var(--border);flex-shrink:0;">
+    <select id="aiSportSelect" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid var(--border2);color:#fff;padding:7px 10px;border-radius:10px;font-size:11px;font-family:inherit;">
+      <option value="boks">🥊 Boks</option>
+      <option value="atletizm">🏃 Atletizm</option>
+      <option value="basketbol">🏀 Basketbol</option>
+      <option value="voleybol">🏐 Voleybol</option>
+      <option value="karate">🥋 Karate</option>
+      <option value="tenis">🎾 Tenis</option>
+      <option value="gures">🤼 Güreş</option>
+      <option value="yuzme">🏊 Yüzme</option>
+    </select>
+    <div id="aiTimer" style="font-size:15px;font-weight:900;color:var(--gold);min-width:44px;text-align:right;">0:00</div>
+  </div>
+
+  <!-- Kamera alanı -->
+  <div style="position:relative;background:#000;flex:1;overflow:hidden;min-height:0;">
+    <video id="aiVideo" autoplay muted playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video>
+    <canvas id="aiCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;"></canvas>
+
+    <!-- Durum rozeti -->
+    <div id="aiStatusBadge" style="position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(9,11,17,0.8);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:6px 16px;font-size:10.5px;color:#fff;white-space:nowrap;max-width:92%;text-align:center;">
+      📷 Kamera Başlatmak İçin Aşağıdaki Butona Bas
+    </div>
+
+    <!-- Canlı metrikler (aktif iken görünür) -->
+    <div id="aiLiveMetrics" style="display:none;position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(9,11,17,0.92),transparent);padding:16px 16px 10px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+        <div style="text-align:center;">
+          <div id="aiPunchRateDisp" style="font-size:22px;font-weight:900;color:var(--gold);line-height:1;">0.0</div>
+          <div style="font-size:8px;color:var(--muted);margin-top:2px;">Vuruş / sn</div>
+        </div>
+        <div style="text-align:center;">
+          <div id="aiSpeedDisp" style="font-size:22px;font-weight:900;color:#4ade80;line-height:1;">0.0</div>
+          <div style="font-size:8px;color:var(--muted);margin-top:2px;">Hız (m/s)</div>
+        </div>
+        <div style="text-align:center;">
+          <div id="aiForceDisp" style="font-size:22px;font-weight:900;color:var(--pur-light);line-height:1;">0</div>
+          <div style="font-size:8px;color:var(--muted);margin-top:2px;">Kuvvet (kg)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vuruş flash efekti -->
+    <div id="aiPunchFlash" style="display:none;position:absolute;inset:0;background:rgba(255,200,0,0.18);pointer-events:none;border-radius:0;"></div>
+  </div>
+
+  <!-- Kontrol butonları -->
+  <div style="padding:10px 16px;display:flex;gap:8px;flex-shrink:0;">
+    <button id="aiStartBtn" onclick="startAiSession()" style="flex:1;padding:13px;background:linear-gradient(135deg,var(--blue),var(--purple));border:none;border-radius:14px;color:#fff;font-size:12px;font-weight:800;font-family:inherit;cursor:pointer;">
+      📷 Kamera Başlat
+    </button>
+    <button id="aiStopBtn" onclick="stopAiSession()" disabled style="flex:1;padding:13px;background:rgba(232,69,69,0.15);border:1px solid rgba(232,69,69,0.35);border-radius:14px;color:#e84545;font-size:12px;font-weight:800;font-family:inherit;cursor:pointer;opacity:0.45;">
+      ⏹ Bitir & Kaydet
+    </button>
+  </div>
+
+  <!-- Seans sonuçları -->
+  <div id="aiResultsPanel" style="display:none;margin:0 16px 10px;background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:14px;flex-shrink:0;">
+    <div style="font-size:12px;font-weight:800;color:#fff;margin-bottom:10px;">🏆 Seans Sonuçları</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+      <div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:10px;text-align:center;">
+        <div id="resPunchCount" style="font-size:24px;font-weight:900;color:var(--gold);">0</div>
+        <div style="font-size:9px;color:var(--muted);">Toplam Vuruş</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:10px;text-align:center;">
+        <div id="resMaxSpeed" style="font-size:24px;font-weight:900;color:#4ade80;">0.0</div>
+        <div style="font-size:9px;color:var(--muted);">Maks Hız (m/s)</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:10px;text-align:center;">
+        <div id="resMaxForce" style="font-size:24px;font-weight:900;color:var(--pur-light);">0</div>
+        <div style="font-size:9px;color:var(--muted);">Maks Kuvvet (kg)</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:10px;text-align:center;">
+        <div id="resSgsGain" style="font-size:24px;font-weight:900;color:var(--blue);">+0</div>
+        <div style="font-size:9px;color:var(--muted);">SGS Puanı Kazanımı</div>
+      </div>
+    </div>
+    <div id="resWeakSide" style="background:rgba(232,69,69,0.08);border:1px solid rgba(232,69,69,0.2);border-radius:8px;padding:8px 10px;font-size:10px;color:#f87171;margin-bottom:10px;"></div>
+    <button onclick="saveAiSession()" style="width:100%;padding:11px;background:linear-gradient(135deg,var(--green),#059669);border:none;border-radius:12px;color:#fff;font-size:11px;font-weight:800;font-family:inherit;cursor:pointer;">
+      💾 Firestore'a Kaydet & SGS Güncelle
+    </button>
+  </div>
+
+  <!-- Alt navigasyon -->
+  <div class="bnav">
+    <button class="bni" onclick="pg('pg4')"><span class="bni-icon">🏠</span><span class="bni-lbl">Ana Sayfa</span></button>
+    <button class="bni on"><span class="bni-icon">🤖</span><span class="bni-lbl">AI Analiz</span></button>
+    <button class="bni" onclick="pg('pg6')"><span class="bni-icon">💰</span><span class="bni-lbl">Değerim</span></button>
+    <button class="bni" onclick="pg('pg18')"><span class="bni-icon">🎬</span><span class="bni-lbl">Medya</span></button>
+    <button class="bni" onclick="pg('pg8')"><span class="bni-icon">🏆</span><span class="bni-lbl">Spor Dalları</span></button>
+  </div>
+</div>
+
 </body>
 </html>
