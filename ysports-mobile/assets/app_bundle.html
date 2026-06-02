@@ -3476,11 +3476,14 @@ function stopAiSession() {
 
 async function saveAiSession() {
   if (!_sessionData) return;
-  const uid = window.ysportsNativeUser && window.ysportsNativeUser.uid;
-  if (!uid || !window._db) { t('Önce giriş yapın.'); return; }
+  // UID: önce firebase.auth() kontrol et, yoksa native injection'dan al
+  const fbUser = firebase.auth().currentUser;
+  const uid = (fbUser && fbUser.uid) || (window.ysportsNativeUser && window.ysportsNativeUser.uid);
+  if (!uid) { t('Önce giriş yapın.'); return; }
+  if (!_db)  { t('Veritabanı bağlantısı yok.'); return; }
   try {
-    await window._db.collection('sporcular').doc(uid).collection('performans').add(_sessionData);
-    const userRef = window._db.collection('users').doc(uid);
+    await _db.collection('sporcular').doc(uid).collection('performans').add(_sessionData);
+    const userRef = _db.collection('users').doc(uid);
     const snap = await userRef.get();
     const cur = (snap.exists && snap.data().sgsPuani) || 50;
     await userRef.set({ sgsPuani: Math.min(100, cur + _sessionData.sgsGain) }, { merge: true });
