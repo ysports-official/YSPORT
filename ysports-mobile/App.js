@@ -1,72 +1,54 @@
+import 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import { WebView } from 'react-native-webview';
-import { StatusBar } from 'expo-status-bar';
-import { useAssets } from 'expo-asset';
-import * as FileSystem from 'expo-file-system/legacy';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getApp } from 'firebase/app';
+
+import './src/services/FirebaseConfig';
+
+import SplashScreen     from './src/screens/SplashScreen';
+import RoleSelectScreen from './src/screens/RoleSelectScreen';
+import LoginScreen      from './src/screens/LoginScreen';
+import MainScreen       from './src/screens/MainScreen';
+
+const Stack = createStackNavigator();
 
 export default function App() {
-  const [assets] = useAssets([require('./assets/app_bundle.html')]);
-  const [htmlContent, setHtmlContent] = useState('');
-  const [error, setError] = useState(null);
+  const [showSplash, setShowSplash] = useState(true);
+  const [user, setUser]             = useState(undefined);
 
   useEffect(() => {
-    async function loadHtml() {
-      try {
-        if (assets && assets[0]) {
-          const uri = assets[0].localUri || assets[0].uri;
-          const content = await FileSystem.readAsStringAsync(uri);
-          setHtmlContent(content);
-        }
-      } catch (err) {
-        setError(err.message);
-      }
-    }
-    loadHtml();
-  }, [assets]);
+    const auth = getAuth(getApp());
+    const unsub = onAuthStateChanged(auth, u => setUser(u || null));
+    return unsub;
+  }, []);
 
-  if (error) {
+  if (showSplash || user === undefined) {
     return (
-      <View style={styles.container}>
-        <Text style={{color:'red', marginTop:100, padding: 20}}>Hata: {error}</Text>
-      </View>
-    );
-  }
-
-  if (!htmlContent) {
-    return (
-      <View style={styles.container}>
-        <Text style={{color:'white', marginTop:100, textAlign: 'center'}}>Y SPORTS Yükleniyor...</Text>
-      </View>
+      <SplashScreen onFinish={() => setShowSplash(false)} />
     );
   }
 
   return (
-    <View style={styles.container}>
-      <StatusBar style="light" hidden={true} />
-      <WebView 
-        source={{ html: htmlContent, baseUrl: '' }} 
-        style={styles.webview}
-        javaScriptEnabled={true}
-        domStorageEnabled={true}
-        originWhitelist={['*']}
-        allowFileAccess={true}
-        allowUniversalAccessFromFileURLs={true}
-        mixedContentMode="always"
-        bounces={false}
-        overScrollMode="never"
-      />
-    </View>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false, animationEnabled: true }}>
+            {user ? (
+              <Stack.Screen name="Main" component={MainScreen} />
+            ) : (
+              <>
+                <Stack.Screen name="RoleSelect" component={RoleSelectScreen} />
+                <Stack.Screen name="Login"      component={LoginScreen} />
+                <Stack.Screen name="Main"       component={MainScreen} />
+              </>
+            )}
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#1a1a2e',
-  },
-  webview: {
-    flex: 1,
-    backgroundColor: '#1a1a2e',
-  },
-});
