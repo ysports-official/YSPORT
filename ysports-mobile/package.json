@@ -5,6 +5,7 @@
   "dependencies": {
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/stack": "^6.4.1",
+    "@supabase/supabase-js": "^2.107.0",
     "expo": "~56.0.5",
     "expo-asset": "~56.0.15",
     "expo-file-system": "~56.0.7",
