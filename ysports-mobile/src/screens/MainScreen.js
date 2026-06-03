@@ -30,8 +30,12 @@ export default function MainScreen({ route }) {
     FileSystem.copyAsync({ from: srcUri, to: destUri })
       .then(() => setFileUri(destUri))
       .catch(() => {
-        // Kopyalama başarısız — doğrudan asset URI'yi dene
-        setFileUri(srcUri);
+        // Hedef zaten varsa veya kopyalama başarısız — doğrudan asset URI'yi dene
+        if (srcUri) {
+          setFileUri(srcUri);
+        } else {
+          setError('Uygulama dosyası yüklenemedi.');
+        }
       });
   }, [assets]);
 
@@ -79,6 +83,8 @@ export default function MainScreen({ route }) {
         bounces={false}
         overScrollMode="never"
         onMessage={() => {}}
+        onError={(e) => setError('WebView hatası: ' + (e.nativeEvent?.description || 'bilinmiyor'))}
+        onHttpError={(e) => console.warn('WebView HTTP hatası:', e.nativeEvent?.statusCode)}
       />
     </View>
   );
