@@ -1,99 +1,120 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ActivityIndicator, Text, PermissionsAndroid, Platform } from 'react-native';
-import { WebView } from 'react-native-webview';
-import { useAssets } from 'expo-asset';
-import * as FileSystem from 'expo-file-system/legacy';
+import React from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
+import { Text, View, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export default function MainScreen({ route }) {
+import HomeScreen    from './main/HomeScreen';
+import MarketScreen  from './main/MarketScreen';
+import AthletesScreen from './main/AthletesScreen';
+import SportsScreen  from './main/SportsScreen';
+import LiveScreen    from './main/LiveScreen';
+import AIScreen      from './main/AIScreen';
+
+const Tab   = createBottomTabNavigator();
+const Stack = createStackNavigator();
+
+// ─── HomeStack: Ana Sayfa + AI Kamera ───
+function HomeStack({ route }) {
   const role = route?.params?.role || 'sporcu';
   const uid  = route?.params?.uid  || '';
-
-  const [assets] = useAssets([require('../../assets/app_bundle.html')]);
-  const [fileUri, setFileUri] = useState(null);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    if (Platform.OS === 'android') {
-      PermissionsAndroid.requestMultiple([
-        PermissionsAndroid.PERMISSIONS.CAMERA,
-        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-      ]).catch(() => {});
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!assets || !assets[0]) return;
-    // HTML string olarak geçmek Android Binder 1MB limitini aşıyor (1.4MB dosya).
-    // Dosyayı documentDirectory'e kopyalayıp URI ile yükle.
-    const destUri = FileSystem.documentDirectory + 'app_bundle.html';
-    const srcUri  = assets[0].localUri || assets[0].uri;
-    FileSystem.copyAsync({ from: srcUri, to: destUri })
-      .then(() => setFileUri(destUri))
-      .catch(() => {
-        // Hedef zaten varsa veya kopyalama başarısız — doğrudan asset URI'yi dene
-        if (srcUri) {
-          setFileUri(srcUri);
-        } else {
-          setError('Uygulama dosyası yüklenemedi.');
-        }
-      });
-  }, [assets]);
-
-  const injectedJS = `
-    (function() {
-      window.ysportsNativeUser = { uid: "${uid}", role: "${role}" };
-      window.dispatchEvent(new CustomEvent('ysportsNativeAuth', {
-        detail: { uid: "${uid}", role: "${role}" }
-      }));
-    })();
-    true;
-  `;
-
-  if (error) {
-    return (
-      <View style={styles.center}>
-        <Text style={styles.err}>Hata: {error}</Text>
-      </View>
-    );
-  }
-
-  if (!fileUri) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#1a4fff" />
-        <Text style={styles.loading}>Y SPORTS yükleniyor...</Text>
-      </View>
-    );
-  }
-
   return (
-    <View style={styles.container}>
-      <WebView
-        source={{ uri: fileUri }}
-        style={styles.webview}
-        injectedJavaScriptBeforeContentLoaded={injectedJS}
-        javaScriptEnabled={true}
-        domStorageEnabled={true}
-        originWhitelist={['*']}
-        allowFileAccess={true}
-        allowUniversalAccessFromFileURLs={true}
-        allowFileAccessFromFileURLs={true}
-        mixedContentMode="always"
-        mediaPlaybackRequiresUserAction={false}
-        bounces={false}
-        overScrollMode="never"
-        onMessage={() => {}}
-        onError={(e) => setError('WebView hatası: ' + (e.nativeEvent?.description || 'bilinmiyor'))}
-        onHttpError={(e) => console.warn('WebView HTTP hatası:', e.nativeEvent?.statusCode)}
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen
+        name="HomeMain"
+        component={HomeScreen}
+        initialParams={{ role, uid }}
       />
+      <Stack.Screen
+        name="AICamera"
+        component={AIScreen}
+      />
+    </Stack.Navigator>
+  );
+}
+
+// ─── Tab Icon ───
+function TabIcon({ icon, focused, color }) {
+  return (
+    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+      <Text style={{
+        fontSize: focused ? 22 : 20,
+        opacity: focused ? 1 : 0.6,
+        ...(focused ? { textShadowColor: color, textShadowRadius: 8, textShadowOffset: { width: 0, height: 0 } } : {}),
+      }}>
+        {icon}
+      </Text>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#090b11' },
-  webview:   { flex: 1 },
-  center:    { flex: 1, backgroundColor: '#090b11', justifyContent: 'center', alignItems: 'center' },
-  loading:   { color: '#4a6fa5', marginTop: 16, fontSize: 14 },
-  err:       { color: '#e84545', padding: 20, textAlign: 'center' },
-});
+export default function MainScreen({ route }) {
+  const role = route?.params?.role || 'sporcu';
+  const uid  = route?.params?.uid  || '';
+  const insets = useSafeAreaInsets();
+
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          backgroundColor: '#0d1117',
+          borderTopColor: '#1e2d4a',
+          borderTopWidth: 1,
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 8,
+          paddingTop: 8,
+          height: 56 + (insets.bottom > 0 ? insets.bottom : 8),
+        },
+        tabBarActiveTintColor: '#7c6fff',
+        tabBarInactiveTintColor: '#4a6fa5',
+        tabBarLabelStyle: { fontSize: 9, fontWeight: '700' },
+      }}
+    >
+      <Tab.Screen
+        name="Home"
+        options={{
+          tabBarLabel: 'Ana Sayfa',
+          tabBarIcon: ({ focused, color }) => <TabIcon icon="🏠" focused={focused} color={color} />,
+        }}
+      >
+        {(props) => <HomeStack {...props} route={{ ...props.route, params: { role, uid } }} />}
+      </Tab.Screen>
+
+      <Tab.Screen
+        name="Market"
+        component={MarketScreen}
+        options={{
+          tabBarLabel: 'Piyasa',
+          tabBarIcon: ({ focused, color }) => <TabIcon icon="💰" focused={focused} color={color} />,
+        }}
+      />
+
+      <Tab.Screen
+        name="Athletes"
+        component={AthletesScreen}
+        options={{
+          tabBarLabel: 'Sporcular',
+          tabBarIcon: ({ focused, color }) => <TabIcon icon="🏅" focused={focused} color={color} />,
+        }}
+      />
+
+      <Tab.Screen
+        name="Sports"
+        component={SportsScreen}
+        options={{
+          tabBarLabel: 'Spor Dalları',
+          tabBarIcon: ({ focused, color }) => <TabIcon icon="🏆" focused={focused} color={color} />,
+        }}
+      />
+
+      <Tab.Screen
+        name="Live"
+        component={LiveScreen}
+        options={{
+          tabBarLabel: 'Canlı',
+          tabBarIcon: ({ focused, color }) => <TabIcon icon="🔴" focused={focused} color={color} />,
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
