@@ -8,6 +8,7 @@
     "@supabase/supabase-js": "^2.107.0",
     "expo": "~56.0.5",
     "expo-asset": "~56.0.15",
+    "expo-build-properties": "^56.0.16",
     "expo-file-system": "~56.0.7",
     "expo-status-bar": "~56.0.4",
     "firebase": "^10.12.0",
