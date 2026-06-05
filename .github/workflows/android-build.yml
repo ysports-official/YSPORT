@@ -11,9 +11,6 @@ on:
         options:
           - preview
           - production
-  push:
-    branches:
-      - main
 
 permissions:
   contents: write
@@ -45,53 +42,28 @@ jobs:
         working-directory: ./ysports-mobile
         run: npm install --legacy-peer-deps
 
-      - name: 🏗️ EAS Cloud Build + APK URL Al
+      - name: 🏗️ EAS Local Build
         shell: bash
         working-directory: ./ysports-mobile
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
         run: |
           PROFILE="${{ github.event.inputs.profile || 'preview' }}"
-          echo "EAS cloud build başlatılıyor: $PROFILE..."
+          EXT="apk"
+          if [ "$PROFILE" = "production" ]; then EXT="aab"; fi
 
+          echo "BUILD_EXT=$EXT" >> $GITHUB_ENV
+
+          echo "EAS local build başlatılıyor: $PROFILE..."
           eas build \
             --platform android \
             --profile "$PROFILE" \
             --non-interactive \
-            --wait
+            --local \
+            --output "../app-release.$EXT"
 
-          EXT="apk"
-          if [ "$PROFILE" = "production" ]; then EXT="aab"; fi
-
-          BUILD_URL=$(eas build:list \
-            --platform android \
-            --limit 1 \
-            --status finished \
-            --json \
-            --non-interactive 2>/dev/null | \
-            node -e "
-              let d='';
-              process.stdin.on('data',c=>d+=c);
-              process.stdin.on('end',()=>{
-                const b=JSON.parse(d);
-                process.stdout.write(b[0]?.artifacts?.buildUrl||b[0]?.artifacts?.applicationArchiveUrl||'');
-              });
-            "
-          )
-
-          echo "BUILD_URL=$BUILD_URL" >> $GITHUB_ENV
-          echo "BUILD_EXT=$EXT"       >> $GITHUB_ENV
-          echo "✅ Build URL: $BUILD_URL"
-
-      - name: 📥 APK İndir
-        shell: bash
-        run: |
-          if [ -z "$BUILD_URL" ]; then
-            echo "HATA: Build URL boş!"
-            exit 1
-          fi
-          curl -L --retry 5 --retry-delay 10 "$BUILD_URL" -o "./app-release.$BUILD_EXT"
-          ls -lh app-release.*
+          ls -lh ../app-release.*
 
       - name: 🚀 GitHub Release olarak yayınla
         shell: bash

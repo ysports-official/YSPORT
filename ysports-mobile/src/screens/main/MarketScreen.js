@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, StatusBar } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, StatusBar, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const PACKAGES = [
@@ -69,7 +69,14 @@ export default function MarketScreen() {
                     <Text style={s.featureText}>{f}</Text>
                   </View>
                 ))}
-                <TouchableOpacity style={[s.pkgBtn, { backgroundColor: pkg.color }]}>
+                <TouchableOpacity
+                  style={[s.pkgBtn, { backgroundColor: pkg.color }]}
+                  onPress={() => Alert.alert(
+                    `${pkg.name} Paketi`,
+                    `Fiyat: ${pkg.price}\n\nBaşvuru için:\ninfo@ysports.com\n\nYakında online başvuru aktif olacak.`,
+                    [{ text: 'Tamam' }]
+                  )}
+                >
                   <Text style={s.pkgBtnText}>Başvur →</Text>
                 </TouchableOpacity>
               </View>

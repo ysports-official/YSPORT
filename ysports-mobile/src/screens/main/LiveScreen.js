@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, StatusBar, Animated, Easing } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, StatusBar, Animated, Easing, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const LIVE_EVENTS = [
@@ -59,7 +59,15 @@ export default function LiveScreen() {
 
 function EventCard({ event: e }) {
   return (
-    <TouchableOpacity style={[s.card, { borderColor: e.color + '44' }]} activeOpacity={0.8}>
+    <TouchableOpacity
+      style={[s.card, { borderColor: e.color + '44' }]}
+      activeOpacity={0.8}
+      onPress={() => Alert.alert(
+        `${e.home}  vs  ${e.away}`,
+        `Skor: ${e.score}\n${e.status === 'live' ? '🔴 Canlı — ' + e.min : '🕐 Başlangıç: ' + e.min}\n\nGerçek zamanlı maç akışı yakında aktif olacak.`,
+        [{ text: 'Tamam' }]
+      )}
+    >
       <View style={s.cardTop}>
         <Text style={s.sportIcon}>{e.sport}</Text>
         {e.status === 'live' ? (

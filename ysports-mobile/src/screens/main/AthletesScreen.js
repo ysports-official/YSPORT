@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, StatusBar, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, StatusBar, TextInput, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getFirestore, collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
 import { getApp } from 'firebase/app';
@@ -68,7 +68,15 @@ export default function AthletesScreen() {
             const colors = ['#1a4fff','#8b2fff','#c9a227','#00b97a','#e84545','#06b6d4'];
             const color  = colors[name.charCodeAt(0) % colors.length];
             return (
-              <TouchableOpacity style={s.card} activeOpacity={0.8}>
+              <TouchableOpacity
+                style={s.card}
+                activeOpacity={0.8}
+                onPress={() => Alert.alert(
+                  name,
+                  `Spor Dalı: ${sport}${city ? '\nŞehir: ' + city : ''}\n\nSGD profil sayfası yakında aktif olacak.`,
+                  [{ text: 'Tamam' }]
+                )}
+              >
                 <View style={[s.avatar, { backgroundColor: color + '22', borderColor: color + '55' }]}>
                   <Text style={[s.avatarText, { color }]}>{initial}</Text>
                 </View>

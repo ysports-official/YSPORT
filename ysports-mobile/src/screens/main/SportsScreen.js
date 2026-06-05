@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, StatusBar, TextInput } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, StatusBar, TextInput, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const SPORTS = [
@@ -123,7 +123,15 @@ export default function SportsScreen() {
         renderItem={({ item }) => {
           const color = CAT_COLORS[item.cat] || '#4a6fa5';
           return (
-            <TouchableOpacity style={[s.card, { borderColor: color + '33' }]} activeOpacity={0.8}>
+            <TouchableOpacity
+              style={[s.card, { borderColor: color + '33' }]}
+              activeOpacity={0.8}
+              onPress={() => Alert.alert(
+                item.name,
+                `Kategori: ${item.cat}\n\nY SPORTS'ta bu branştaki sporcuları keşfedin ve SGD puanlarını görün.`,
+                [{ text: 'Tamam' }]
+              )}
+            >
               <Text style={s.cardIcon}>{item.icon}</Text>
               <Text style={s.cardName}>{item.name}</Text>
               <View style={[s.catTag, { backgroundColor: color + '22' }]}>
