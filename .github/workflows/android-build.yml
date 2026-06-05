@@ -25,7 +25,7 @@ jobs:
 
     steps:
       - name: 🔧 Git Bash PATH (Windows runner)
-        shell: pwsh
+        shell: powershell
         run: |
           Add-Content $env:GITHUB_PATH "C:\Program Files\Git\bin"
           Add-Content $env:GITHUB_PATH "C:\Program Files\Git\usr\bin"
