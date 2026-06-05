@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "734566007827",
+    "project_id": "ysports-31e37",
+    "storage_bucket": "ysports-31e37.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:734566007827:android:da19d79901b6a4599d6be6",
+        "android_client_info": {
+          "package_name": "com.kaldirimmuhendisi.ysports"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-6fZ_7ZS3cnS--VGcib_f6n_S2wG5QVw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

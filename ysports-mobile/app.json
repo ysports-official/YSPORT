@@ -11,6 +11,7 @@
     },
     "android": {
       "package": "com.kaldirimmuhendisi.ysports",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#090b11",
         "foregroundImage": "./assets/android-icon-foreground.png",
