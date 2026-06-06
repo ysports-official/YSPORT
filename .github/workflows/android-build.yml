@@ -39,6 +39,17 @@ jobs:
       - name: 📂 Checkout Repository
         uses: actions/checkout@v4
 
+      - name: 🔗 Y: sürücüsü — Windows MAX_PATH kalıcı fix
+        shell: powershell
+        run: |
+          # subst Y: ile ysports-mobile klasörünü Y: sürücüsüne bağla
+          # Böylece tüm C++ .o path'leri Y:\android\... ve Y:\node_modules\... olur
+          # = ~257 char (260 limitinin altında)
+          $target = "$env:GITHUB_WORKSPACE\ysports-mobile"
+          subst Y: $target 2>$null
+          Write-Host "Y: = $target"
+          Add-Content $env:GITHUB_ENV "YS_ROOT=Y:"
+
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -47,9 +58,9 @@ jobs:
       - name: 🚀 Install EAS CLI
         run: npm install -g eas-cli
 
-      - name: 📦 Install Project Dependencies
-        working-directory: ./ysports-mobile
-        run: npm install --legacy-peer-deps
+      - name: 📦 Install Project Dependencies (Y: üzerinden)
+        shell: bash
+        run: cd /y && npm install --legacy-peer-deps
 
       - name: 🔩 Android NDK Kontrol & Kurulum
         shell: powershell
@@ -71,19 +82,18 @@ jobs:
             Write-Host "NDK kuruldu: $(Test-Path `"$ndkPath\source.properties`")"
           }
 
-      - name: 🏗️ Expo Prebuild (native Android project oluştur)
+      - name: 🏗️ Expo Prebuild (Y: üzerinden — kısa path)
         shell: bash
-        working-directory: ./ysports-mobile
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
+          cd /y
           npx expo prebuild --platform android --non-interactive --clean
           echo "Prebuild tamamlandı."
           ls android/app/
 
-      - name: 🔨 Gradle Build
+      - name: 🔨 Gradle Build (Y:\android — ~257 char path)
         shell: bash
-        working-directory: ./ysports-mobile/android
         env:
           JAVA_HOME:    ${{ env.JAVA_HOME }}
           ANDROID_HOME: ${{ env.ANDROID_HOME }}
@@ -94,6 +104,8 @@ jobs:
           KEYSTORE_WIN=$(powershell.exe -Command "echo \$env:USERPROFILE" | tr -d '\r')
           KEYSTORE="$KEYSTORE_WIN/.android/debug.keystore"
 
+          cd /y/android
+
           if [ "$PROFILE" = "production" ]; then
             echo "AAB (bundleRelease) build başlatılıyor..."
             ./gradlew bundleRelease --no-daemon \
@@ -101,7 +113,7 @@ jobs:
               -Pandroid.injected.signing.store.password=android \
               -Pandroid.injected.signing.key.alias=androiddebugkey \
               -Pandroid.injected.signing.key.password=android
-            cp app/build/outputs/bundle/release/app-release.aab ../../app-release.aab
+            cp app/build/outputs/bundle/release/app-release.aab "$GITHUB_WORKSPACE/app-release.aab"
             echo "BUILD_EXT=aab" >> $GITHUB_ENV
           else
             echo "APK (assembleRelease) build başlatılıyor..."
@@ -110,11 +122,11 @@ jobs:
               -Pandroid.injected.signing.store.password=android \
               -Pandroid.injected.signing.key.alias=androiddebugkey \
               -Pandroid.injected.signing.key.password=android
-            cp app/build/outputs/apk/release/app-release.apk ../../app-release.apk
+            cp app/build/outputs/apk/release/app-release.apk "$GITHUB_WORKSPACE/app-release.apk"
             echo "BUILD_EXT=apk" >> $GITHUB_ENV
           fi
 
-          ls -lh ../../app-release.*
+          ls -lh "$GITHUB_WORKSPACE/app-release."*
 
       - name: 🚀 GitHub Release olarak yayınla
         shell: bash
