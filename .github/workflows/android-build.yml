@@ -91,15 +91,26 @@ jobs:
           PROFILE="${{ github.event.inputs.profile || 'preview' }}"
           echo "Profile: $PROFILE"
 
+          KEYSTORE_WIN=$(powershell.exe -Command "echo \$env:USERPROFILE" | tr -d '\r')
+          KEYSTORE="$KEYSTORE_WIN/.android/debug.keystore"
+
           if [ "$PROFILE" = "production" ]; then
             echo "AAB (bundleRelease) build başlatılıyor..."
-            ./gradlew bundleRelease --no-daemon --stacktrace
+            ./gradlew bundleRelease --no-daemon \
+              -Pandroid.injected.signing.store.file="$KEYSTORE" \
+              -Pandroid.injected.signing.store.password=android \
+              -Pandroid.injected.signing.key.alias=androiddebugkey \
+              -Pandroid.injected.signing.key.password=android
             cp app/build/outputs/bundle/release/app-release.aab ../../app-release.aab
             echo "BUILD_EXT=aab" >> $GITHUB_ENV
           else
-            echo "APK (assembleDebug) build başlatılıyor..."
-            ./gradlew assembleDebug --no-daemon --stacktrace
-            cp app/build/outputs/apk/debug/app-debug.apk ../../app-release.apk
+            echo "APK (assembleRelease) build başlatılıyor..."
+            ./gradlew assembleRelease --no-daemon \
+              -Pandroid.injected.signing.store.file="$KEYSTORE" \
+              -Pandroid.injected.signing.store.password=android \
+              -Pandroid.injected.signing.key.alias=androiddebugkey \
+              -Pandroid.injected.signing.key.password=android
+            cp app/build/outputs/apk/release/app-release.apk ../../app-release.apk
             echo "BUILD_EXT=apk" >> $GITHUB_ENV
           fi
 
