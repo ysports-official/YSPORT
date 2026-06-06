@@ -81,18 +81,6 @@ jobs:
           echo "Prebuild tamamlandı."
           ls android/app/
 
-      - name: 📏 Windows MAX_PATH fix — kısa CMake build dizini
-        shell: bash
-        working-directory: ./ysports-mobile
-        run: |
-          # ninja .o dosya path'leri 260 char'ı aşıyor.
-          # android.cxx.dir=C:/cxx ile CMake build dizinini kısaltıyoruz (admin gerektirmez).
-          echo "" >> android/gradle.properties
-          echo "# Windows MAX_PATH fix" >> android/gradle.properties
-          echo "android.cxx.dir=C:/cxx" >> android/gradle.properties
-          echo "gradle.properties güncellendi:"
-          tail -4 android/gradle.properties
-
       - name: 🔨 Gradle Build
         shell: bash
         working-directory: ./ysports-mobile/android

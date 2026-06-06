@@ -1,5 +1,6 @@
 {
   "expo": {
+    "newArchEnabled": false,
     "name": "Y SPORTS",
     "slug": "ysports-mobile",
     "version": "1.0.0",
