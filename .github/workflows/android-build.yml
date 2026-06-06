@@ -36,19 +36,16 @@ jobs:
           Write-Host "JAVA_HOME = $javaHome"
           Write-Host "ANDROID_HOME = $androidHome"
 
-      - name: 📂 Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: 🔗 Y: sürücüsü — Windows MAX_PATH kalıcı fix
+      - name: 📂 Clone to C:\y — Windows MAX_PATH fix (kısa yol)
         shell: powershell
         run: |
-          # subst Y: ile ysports-mobile klasörünü Y: sürücüsüne bağla
-          # Böylece tüm C++ .o path'leri Y:\android\... ve Y:\node_modules\... olur
-          # = ~257 char (260 limitinin altında)
-          $target = "$env:GITHUB_WORKSPACE\ysports-mobile"
-          subst Y: $target 2>$null
-          Write-Host "Y: = $target"
-          Add-Content $env:GITHUB_ENV "YS_ROOT=Y:"
+          # actions/checkout KULLANMIYORUZ — C:\actions-runner-ysports\_work\... yolu
+          # CMake .o dosyalarına bu uzun yolu gömer ve 260 char sınırını aşar.
+          # C:\y altına klonlayarak base path 59 char -> 4 char'a düşüyor.
+          if (Test-Path C:\y) { Remove-Item -Recurse -Force C:\y }
+          git clone --depth 1 "https://github.com/ysports-official/YSPORT.git" C:\y
+          Write-Host "Klonlama tamamlandi: C:\y"
+          Get-ChildItem C:\y | Select-Object Name
 
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
@@ -58,9 +55,11 @@ jobs:
       - name: 🚀 Install EAS CLI
         run: npm install -g eas-cli
 
-      - name: 📦 Install Project Dependencies (Y: üzerinden)
+      - name: 📦 Install Project Dependencies
         shell: bash
-        run: cd /y && npm install --legacy-peer-deps
+        run: |
+          cd /c/y/ysports-mobile
+          npm install --legacy-peer-deps
 
       - name: 🔩 Android NDK Kontrol & Kurulum
         shell: powershell
@@ -82,17 +81,17 @@ jobs:
             Write-Host "NDK kuruldu: $(Test-Path `"$ndkPath\source.properties`")"
           }
 
-      - name: 🏗️ Expo Prebuild (Y: üzerinden — kısa path)
+      - name: 🏗️ Expo Prebuild (C:\y kisa path)
         shell: bash
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
-          cd /y
+          cd /c/y/ysports-mobile
           npx expo prebuild --platform android --non-interactive --clean
-          echo "Prebuild tamamlandı."
+          echo "Prebuild tamamlandi."
           ls android/app/
 
-      - name: 🔨 Gradle Build (Y:\android — ~257 char path)
+      - name: 🔨 Gradle Build (C:\y\ysports-mobile\android — kisa path)
         shell: bash
         env:
           JAVA_HOME:    ${{ env.JAVA_HOME }}
@@ -104,10 +103,10 @@ jobs:
           KEYSTORE_WIN=$(powershell.exe -Command "echo \$env:USERPROFILE" | tr -d '\r')
           KEYSTORE="$KEYSTORE_WIN/.android/debug.keystore"
 
-          cd /y/android
+          cd /c/y/ysports-mobile/android
 
           if [ "$PROFILE" = "production" ]; then
-            echo "AAB (bundleRelease) build başlatılıyor..."
+            echo "AAB (bundleRelease) build baslatiliyor..."
             ./gradlew bundleRelease --no-daemon \
               -Pandroid.injected.signing.store.file="$KEYSTORE" \
               -Pandroid.injected.signing.store.password=android \
@@ -116,7 +115,7 @@ jobs:
             cp app/build/outputs/bundle/release/app-release.aab "$GITHUB_WORKSPACE/app-release.aab"
             echo "BUILD_EXT=aab" >> $GITHUB_ENV
           else
-            echo "APK (assembleRelease) build başlatılıyor..."
+            echo "APK (assembleRelease) build baslatiliyor..."
             ./gradlew assembleRelease --no-daemon \
               -Pandroid.injected.signing.store.file="$KEYSTORE" \
               -Pandroid.injected.signing.store.password=android \
@@ -128,7 +127,7 @@ jobs:
 
           ls -lh "$GITHUB_WORKSPACE/app-release."*
 
-      - name: 🚀 GitHub Release olarak yayınla
+      - name: 🚀 GitHub Release olarak yayinla
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -138,20 +137,21 @@ jobs:
           SHORT_SHA="${{ github.sha }}"
           SHORT_SHA="${SHORT_SHA:0:7}"
 
+          cd "$GITHUB_WORKSPACE"
           gh release create "$TAG" app-release.* \
-            --title "Build #${{ github.run_number }} • ${PROFILE} • ${SHORT_SHA}" \
+            --title "Build #${{ github.run_number }} - ${PROFILE} - ${SHORT_SHA}" \
             --notes "**Branch:** ${{ github.ref_name }}
           **Commit:** ${{ github.sha }}
           **Profile:** ${PROFILE}
 
-          > APK indirmek için aşağıdaki Assets bölümünü kullanın." \
+          > APK indirmek icin asagidaki Assets bolumunu kullanin." \
             --prerelease \
             --repo ysports-official/YSPORT
 
-      - name: ✅ Build Summary
+      - name: Build Summary
         if: success()
         shell: bash
         run: |
-          echo "## ✅ Build #${{ github.run_number }} Tamamlandı" >> $GITHUB_STEP_SUMMARY
-          echo "📦 **Release:** https://github.com/ysports-official/YSPORT/releases/tag/build-${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
-          echo "⬇️ APK'yı Releases sayfasından indir" >> $GITHUB_STEP_SUMMARY
+          echo "## Build #${{ github.run_number }} Tamamlandi" >> $GITHUB_STEP_SUMMARY
+          echo "Release: https://github.com/ysports-official/YSPORT/releases/tag/build-${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
+          echo "APK'yi Releases sayfasindan indir" >> $GITHUB_STEP_SUMMARY
