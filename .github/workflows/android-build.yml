@@ -51,6 +51,26 @@ jobs:
         working-directory: ./ysports-mobile
         run: npm install --legacy-peer-deps
 
+      - name: 🔩 Android NDK Kontrol & Kurulum
+        shell: powershell
+        run: |
+          $androidHome = "$env:LOCALAPPDATA\Android\Sdk"
+          $ndkVer      = "27.1.12297006"
+          $ndkPath     = "$androidHome\ndk\$ndkVer"
+          if (Test-Path "$ndkPath\source.properties") {
+            Write-Host "NDK OK: $ndkVer"
+          } else {
+            Write-Host "NDK eksik, kuruluyor..."
+            $env:JAVA_HOME    = "$env:LOCALAPPDATA\Java\jdk-17.0.11+9"
+            $env:ANDROID_HOME = $androidHome
+            $env:PATH         = "$env:JAVA_HOME\bin;$androidHome\cmdline-tools\latest\bin;$env:PATH"
+            cmd /c "`"$androidHome\cmdline-tools\latest\bin\sdkmanager.bat`" `"ndk;$ndkVer`""
+            if ((Test-Path "$androidHome\ndk\$ndkVer-2") -and !(Test-Path "$ndkPath\source.properties")) {
+              Rename-Item "$androidHome\ndk\$ndkVer-2" $ndkVer
+            }
+            Write-Host "NDK kuruldu: $(Test-Path `"$ndkPath\source.properties`")"
+          }
+
       - name: 🏗️ Expo Prebuild (native Android project oluştur)
         shell: bash
         working-directory: ./ysports-mobile
