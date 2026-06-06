@@ -24,9 +24,6 @@ jobs:
       - name: 🔧 Git Bash + Java + Android PATH (Windows runner)
         shell: powershell
         run: |
-          # Windows MAX_PATH (260 char) limitini kaldır — ninja C++ build için zorunlu
-          reg add "HKLM\SYSTEM\CurrentControlSet\Control\FileSystem" /v LongPathsEnabled /t REG_DWORD /d 1 /f
-          git config --system core.longpaths true
           Add-Content $env:GITHUB_PATH "C:\Program Files\Git\bin"
           Add-Content $env:GITHUB_PATH "C:\Program Files\Git\usr\bin"
           $javaHome    = "$env:LOCALAPPDATA\Java\jdk-17.0.11+9"
@@ -38,7 +35,6 @@ jobs:
           Add-Content $env:GITHUB_PATH "$androidHome\cmdline-tools\latest\bin"
           Write-Host "JAVA_HOME = $javaHome"
           Write-Host "ANDROID_HOME = $androidHome"
-          Write-Host "LongPathsEnabled aktif"
 
       - name: 📂 Checkout Repository
         uses: actions/checkout@v4
@@ -84,6 +80,18 @@ jobs:
           npx expo prebuild --platform android --non-interactive --clean
           echo "Prebuild tamamlandı."
           ls android/app/
+
+      - name: 📏 Windows MAX_PATH fix — kısa CMake build dizini
+        shell: bash
+        working-directory: ./ysports-mobile
+        run: |
+          # ninja .o dosya path'leri 260 char'ı aşıyor.
+          # android.cxx.dir=C:/cxx ile CMake build dizinini kısaltıyoruz (admin gerektirmez).
+          echo "" >> android/gradle.properties
+          echo "# Windows MAX_PATH fix" >> android/gradle.properties
+          echo "android.cxx.dir=C:/cxx" >> android/gradle.properties
+          echo "gradle.properties güncellendi:"
+          tail -4 android/gradle.properties
 
       - name: 🔨 Gradle Build
         shell: bash
