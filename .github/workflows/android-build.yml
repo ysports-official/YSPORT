@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       profile:
-        description: 'EAS Build Profile (preview: APK, production: AAB)'
+        description: 'Build Profile (preview: APK debug, production: AAB)'
         required: true
         default: 'preview'
         type: choice
@@ -21,11 +21,20 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: 🔧 Git Bash PATH (Windows runner)
+      - name: 🔧 Git Bash + Java + Android PATH (Windows runner)
         shell: powershell
         run: |
           Add-Content $env:GITHUB_PATH "C:\Program Files\Git\bin"
           Add-Content $env:GITHUB_PATH "C:\Program Files\Git\usr\bin"
+          $javaHome    = "$env:LOCALAPPDATA\Java\jdk-17.0.11+9"
+          $androidHome = "$env:LOCALAPPDATA\Android\Sdk"
+          Add-Content $env:GITHUB_ENV  "JAVA_HOME=$javaHome"
+          Add-Content $env:GITHUB_ENV  "ANDROID_HOME=$androidHome"
+          Add-Content $env:GITHUB_PATH "$javaHome\bin"
+          Add-Content $env:GITHUB_PATH "$androidHome\platform-tools"
+          Add-Content $env:GITHUB_PATH "$androidHome\cmdline-tools\latest\bin"
+          Write-Host "JAVA_HOME = $javaHome"
+          Write-Host "ANDROID_HOME = $androidHome"
 
       - name: 📂 Checkout Repository
         uses: actions/checkout@v4
@@ -42,28 +51,39 @@ jobs:
         working-directory: ./ysports-mobile
         run: npm install --legacy-peer-deps
 
-      - name: 🏗️ EAS Local Build
+      - name: 🏗️ Expo Prebuild (native Android project oluştur)
         shell: bash
         working-directory: ./ysports-mobile
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          npx expo prebuild --platform android --non-interactive --clean
+          echo "Prebuild tamamlandı."
+          ls android/app/
+
+      - name: 🔨 Gradle Build
+        shell: bash
+        working-directory: ./ysports-mobile/android
+        env:
+          JAVA_HOME:    ${{ env.JAVA_HOME }}
           ANDROID_HOME: ${{ env.ANDROID_HOME }}
         run: |
           PROFILE="${{ github.event.inputs.profile || 'preview' }}"
-          EXT="apk"
-          if [ "$PROFILE" = "production" ]; then EXT="aab"; fi
+          echo "Profile: $PROFILE"
 
-          echo "BUILD_EXT=$EXT" >> $GITHUB_ENV
+          if [ "$PROFILE" = "production" ]; then
+            echo "AAB (bundleRelease) build başlatılıyor..."
+            ./gradlew bundleRelease --no-daemon --stacktrace
+            cp app/build/outputs/bundle/release/app-release.aab ../../app-release.aab
+            echo "BUILD_EXT=aab" >> $GITHUB_ENV
+          else
+            echo "APK (assembleDebug) build başlatılıyor..."
+            ./gradlew assembleDebug --no-daemon --stacktrace
+            cp app/build/outputs/apk/debug/app-debug.apk ../../app-release.apk
+            echo "BUILD_EXT=apk" >> $GITHUB_ENV
+          fi
 
-          echo "EAS local build başlatılıyor: $PROFILE..."
-          eas build \
-            --platform android \
-            --profile "$PROFILE" \
-            --non-interactive \
-            --local \
-            --output "../app-release.$EXT"
-
-          ls -lh ../app-release.*
+          ls -lh ../../app-release.*
 
       - name: 🚀 GitHub Release olarak yayınla
         shell: bash
