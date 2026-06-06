@@ -1,5 +1,5 @@
-import 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
+import { View, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -26,9 +26,15 @@ export default function App() {
     return unsub;
   }, []);
 
-  if (showSplash || user === undefined) {
+  if (showSplash) {
+    return <SplashScreen onFinish={() => setShowSplash(false)} />;
+  }
+
+  if (user === undefined) {
     return (
-      <SplashScreen onFinish={() => setShowSplash(false)} />
+      <View style={{ flex: 1, backgroundColor: '#090b11', justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator color="#1a4fff" size="large" />
+      </View>
     );
   }
 
