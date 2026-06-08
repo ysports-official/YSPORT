@@ -1,18 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, StatusBar, Animated, Easing, Alert } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, StatusBar, Animated, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-const LIVE_EVENTS = [
-  { id: 1, sport: '⚽', home: 'Galatasaray', away: 'Fenerbahçe', score: '2 - 1', min: "67'", status: 'live', color: '#e84545' },
-  { id: 2, sport: '🏀', home: 'Anadolu Efes', away: 'Fenerbahçe', score: '78 - 74', min: "Q3", status: 'live', color: '#1a4fff' },
-  { id: 3, sport: '🏐', home: 'Halkbank', away: 'Arkas', score: '2 - 1', min: "Set 4", status: 'live', color: '#8b2fff' },
-  { id: 4, sport: '⚽', home: 'Trabzonspor', away: 'Beşiktaş', score: '0 - 0', min: "21:45", status: 'upcoming', color: '#4a6fa5' },
-  { id: 5, sport: '🎾', home: 'T. Çağlar', away: 'M. Yıldız', score: '6-4, 3-', min: "Set 2", status: 'live', color: '#c9a227' },
-];
+import { supabase } from '../../services/SupabaseConfig';
 
 export default function LiveScreen() {
-  const [dot] = useState(new Animated.Value(1));
+  const [events,   setEvents]   = useState([]);
+  const [loading,  setLoading]  = useState(true);
+  const [dot]                   = useState(new Animated.Value(1));
+  const channelRef              = useRef(null);
 
+  // Canlı dot animasyonu
   useEffect(() => {
     Animated.loop(
       Animated.sequence([
@@ -22,8 +19,70 @@ export default function LiveScreen() {
     ).start();
   }, []);
 
-  const live     = LIVE_EVENTS.filter(e => e.status === 'live');
-  const upcoming = LIVE_EVENTS.filter(e => e.status === 'upcoming');
+  // İlk veri yükle
+  const fetchEvents = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('live_events')
+        .select('*')
+        .in('status', ['live', 'upcoming'])
+        .order('status', { ascending: false }) // live önce
+        .order('created_at');
+      if (error) throw error;
+      setEvents(data || []);
+    } catch (e) {
+      console.warn('LiveScreen fetch error:', e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Realtime subscription
+  useEffect(() => {
+    fetchEvents();
+
+    // Supabase realtime — live_events tablosuna abone ol
+    channelRef.current = supabase
+      .channel('live_events_changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'live_events' },
+        (payload) => {
+          console.log('[Realtime] live_events change:', payload.eventType);
+          // Her değişiklikte tüm listeyi güncelle
+          fetchEvents();
+        }
+      )
+      .subscribe((status) => {
+        console.log('[Realtime] subscription status:', status);
+      });
+
+    return () => {
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
+    };
+  }, []);
+
+  const live     = events.filter(e => e.status === 'live');
+  const upcoming = events.filter(e => e.status === 'upcoming');
+
+  if (loading) {
+    return (
+      <SafeAreaView style={s.safe}>
+        <StatusBar barStyle="light-content" backgroundColor="#090b11" />
+        <View style={s.topbar}>
+          <Animated.View style={[s.liveDot, { opacity: dot }]} />
+          <Text style={s.title}>CANLI YAYINLAR</Text>
+        </View>
+        <View style={s.center}>
+          <ActivityIndicator color="#e84545" size="large" />
+          <Text style={s.loadingText}>Canlı veriler yükleniyor...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={s.safe}>
@@ -31,6 +90,9 @@ export default function LiveScreen() {
       <View style={s.topbar}>
         <Animated.View style={[s.liveDot, { opacity: dot }]} />
         <Text style={s.title}>CANLI YAYINLAR</Text>
+        <View style={s.realtimeBadge}>
+          <Text style={s.realtimeText}>🔄 Realtime</Text>
+        </View>
         <Text style={s.liveCount}>{live.length} canlı</Text>
       </View>
 
@@ -41,12 +103,22 @@ export default function LiveScreen() {
             {live.map(e => <EventCard key={e.id} event={e} />)}
           </>
         )}
+
         {upcoming.length > 0 && (
           <>
             <Text style={s.sectionTitle}>🕐 YAKLAŞAN</Text>
             {upcoming.map(e => <EventCard key={e.id} event={e} />)}
           </>
         )}
+
+        {events.length === 0 && (
+          <View style={s.emptyBox}>
+            <Text style={s.emptyIcon}>📡</Text>
+            <Text style={s.emptyTitle}>Şu an aktif maç yok</Text>
+            <Text style={s.emptySub}>Maç başladığında otomatik güncellenecek</Text>
+          </View>
+        )}
+
         <View style={s.comingSoon}>
           <Text style={s.csIcon}>📡</Text>
           <Text style={s.csTitle}>Canlı Yayın Geliyor</Text>
@@ -60,29 +132,29 @@ export default function LiveScreen() {
 function EventCard({ event: e }) {
   return (
     <TouchableOpacity
-      style={[s.card, { borderColor: e.color + '44' }]}
+      style={[s.card, { borderColor: (e.color || '#4a6fa5') + '44' }]}
       activeOpacity={0.8}
       onPress={() => Alert.alert(
-        `${e.home}  vs  ${e.away}`,
-        `Skor: ${e.score}\n${e.status === 'live' ? '🔴 Canlı — ' + e.min : '🕐 Başlangıç: ' + e.min}\n\nGerçek zamanlı maç akışı yakında aktif olacak.`,
+        `${e.home_team}  vs  ${e.away_team}`,
+        `Skor: ${e.score}\n${e.status === 'live' ? '🔴 Canlı — ' + e.time_info : '🕐 Başlangıç: ' + e.time_info}\n\nGerçek zamanlı maç akışı yakında aktif olacak.`,
         [{ text: 'Tamam' }]
       )}
     >
       <View style={s.cardTop}>
-        <Text style={s.sportIcon}>{e.sport}</Text>
+        <Text style={s.sportIcon}>{e.sport_emoji || '🏅'}</Text>
         {e.status === 'live' ? (
           <View style={s.liveBadge}><Text style={s.liveBadgeText}>🔴 CANLI</Text></View>
         ) : (
-          <Text style={[s.minText, { color: '#4a6fa5' }]}>{e.min}</Text>
+          <Text style={[s.minText, { color: '#4a6fa5' }]}>{e.time_info}</Text>
         )}
       </View>
       <View style={s.scoreRow}>
-        <Text style={s.teamName}>{e.home}</Text>
-        <Text style={[s.score, { color: e.color }]}>{e.score}</Text>
-        <Text style={s.teamName}>{e.away}</Text>
+        <Text style={s.teamName}>{e.home_team}</Text>
+        <Text style={[s.score, { color: e.color || '#4a6fa5' }]}>{e.score}</Text>
+        <Text style={s.teamName}>{e.away_team}</Text>
       </View>
       {e.status === 'live' && (
-        <Text style={[s.minText, { color: e.color, textAlign: 'center', marginTop: 6 }]}>{e.min}</Text>
+        <Text style={[s.minText, { color: e.color, textAlign: 'center', marginTop: 6 }]}>{e.time_info}</Text>
       )}
     </TouchableOpacity>
   );
@@ -90,9 +162,13 @@ function EventCard({ event: e }) {
 
 const s = StyleSheet.create({
   safe:          { flex: 1, backgroundColor: '#090b11' },
+  center:        { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
+  loadingText:   { color: '#4a6fa5', fontSize: 13, marginTop: 8 },
   topbar:        { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#1e2d4a', gap: 8 },
   liveDot:       { width: 10, height: 10, borderRadius: 5, backgroundColor: '#e84545' },
   title:         { color: '#fff', fontSize: 16, fontWeight: '800', flex: 1 },
+  realtimeBadge: { backgroundColor: '#1a4fff22', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
+  realtimeText:  { color: '#1a4fff', fontSize: 9, fontWeight: '700' },
   liveCount:     { color: '#e84545', fontSize: 12, fontWeight: '700', backgroundColor: '#e8454522', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
   scroll:        { padding: 16, paddingBottom: 40 },
   sectionTitle:  { color: '#4a6fa5', fontSize: 10, fontWeight: '700', letterSpacing: 2, marginBottom: 12, marginTop: 8 },
@@ -105,8 +181,12 @@ const s = StyleSheet.create({
   teamName:      { color: '#fff', fontSize: 13, fontWeight: '700', flex: 1 },
   score:         { fontSize: 20, fontWeight: '900', marginHorizontal: 12 },
   minText:       { color: '#4a6fa5', fontSize: 12, fontWeight: '700' },
-  comingSoon:    { alignItems: 'center', paddingTop: 40, paddingBottom: 20 },
-  csIcon:        { fontSize: 40, marginBottom: 12 },
-  csTitle:       { color: '#fff', fontSize: 16, fontWeight: '700', marginBottom: 8 },
-  csSub:         { color: '#4a6fa5', fontSize: 12, textAlign: 'center' },
+  emptyBox:      { alignItems: 'center', paddingTop: 60, paddingBottom: 20 },
+  emptyIcon:     { fontSize: 48, marginBottom: 12 },
+  emptyTitle:    { color: '#fff', fontSize: 16, fontWeight: '700', marginBottom: 8 },
+  emptySub:      { color: '#4a6fa5', fontSize: 12, textAlign: 'center' },
+  comingSoon:    { alignItems: 'center', paddingTop: 20, paddingBottom: 20 },
+  csIcon:        { fontSize: 32, marginBottom: 8 },
+  csTitle:       { color: '#2a3a5a', fontSize: 14, fontWeight: '700', marginBottom: 4 },
+  csSub:         { color: '#1e2d4a', fontSize: 11, textAlign: 'center' },
 });
