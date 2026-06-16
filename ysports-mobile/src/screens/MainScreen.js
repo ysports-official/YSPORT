@@ -4,12 +4,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Text, View, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import HomeScreen    from './main/HomeScreen';
-import MarketScreen  from './main/MarketScreen';
+import HomeScreen     from './main/HomeScreen';
+import MarketScreen   from './main/MarketScreen';
 import AthletesScreen from './main/AthletesScreen';
-import SportsScreen  from './main/SportsScreen';
-import LiveScreen    from './main/LiveScreen';
-import AIScreen      from './main/AIScreen';
+import SportsScreen   from './main/SportsScreen';
+import LiveScreen     from './main/LiveScreen';
+// AIScreen lazy loaded — WebView/FileSystem native modülleri startup'ta yüklenmesin
 
 const Tab   = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -27,7 +27,7 @@ function HomeStack({ route }) {
       />
       <Stack.Screen
         name="AICamera"
-        component={AIScreen}
+        getComponent={() => require('./main/AIScreen').default}
       />
     </Stack.Navigator>
   );

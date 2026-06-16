@@ -1,6 +1,6 @@
 import 'react-native-url-polyfill/auto';
 import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -16,6 +16,23 @@ import LoginScreen      from './src/screens/LoginScreen';
 import MainScreen       from './src/screens/MainScreen';
 
 const Stack = createStackNavigator();
+
+class ErrorBoundary extends React.Component {
+  state = { error: null };
+  static getDerivedStateFromError(e) { return { error: e }; }
+  componentDidCatch(e, info) { console.warn('[ErrorBoundary]', e.message, info?.componentStack); }
+  render() {
+    if (this.state.error) {
+      return (
+        <View style={{ flex: 1, backgroundColor: '#090b11', justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+          <Text style={{ color: '#e84545', fontSize: 16, fontWeight: '700', textAlign: 'center', marginBottom: 12 }}>Uygulama Hatası</Text>
+          <Text style={{ color: '#4a6fa5', fontSize: 12, textAlign: 'center' }}>{this.state.error.message}</Text>
+        </View>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -40,6 +57,7 @@ export default function App() {
   }
 
   return (
+    <ErrorBoundary>
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <NavigationContainer>
@@ -57,5 +75,6 @@ export default function App() {
         </NavigationContainer>
       </SafeAreaProvider>
     </GestureHandlerRootView>
+    </ErrorBoundary>
   );
 }

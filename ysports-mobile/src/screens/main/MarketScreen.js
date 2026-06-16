@@ -13,6 +13,7 @@ export default function MarketScreen() {
   const fetchData = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
     try {
+      if (!supabase) throw new Error('Supabase bağlantısı kurulamadı');
       const [athRes, pkgRes] = await Promise.all([
         supabase.from('market_athletes').select('*').order('sgd_score', { ascending: false }),
         supabase.from('sponsorship_packages').select('*').eq('active', true).order('sort_order'),

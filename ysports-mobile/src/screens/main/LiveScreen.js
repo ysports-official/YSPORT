@@ -22,6 +22,7 @@ export default function LiveScreen() {
   // İlk veri yükle
   const fetchEvents = async () => {
     try {
+      if (!supabase) { setLoading(false); return; }
       const { data, error } = await supabase
         .from('live_events')
         .select('*')
@@ -42,6 +43,7 @@ export default function LiveScreen() {
     fetchEvents();
 
     // Supabase realtime — live_events tablosuna abone ol
+    if (!supabase) return;
     channelRef.current = supabase
       .channel('live_events_changes')
       .on(
