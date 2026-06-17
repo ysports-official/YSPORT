@@ -115,13 +115,10 @@ jobs:
             cp app/build/outputs/bundle/release/app-release.aab "$GITHUB_WORKSPACE/app-release.aab"
             echo "BUILD_EXT=aab" >> $GITHUB_ENV
           else
-            echo "APK (assembleRelease) build baslatiliyor..."
-            ./gradlew assembleRelease --no-daemon \
-              -Pandroid.injected.signing.store.file="$KEYSTORE" \
-              -Pandroid.injected.signing.store.password=android \
-              -Pandroid.injected.signing.key.alias=androiddebugkey \
-              -Pandroid.injected.signing.key.password=android
-            cp app/build/outputs/apk/release/app-release.apk "$GITHUB_WORKSPACE/app-release.apk"
+            echo "APK (assembleDebug) build baslatiliyor — ProGuard kapali, standalone bundle..."
+            ./gradlew assembleDebug --no-daemon \
+              -PbundleInDebug=true
+            cp app/build/outputs/apk/debug/app-debug.apk "$GITHUB_WORKSPACE/app-release.apk"
             echo "BUILD_EXT=apk" >> $GITHUB_ENV
           fi
 
