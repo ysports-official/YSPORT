@@ -89,9 +89,20 @@ jobs:
           cd /c/y/ysports-mobile
           npx expo prebuild --platform android --non-interactive --clean
           echo "Prebuild tamamlandi."
-          # Debug build'de JS bundle APK'ya dahil edilsin
-          echo "" >> android/gradle.properties
-          echo "bundleInDebug=true" >> android/gradle.properties
+          # RN 0.73+ / Expo SDK 52+ icin dogru yontem: debuggableVariants = []
+          # bundleInDebug=true artik bu surumde calismıyor
+          node -e "
+            const fs = require('fs');
+            const path = 'android/app/build.gradle';
+            let c = fs.readFileSync(path, 'utf8');
+            if (!c.includes('debuggableVariants')) {
+              c = c.replace('react {', 'react {\n    debuggableVariants = []');
+              fs.writeFileSync(path, c);
+              console.log('build.gradle patched: debuggableVariants = []');
+            } else {
+              console.log('build.gradle already patched');
+            }
+          "
           ls android/app/
 
       - name: 🔨 Gradle Build (C:\y\ysports-mobile\android — kisa path)
@@ -119,8 +130,7 @@ jobs:
             echo "BUILD_EXT=aab" >> $GITHUB_ENV
           else
             echo "APK (assembleDebug) build baslatiliyor — ProGuard kapali, standalone bundle..."
-            ./gradlew assembleDebug --no-daemon \
-              -PbundleInDebug=true
+            ./gradlew assembleDebug --no-daemon
             cp app/build/outputs/apk/debug/app-debug.apk "$GITHUB_WORKSPACE/app-release.apk"
             echo "BUILD_EXT=apk" >> $GITHUB_ENV
           fi
