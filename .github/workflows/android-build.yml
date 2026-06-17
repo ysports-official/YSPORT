@@ -89,20 +89,45 @@ jobs:
           cd /c/y/ysports-mobile
           npx expo prebuild --platform android --non-interactive --clean
           echo "Prebuild tamamlandi."
-          # RN 0.73+ / Expo SDK 52+ icin dogru yontem: debuggableVariants = []
-          # bundleInDebug=true artik bu surumde calismıyor
+
+          # ── FIX 1: debuggableVariants ["debug"] → [] ──────────────────────
+          # Expo SDK 56 prebuild, build.gradle'a debuggableVariants = ["debug"]
+          # yazar. Bu, debug build'de JS bundle'ı devre disi birakir.
+          # Regex ile her durumda [] yapiyoruz.
           node -e "
             const fs = require('fs');
-            const path = 'android/app/build.gradle';
-            let c = fs.readFileSync(path, 'utf8');
-            if (!c.includes('debuggableVariants')) {
-              c = c.replace('react {', 'react {\n    debuggableVariants = []');
-              fs.writeFileSync(path, c);
-              console.log('build.gradle patched: debuggableVariants = []');
+            const p = 'android/app/build.gradle';
+            let c = fs.readFileSync(p, 'utf8');
+            const before = c;
+            c = c.replace(/debuggableVariants\s*=\s*\[[^\]]*\]/, 'debuggableVariants = []');
+            if (c !== before) {
+              fs.writeFileSync(p, c);
+              console.log('PATCHED: debuggableVariants = []');
             } else {
-              console.log('build.gradle already patched');
+              // fallback: react { blogu yoksa ekle
+              c = c.replace('react {', 'react {\n    debuggableVariants = []');
+              fs.writeFileSync(p, c);
+              console.log('FALLBACK PATCH applied');
             }
+            // Sonucu dogrula
+            const verify = fs.readFileSync(p, 'utf8');
+            const m = verify.match(/debuggableVariants\s*=\s*\[[^\]]*\]/);
+            console.log('Current value:', m ? m[0] : 'NOT FOUND');
           "
+
+          # ── FIX 2: JS bundle'i elle olustur (Gradle'dan bagimsiz) ─────────
+          # Bu, Gradle konfigurasyonundan bagimsiz olarak bundle'in APK'ya
+          # girmesini garanti eder.
+          mkdir -p android/app/src/main/assets
+          npx react-native bundle \
+            --platform android \
+            --dev false \
+            --entry-file index.js \
+            --bundle-output android/app/src/main/assets/index.android.bundle \
+            --assets-dest android/app/src/main/res \
+            --reset-cache
+          echo "Bundle olusturuldu: $(ls -lh android/app/src/main/assets/index.android.bundle)"
+
           ls android/app/
 
       - name: 🔨 Gradle Build (C:\y\ysports-mobile\android — kisa path)
