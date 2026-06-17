@@ -23,7 +23,7 @@ const SPORTS = [
   { id: 18, icon: '🤺', name: 'Eskrim',            cat: 'Dövüş' },
   { id: 19, icon: '🎳', name: 'Bowling',           cat: 'Bireysel' },
   { id: 20, icon: '🏌️', name: 'Golf',              cat: 'Bireysel' },
-  { id: 21, icon: '🏇', name: 'Biniciliik',        cat: 'Bireysel' },
+  { id: 21, icon: '🏇', name: 'Binicilik',          cat: 'Bireysel' },
   { id: 22, icon: '⛷️', name: 'Kayak',             cat: 'Kış' },
   { id: 23, icon: '🏂', name: 'Snowboard',         cat: 'Kış' },
   { id: 24, icon: '🛷', name: 'Kızak',             cat: 'Kış' },

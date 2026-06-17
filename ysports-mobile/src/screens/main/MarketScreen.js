@@ -116,7 +116,8 @@ export default function MarketScreen() {
               </View>
             ) : (
               packages.map(pkg => {
-                const features = Array.isArray(pkg.features) ? pkg.features : JSON.parse(pkg.features || '[]');
+                let features = [];
+                try { features = Array.isArray(pkg.features) ? pkg.features : JSON.parse(pkg.features || '[]'); } catch { features = []; }
                 return (
                   <View key={pkg.id} style={[s.pkgCard, { borderColor: (pkg.color || '#1a4fff') + '44' }]}>
                     <View style={s.pkgHeader}>
