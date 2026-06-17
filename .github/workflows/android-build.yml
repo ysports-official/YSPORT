@@ -116,16 +116,13 @@ jobs:
           "
 
           # ── FIX 2: JS bundle'i elle olustur (Gradle'dan bagimsiz) ─────────
-          # Bu, Gradle konfigurasyonundan bagimsiz olarak bundle'in APK'ya
-          # girmesini garanti eder.
+          # Expo SDK 52+ = expo export:embed  (react-native bundle artik yok)
           mkdir -p android/app/src/main/assets
-          npx react-native bundle \
+          npx expo export:embed \
             --platform android \
             --dev false \
-            --entry-file index.js \
             --bundle-output android/app/src/main/assets/index.android.bundle \
-            --assets-dest android/app/src/main/res \
-            --reset-cache
+            --assets-dest android/app/src/main/res
           echo "Bundle olusturuldu: $(ls -lh android/app/src/main/assets/index.android.bundle)"
 
           ls android/app/
