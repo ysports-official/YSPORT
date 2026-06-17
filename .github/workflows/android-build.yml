@@ -89,6 +89,9 @@ jobs:
           cd /c/y/ysports-mobile
           npx expo prebuild --platform android --non-interactive --clean
           echo "Prebuild tamamlandi."
+          # Debug build'de JS bundle APK'ya dahil edilsin
+          echo "" >> android/gradle.properties
+          echo "bundleInDebug=true" >> android/gradle.properties
           ls android/app/
 
       - name: 🔨 Gradle Build (C:\y\ysports-mobile\android — kisa path)
