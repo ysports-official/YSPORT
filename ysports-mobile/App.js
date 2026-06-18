@@ -39,9 +39,14 @@ export default function App() {
   const [user, setUser]             = useState(undefined);
 
   useEffect(() => {
-    const auth = getAuth(getApp());
-    const unsub = onAuthStateChanged(auth, u => setUser(u || null));
-    return unsub;
+    try {
+      const auth = getAuth(getApp());
+      const unsub = onAuthStateChanged(auth, u => setUser(u || null));
+      return unsub;
+    } catch (e) {
+      console.warn('[App] auth init failed:', e.message);
+      setUser(null);
+    }
   }, []);
 
   if (showSplash) {
