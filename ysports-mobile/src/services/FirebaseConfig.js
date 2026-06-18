@@ -11,12 +11,16 @@ const firebaseConfig = {
   appId:             "1:734566007827:web:da19d79901b6a4599d6be6",
 };
 
-// inMemoryPersistence: google-services.json ve Google Play Services gerektirmez
-// Android'de getAuth() native Play Services'e bağlanmaya çalışır → crash
 let app, auth;
 if (getApps().length === 0) {
-  app  = initializeApp(firebaseConfig);
-  auth = initializeAuth(app, { persistence: inMemoryPersistence });
+  app = initializeApp(firebaseConfig);
+  // ponytail: try/catch — Metro production occasionally strips firebase/auth
+  // component registration; getAuth() fallback keeps app alive either way
+  try {
+    auth = initializeAuth(app, { persistence: inMemoryPersistence });
+  } catch (_) {
+    auth = getAuth(app);
+  }
 } else {
   app  = getApp();
   auth = getAuth(app);
