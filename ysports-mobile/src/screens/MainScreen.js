@@ -4,11 +4,16 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Text, View, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import HomeScreen     from './main/HomeScreen';
-import MarketScreen   from './main/MarketScreen';
-import AthletesScreen from './main/AthletesScreen';
-import SportsScreen   from './main/SportsScreen';
-import LiveScreen     from './main/LiveScreen';
+import HomeScreen            from './main/HomeScreen';
+import MarketScreen          from './main/MarketScreen';
+import AthletesScreen        from './main/AthletesScreen';
+import SportsScreen          from './main/SportsScreen';
+import LiveScreen            from './main/LiveScreen';
+import SporcuDashboardScreen from './main/SporcuDashboardScreen';
+import ProfileSettingsScreen from './main/ProfileSettingsScreen';
+import ContractScreen        from './main/ContractScreen';
+import MediaCenterScreen     from './main/MediaCenterScreen';
+import OnboardingScreen      from './main/OnboardingScreen';
 // AIScreen lazy loaded — WebView/FileSystem native modülleri startup'ta yüklenmesin
 
 const Tab   = createBottomTabNavigator();
@@ -29,6 +34,11 @@ function HomeStack({ route }) {
         name="AICamera"
         getComponent={() => require('./main/AIScreen').default}
       />
+      <Stack.Screen name="SporcuDashboard" component={SporcuDashboardScreen} />
+      <Stack.Screen name="ProfileSettings" component={ProfileSettingsScreen} />
+      <Stack.Screen name="ContractView"    component={ContractScreen}        />
+      <Stack.Screen name="MediaCenter"     component={MediaCenterScreen}     />
+      <Stack.Screen name="Onboarding"      component={OnboardingScreen}      />
     </Stack.Navigator>
   );
 }

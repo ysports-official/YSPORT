@@ -88,6 +88,20 @@ export default function HomeScreen({ navigation, route }) {
           ))}
         </View>
 
+        {/* Sporcu Paneli Butonu */}
+        <TouchableOpacity
+          style={[s.aiBtn, { borderColor: '#00b97a44', marginBottom: 12 }]}
+          onPress={() => navigation.navigate('SporcuDashboard', { uid, role })}
+          activeOpacity={0.85}
+        >
+          <Text style={s.aiBtnIcon}>🏅</Text>
+          <View style={{ flex: 1, marginLeft: 12 }}>
+            <Text style={s.aiBtnTitle}>Sporcu Paneli</Text>
+            <Text style={s.aiBtnSub}>Dashboard, sözleşme ve medya merkezi</Text>
+          </View>
+          <Text style={[s.aiBtnArrow, { color: '#00b97a' }]}>›</Text>
+        </TouchableOpacity>
+
         {/* AI Kamera Butonu */}
         <TouchableOpacity
           style={s.aiBtn}
