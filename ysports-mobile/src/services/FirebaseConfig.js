@@ -1,5 +1,4 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { initializeAuth, inMemoryPersistence, getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -11,22 +10,12 @@ const firebaseConfig = {
   appId:             "1:734566007827:web:da19d79901b6a4599d6be6",
 };
 
-let app, auth;
-if (getApps().length === 0) {
-  app = initializeApp(firebaseConfig);
-  // ponytail: try/catch — Metro production occasionally strips firebase/auth
-  // component registration; getAuth() fallback keeps app alive either way
-  try {
-    auth = initializeAuth(app, { persistence: inMemoryPersistence });
-  } catch (_) {
-    auth = getAuth(app);
-  }
-} else {
-  app  = getApp();
-  auth = getAuth(app);
-}
+// ponytail: app+firestore safe at module level. Auth intentionally NOT initialized
+// here — initializeAuth() at module level crashes because firebase/auth component
+// isn't registered yet when Metro executes this module. Screens call getAuth(getApp())
+// inside useEffect where the runtime is ready.
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+const db  = getFirestore(app);
 
-const db = getFirestore(app);
-
-export { auth, db };
+export { db };
 export default app;
