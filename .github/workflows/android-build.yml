@@ -90,34 +90,22 @@ jobs:
           npx expo prebuild --platform android --non-interactive --clean
           echo "Prebuild tamamlandi."
 
-          # ── KALİCİ FİX: assembleRelease + minifyEnabled false ─────────────
-          # Debug build Metro'ya baglanmak icin tasarlandi — override etmek
-          # surekli yeni sorun cikariyor. Dogru yontem:
-          # Release build + ProGuard/R8 tamamen kapali = JS bundle her zaman var
-          node -e "
-            const fs = require('fs');
-            const p = 'android/app/build.gradle';
-            let c = fs.readFileSync(p, 'utf8');
+      - name: 📦 JS Bundle (Windows CI'da Gradle alt sureci node bulamiyor)
+        shell: bash
+        run: |
+          cd /c/y/ysports-mobile
+          mkdir -p android/app/src/main/assets
 
-            // release buildType'ta minifyEnabled false yap
-            c = c.replace(
-              /buildTypes\s*\{[^}]*release\s*\{[^}]*minifyEnabled\s+\w+/,
-              m => m.replace(/minifyEnabled\s+\w+/, 'minifyEnabled false')
-            );
-            // shrinkResources false
-            c = c.replace(
-              /buildTypes\s*\{[^}]*release\s*\{[^}]*shrinkResources\s+\w+/,
-              m => m.replace(/shrinkResources\s+\w+/, 'shrinkResources false')
-            );
+          node node_modules/.bin/react-native bundle \
+            --platform android \
+            --dev false \
+            --entry-file index.js \
+            --bundle-output android/app/src/main/assets/index.android.bundle \
+            --assets-dest android/app/src/main/res \
+            --reset-cache
 
-            fs.writeFileSync(p, c);
-
-            // Dogrula
-            const v = fs.readFileSync(p, 'utf8');
-            console.log('minifyEnabled:', v.match(/minifyEnabled\s+\w+/g));
-            console.log('shrinkResources:', v.match(/shrinkResources\s+\w+/g));
-          "
-          ls android/app/
+          echo "Bundle boyutu:"
+          ls -lh android/app/src/main/assets/index.android.bundle
 
       - name: 🔨 Gradle Build (C:\y\ysports-mobile\android — kisa path)
         shell: bash
