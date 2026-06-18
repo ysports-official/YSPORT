@@ -1,0 +1,8 @@
+appId: com.ysports.app
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    text: "Y SPORTS"
+    optional: true
+- takeScreenshot: launch_screen
