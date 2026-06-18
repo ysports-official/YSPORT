@@ -1,0 +1,21 @@
+default_platform(:android)
+
+platform :android do
+  desc "Build release APK"
+  lane :build_apk do
+    gradle(
+      task: "assemble",
+      build_type: "Release",
+      project_dir: "android/"
+    )
+  end
+
+  desc "Deploy to Play Store (internal track)"
+  lane :deploy_play do
+    supply(
+      track: "internal",
+      aab: "android/app/build/outputs/bundle/release/app-release.aab",
+      json_key_data: ENV["PLAY_STORE_JSON_KEY"]
+    )
+  end
+end

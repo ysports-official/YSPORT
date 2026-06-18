@@ -1,0 +1,46 @@
+name: Fastlane Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      lane:
+        description: 'Lane (build_apk / deploy_play)'
+        required: true
+        default: 'build_apk'
+
+permissions:
+  contents: write
+
+jobs:
+  fastlane:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+          working-directory: ysports-mobile
+
+      - name: 📦 Install dependencies
+        working-directory: ysports-mobile
+        run: npm install --legacy-peer-deps
+
+      - name: 🚀 Run Fastlane
+        working-directory: ysports-mobile
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          CREDENTIALS_JSON: ${{ secrets.CREDENTIALS_JSON }}
+          PLAY_STORE_JSON_KEY: ${{ secrets.PLAY_STORE_JSON_KEY }}
+        run: bundle exec fastlane ${{ github.event.inputs.lane }}
