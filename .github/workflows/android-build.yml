@@ -90,41 +90,33 @@ jobs:
           npx expo prebuild --platform android --non-interactive --clean
           echo "Prebuild tamamlandi."
 
-          # ── FIX 1: debuggableVariants ["debug"] → [] ──────────────────────
-          # Expo SDK 56 prebuild, build.gradle'a debuggableVariants = ["debug"]
-          # yazar. Bu, debug build'de JS bundle'ı devre disi birakir.
-          # Regex ile her durumda [] yapiyoruz.
+          # ── KALİCİ FİX: assembleRelease + minifyEnabled false ─────────────
+          # Debug build Metro'ya baglanmak icin tasarlandi — override etmek
+          # surekli yeni sorun cikariyor. Dogru yontem:
+          # Release build + ProGuard/R8 tamamen kapali = JS bundle her zaman var
           node -e "
             const fs = require('fs');
             const p = 'android/app/build.gradle';
             let c = fs.readFileSync(p, 'utf8');
-            const before = c;
-            c = c.replace(/debuggableVariants\s*=\s*\[[^\]]*\]/, 'debuggableVariants = []');
-            if (c !== before) {
-              fs.writeFileSync(p, c);
-              console.log('PATCHED: debuggableVariants = []');
-            } else {
-              // fallback: react { blogu yoksa ekle
-              c = c.replace('react {', 'react {\n    debuggableVariants = []');
-              fs.writeFileSync(p, c);
-              console.log('FALLBACK PATCH applied');
-            }
-            // Sonucu dogrula
-            const verify = fs.readFileSync(p, 'utf8');
-            const m = verify.match(/debuggableVariants\s*=\s*\[[^\]]*\]/);
-            console.log('Current value:', m ? m[0] : 'NOT FOUND');
+
+            // release buildType'ta minifyEnabled false yap
+            c = c.replace(
+              /buildTypes\s*\{[^}]*release\s*\{[^}]*minifyEnabled\s+\w+/,
+              m => m.replace(/minifyEnabled\s+\w+/, 'minifyEnabled false')
+            );
+            // shrinkResources false
+            c = c.replace(
+              /buildTypes\s*\{[^}]*release\s*\{[^}]*shrinkResources\s+\w+/,
+              m => m.replace(/shrinkResources\s+\w+/, 'shrinkResources false')
+            );
+
+            fs.writeFileSync(p, c);
+
+            // Dogrula
+            const v = fs.readFileSync(p, 'utf8');
+            console.log('minifyEnabled:', v.match(/minifyEnabled\s+\w+/g));
+            console.log('shrinkResources:', v.match(/shrinkResources\s+\w+/g));
           "
-
-          # ── FIX 2: JS bundle'i elle olustur (Gradle'dan bagimsiz) ─────────
-          # Expo SDK 52+ = expo export:embed  (react-native bundle artik yok)
-          mkdir -p android/app/src/main/assets
-          npx expo export:embed \
-            --platform android \
-            --dev false \
-            --bundle-output android/app/src/main/assets/index.android.bundle \
-            --assets-dest android/app/src/main/res
-          echo "Bundle olusturuldu: $(ls -lh android/app/src/main/assets/index.android.bundle)"
-
           ls android/app/
 
       - name: 🔨 Gradle Build (C:\y\ysports-mobile\android — kisa path)
@@ -151,9 +143,16 @@ jobs:
             cp app/build/outputs/bundle/release/app-release.aab "$GITHUB_WORKSPACE/app-release.aab"
             echo "BUILD_EXT=aab" >> $GITHUB_ENV
           else
-            echo "APK (assembleDebug) build baslatiliyor — ProGuard kapali, standalone bundle..."
-            ./gradlew assembleDebug --no-daemon
-            cp app/build/outputs/apk/debug/app-debug.apk "$GITHUB_WORKSPACE/app-release.apk"
+            # assembleRelease + debug keystore + minifyEnabled false (ProGuard kapali)
+            # Debug build Metro'ya baglanmak icin tasarlanmis — release build
+            # her zaman JS bundle'i icerir, ProGuard kapali olunca class stripping yok.
+            echo "APK (assembleRelease, ProGuard kapali) build baslatiliyor..."
+            ./gradlew assembleRelease --no-daemon \
+              -Pandroid.injected.signing.store.file="$KEYSTORE" \
+              -Pandroid.injected.signing.store.password=android \
+              -Pandroid.injected.signing.key.alias=androiddebugkey \
+              -Pandroid.injected.signing.key.password=android
+            cp app/build/outputs/apk/release/app-release.apk "$GITHUB_WORKSPACE/app-release.apk"
             echo "BUILD_EXT=apk" >> $GITHUB_ENV
           fi
 
