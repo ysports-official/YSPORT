@@ -3,6 +3,7 @@
     "newArchEnabled": false,
     "name": "Y SPORTS",
     "slug": "ysports-mobile",
+    "owner": "ysports",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
