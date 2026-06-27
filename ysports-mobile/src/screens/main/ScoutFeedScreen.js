@@ -10,7 +10,7 @@ import {
   addDoc, doc, where, serverTimestamp,
 } from 'firebase/firestore';
 import { getApp } from 'firebase/app';
-import { auth } from '../../services/FirebaseConfig';
+import { getAuth } from 'firebase/auth';
 
 const { width: W, height: H } = Dimensions.get('window');
 const SWIPE_THRESHOLD = W * 0.28;
@@ -326,8 +326,8 @@ export default function ScoutFeedScreen({ navigation }) {
     let cancelled = false;
     (async () => {
       try {
-        await auth.authStateReady();
-        const u = auth.currentUser;
+        await getAuth(getApp()).authStateReady();
+        const u = getAuth(getApp()).currentUser;
         if (u) setUid(u.uid);
 
         const db   = getFirestore(getApp());

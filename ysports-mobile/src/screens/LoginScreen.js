@@ -4,10 +4,9 @@ import {
   SafeAreaView, KeyboardAvoidingView, Platform, ScrollView,
   ActivityIndicator, Alert, StatusBar,
 } from 'react-native';
-import { signInAnonymously } from 'firebase/auth';
 import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { getApp } from 'firebase/app';
-import { auth } from '../services/FirebaseConfig';
+import { signInAnonymously, getAuth } from 'firebase/auth';
 
 const TEST_PHONE = '5550000000';
 const TEST_CODE  = '123456';
@@ -64,7 +63,7 @@ export default function LoginScreen({ navigation, route }) {
     const isTest = phone.replace(/\D/g, '').endsWith(TEST_PHONE) && otp === TEST_CODE;
     if (isTest) {
       try {
-        const res = await signInAnonymously(auth);
+        const res = await signInAnonymously(getAuth(getApp()));
         await saveUser(res.user, role);
         setStage('done'); setMsg('Giriş başarılı!');
         setTimeout(() => navigation.replace('Main', { role, uid: res.user.uid }), 700);
@@ -77,7 +76,7 @@ export default function LoginScreen({ navigation, route }) {
   const handleGoogle = async () => {
     setStage('sending'); setMsg('Bağlanılıyor...');
     try {
-      const res = await signInAnonymously(auth);
+      const res = await signInAnonymously(getAuth(getApp()));
       await saveUser(res.user, role);
       setStage('done'); setMsg('Giriş başarılı!');
       setTimeout(() => navigation.replace('Main', { role, uid: res.user.uid }), 700);

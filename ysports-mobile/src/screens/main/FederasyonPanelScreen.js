@@ -8,8 +8,8 @@ import {
   getFirestore, doc, getDoc, setDoc, collection,
   addDoc, getDocs, query, where, serverTimestamp,
 } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 import { getApp } from 'firebase/app';
-import { auth } from '../../services/FirebaseConfig';
 
 const db = getFirestore(getApp());
 
@@ -45,8 +45,9 @@ export default function FederasyonPanelScreen({ navigation, route }) {
   useEffect(() => {
     let active = true;
     (async () => {
-      await auth.authStateReady();
-      const resolvedUid = auth.currentUser?.uid || route?.params?.uid;
+      const auth = getAuth(getApp());
+      await getAuth(getApp()).authStateReady();
+      const resolvedUid = getAuth(getApp()).currentUser?.uid || route?.params?.uid;
       if (!resolvedUid) { setLoading(false); return; }
       if (active) setUid(resolvedUid);
 

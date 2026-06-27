@@ -6,7 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getFirestore, doc, getDoc, collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
 import { getApp } from 'firebase/app';
-import { auth } from '../../services/FirebaseConfig';
+import { getAuth } from 'firebase/auth';
 
 const LOGO = require('../../../assets/icon.png');
 
@@ -31,8 +31,8 @@ export default function HomeScreen({ navigation, route }) {
   useEffect(() => {
     (async () => {
       try {
-        await auth.authStateReady();
-        const u = auth.currentUser;
+        await getAuth(getApp()).authStateReady();
+        const u = getAuth(getApp()).currentUser;
         if (!u) { setLoading(false); return; }
         const db = getFirestore(getApp());
         const snap = await getDoc(doc(db, 'users', u.uid));

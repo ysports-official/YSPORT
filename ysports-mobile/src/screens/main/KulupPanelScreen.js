@@ -10,8 +10,8 @@ import {
   addDoc, getDocs, query, where, orderBy, limit,
   serverTimestamp,
 } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 import { getApp } from 'firebase/app';
-import { auth } from '../../services/FirebaseConfig';
 
 const db = getFirestore(getApp());
 
@@ -46,7 +46,7 @@ function Empty({ msg }) {
 
 // ─── Main Screen ─────────────────────────────────────────────────
 export default function KulupPanelScreen({ navigation, route }) {
-  const uid  = route?.params?.uid  || auth.currentUser?.uid || '';
+  const uid  = route?.params?.uid  || getAuth(getApp()).currentUser?.uid || '';
   const role = route?.params?.role || 'kulup';
 
   const [loading,  setLoading]  = useState(true);
@@ -77,7 +77,7 @@ export default function KulupPanelScreen({ navigation, route }) {
 
   // ── Yükle ──
   const loadAll = useCallback(async () => {
-    await auth.authStateReady();
+    await getAuth(getApp()).authStateReady();
     const kulupRef = doc(db, 'kulupler', uid);
     const snap = await getDoc(kulupRef);
     const data = snap.exists() ? snap.data() : {};
