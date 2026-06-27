@@ -5,10 +5,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { getApp } from 'firebase/app';
+import { onAuthStateChanged } from 'firebase/auth';
 
-import './src/services/FirebaseConfig';
+import { auth } from './src/services/FirebaseConfig';
 
 import SplashScreen     from './src/screens/SplashScreen';
 import RoleSelectScreen from './src/screens/RoleSelectScreen';
@@ -40,7 +39,6 @@ export default function App() {
 
   useEffect(() => {
     try {
-      const auth = getAuth(getApp());
       const unsub = onAuthStateChanged(auth, u => setUser(u || null));
       return unsub;
     } catch (e) {

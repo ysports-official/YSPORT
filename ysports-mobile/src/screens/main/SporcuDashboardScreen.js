@@ -4,7 +4,7 @@ import {
   StatusBar, ActivityIndicator, Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getAuth } from 'firebase/auth';
+import { auth } from '../../../services/FirebaseConfig';
 import {
   getFirestore, doc, getDoc, collection, getDocs,
   query, where, orderBy, limit, updateDoc, serverTimestamp,
@@ -40,7 +40,6 @@ export default function SporcuDashboardScreen({ navigation }) {
     let cancelled = false;
     (async () => {
       try {
-        const auth = getAuth(getApp());
         await auth.authStateReady();
         const u = auth.currentUser;
         if (!u || cancelled) { setLoading(false); return; }

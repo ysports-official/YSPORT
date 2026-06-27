@@ -9,10 +9,9 @@ import {
   addDoc, getDocs, query, where, serverTimestamp,
 } from 'firebase/firestore';
 import { getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { auth } from '../../services/FirebaseConfig';
 
-const db   = getFirestore(getApp());
-const auth = getAuth(getApp());
+const db = getFirestore(getApp());
 
 export default function FederasyonPanelScreen({ navigation, route }) {
   const [uid, setUid]               = useState(route?.params?.uid || null);

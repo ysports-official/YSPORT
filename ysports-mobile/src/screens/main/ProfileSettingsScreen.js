@@ -4,9 +4,9 @@ import {
   StyleSheet, StatusBar, Switch, Alert, ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 import { getApp } from 'firebase/app';
+import { auth } from '../../../services/FirebaseConfig';
 
 export default function ProfileSettingsScreen({ navigation, route }) {
   const uid  = route?.params?.uid  || '';
@@ -28,7 +28,6 @@ export default function ProfileSettingsScreen({ navigation, route }) {
   useEffect(() => {
     (async () => {
       try {
-        const auth = getAuth(getApp());
         await auth.authStateReady();
         const u = auth.currentUser;
         if (!u) { setLoading(false); return; }
@@ -53,7 +52,6 @@ export default function ProfileSettingsScreen({ navigation, route }) {
   const save = async () => {
     setSaving(true);
     try {
-      const auth = getAuth(getApp());
       const u = auth.currentUser;
       if (!u) throw new Error('Oturum yok');
       await setDoc(doc(getFirestore(getApp()), 'users', u.uid), {
@@ -187,7 +185,7 @@ export default function ProfileSettingsScreen({ navigation, route }) {
           style={s.logoutBtn}
           onPress={() => Alert.alert('Çıkış', 'Hesabınızdan çıkmak istiyor musunuz?', [
             { text: 'İptal', style: 'cancel' },
-            { text: 'Çıkış Yap', style: 'destructive', onPress: () => getAuth(getApp()).signOut() },
+            { text: 'Çıkış Yap', style: 'destructive', onPress: () => auth.signOut() },
           ])}
         >
           <Text style={s.logoutText}>Hesaptan Çıkış Yap</Text>

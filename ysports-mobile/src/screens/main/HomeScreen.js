@@ -4,9 +4,9 @@ import {
   StatusBar, ActivityIndicator, Image, Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getAuth } from 'firebase/auth';
 import { getFirestore, doc, getDoc, collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
 import { getApp } from 'firebase/app';
+import { auth } from '../../../services/FirebaseConfig';
 
 const LOGO = require('../../../assets/icon.png');
 
@@ -31,7 +31,6 @@ export default function HomeScreen({ navigation, route }) {
   useEffect(() => {
     (async () => {
       try {
-        const auth = getAuth(getApp());
         await auth.authStateReady();
         const u = auth.currentUser;
         if (!u) { setLoading(false); return; }

@@ -1,5 +1,7 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
+import { initializeAuth, getReactNativePersistence, getAuth } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const firebaseConfig = {
   apiKey:            "AIzaSyD-6fZ_7ZS3cnS--VGcib_f6n_S2wG5QVw",
@@ -10,12 +12,19 @@ const firebaseConfig = {
   appId:             "1:734566007827:web:da19d79901b6a4599d6be6",
 };
 
-// ponytail: app+firestore safe at module level. Auth intentionally NOT initialized
-// here — initializeAuth() at module level crashes because firebase/auth component
-// isn't registered yet when Metro executes this module. Screens call getAuth(getApp())
-// inside useEffect where the runtime is ready.
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-const db  = getFirestore(app);
 
-export { db };
+// ponytail: initializeAuth ilk calistirilisda, getAuth hot-reload'da
+let auth;
+try {
+  auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(AsyncStorage),
+  });
+} catch {
+  auth = getAuth(app);
+}
+
+const db = getFirestore(app);
+
+export { db, auth };
 export default app;

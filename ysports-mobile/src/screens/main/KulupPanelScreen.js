@@ -11,10 +11,9 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { auth } from '../../services/FirebaseConfig';
 
-const db   = getFirestore(getApp());
-const auth = getAuth(getApp());
+const db = getFirestore(getApp());
 
 const C = {
   bg: '#090b11', card: '#161d2e', border: '#1e2d4a',
