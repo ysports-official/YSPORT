@@ -5,9 +5,13 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { onAuthStateChanged } from 'firebase/auth';
+import {
+  initializeAuth, getAuth, getReactNativePersistence, onAuthStateChanged,
+} from 'firebase/auth';
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import { getApp } from 'firebase/app';
 
-import { auth } from './src/services/FirebaseConfig';
+import './src/services/FirebaseConfig';
 
 import SplashScreen     from './src/screens/SplashScreen';
 import RoleSelectScreen from './src/screens/RoleSelectScreen';
@@ -38,6 +42,14 @@ export default function App() {
   const [user, setUser]             = useState(undefined);
 
   useEffect(() => {
+    let auth;
+    try {
+      auth = initializeAuth(getApp(), {
+        persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+      });
+    } catch (_) {
+      auth = getAuth(getApp());
+    }
     try {
       const unsub = onAuthStateChanged(auth, u => setUser(u || null));
       return unsub;
