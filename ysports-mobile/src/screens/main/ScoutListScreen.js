@@ -1,3 +1,4 @@
+import { auth } from '../../services/FirebaseConfig';
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet,
@@ -6,7 +7,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getFirestore, collection, getDocs, query, where, orderBy, limit } from 'firebase/firestore';
 import { getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
 
 const TABS = [
   { key: 'all',      label: 'Tümü'    },
@@ -42,8 +42,8 @@ export default function ScoutListScreen({ navigation }) {
   const load = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
     try {
-      await getAuth(getApp()).authStateReady();
-      const uid = getAuth(getApp()).currentUser?.uid;
+      await auth.authStateReady();
+      const uid = auth.currentUser?.uid;
       if (!uid) { setLoading(false); return; }
       const db = getFirestore(getApp());
       const snap = await getDocs(

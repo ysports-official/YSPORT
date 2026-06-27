@@ -1,3 +1,4 @@
+import { auth } from '../../services/FirebaseConfig';
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
   SafeAreaView, ScrollView, View, Text, TextInput, TouchableOpacity,
@@ -5,7 +6,6 @@ import {
 } from 'react-native';
 import { getFirestore, doc, getDoc, setDoc, collection, addDoc, getDocs,
   query, where, orderBy, limit, serverTimestamp } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
 import { getApp } from 'firebase/app';
 
 // ponytail: lazy getter — avoids module-level getApp() before Firebase init
@@ -34,8 +34,8 @@ export default function IlTemsilcisiPanelScreen({ navigation, route }) {
   // ── init ──
   useEffect(() => {
     (async () => {
-      await getAuth(getApp()).authStateReady();
-      const currentUid = getAuth(getApp()).currentUser?.uid;
+      await auth.authStateReady();
+      const currentUid = auth.currentUser?.uid;
       if (currentUid) setUid(currentUid);
       const resolvedUid = currentUid || uid;
       if (!resolvedUid) { setLoading(false); return; }

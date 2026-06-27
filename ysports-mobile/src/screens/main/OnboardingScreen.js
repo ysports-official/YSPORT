@@ -1,3 +1,4 @@
+import { auth } from '../../services/FirebaseConfig';
 import React, { useState } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, TextInput,
@@ -6,7 +7,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import { getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
 
 const SPORTS = [
   { value: 'Futbol',     label: '⚽ Futbol' },
@@ -57,7 +57,7 @@ export default function OnboardingScreen({ navigation, route }) {
     }
     setSaving(true);
     try {
-      const u = getAuth(getApp()).currentUser;
+      const u = auth.currentUser;
       if (!u) throw new Error('Oturum yok');
       await setDoc(doc(getFirestore(getApp()), 'users', u.uid), {
         sporDali: selectedSport,

@@ -1,3 +1,4 @@
+import { auth } from '../../services/FirebaseConfig';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View, Text, StyleSheet, Dimensions, Animated,
@@ -10,7 +11,6 @@ import {
   addDoc, doc, where, serverTimestamp,
 } from 'firebase/firestore';
 import { getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
 
 const { width: W, height: H } = Dimensions.get('window');
 const SWIPE_THRESHOLD = W * 0.28;
@@ -326,8 +326,8 @@ export default function ScoutFeedScreen({ navigation }) {
     let cancelled = false;
     (async () => {
       try {
-        await getAuth(getApp()).authStateReady();
-        const u = getAuth(getApp()).currentUser;
+        await auth.authStateReady();
+        const u = auth.currentUser;
         if (u) setUid(u.uid);
 
         const db   = getFirestore(getApp());
