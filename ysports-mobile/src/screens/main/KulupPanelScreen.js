@@ -2,8 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   View, Text, ScrollView, TextInput, TouchableOpacity,
   FlatList, Modal, Alert, ActivityIndicator,
-  StyleSheet, StatusBar, SafeAreaView,
+  StyleSheet, StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   getFirestore, doc, getDoc, setDoc, collection,
   addDoc, getDocs, query, where, orderBy, limit,

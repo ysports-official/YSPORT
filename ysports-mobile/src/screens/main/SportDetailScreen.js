@@ -109,9 +109,9 @@ export default function SportDetailScreen({ route, navigation }) {
                   <Text style={s.sporcuName}>{sp.ad || sp.displayName || 'İsimsiz'}</Text>
                   <Text style={s.sporcuSub}>{sp.sehir || sp.city || '—'}</Text>
                 </View>
-                {sp.sgd != null && (
+                {sp.sgdScore != null && (
                   <View style={s.sgdBadge}>
-                    <Text style={s.sgdText}>{sp.sgd} SGD</Text>
+                    <Text style={s.sgdText}>{sp.sgdScore} SGD</Text>
                   </View>
                 )}
               </View>

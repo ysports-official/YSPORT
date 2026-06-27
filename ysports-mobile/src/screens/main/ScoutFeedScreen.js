@@ -7,7 +7,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   getFirestore, collection, getDocs, query, orderBy, limit,
-  addDoc, updateDoc, doc, where, serverTimestamp,
+  addDoc, doc, where, serverTimestamp,
 } from 'firebase/firestore';
 import { getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';

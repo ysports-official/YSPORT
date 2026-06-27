@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
   SafeAreaView, ScrollView, View, Text, TextInput, TouchableOpacity,
   ActivityIndicator, FlatList, StatusBar, StyleSheet, Alert,
@@ -29,6 +29,7 @@ export default function IlTemsilcisiPanelScreen({ navigation, route }) {
   const [loading, setLoading]       = useState(true);
   const [saving, setSaving]         = useState(false);
   const [saved, setSaved]           = useState(false);
+  const scrollRef = useRef(null);
 
   // ── init ──
   useEffect(() => {
@@ -167,7 +168,7 @@ export default function IlTemsilcisiPanelScreen({ navigation, route }) {
   return (
     <SafeAreaView style={s.root}>
       <StatusBar barStyle="light-content" backgroundColor={C.bg} />
-      <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
+      <ScrollView ref={scrollRef} contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
 
         {/* ── Header ── */}
         <View style={s.header}>
@@ -178,7 +179,7 @@ export default function IlTemsilcisiPanelScreen({ navigation, route }) {
               <Text style={s.badgeText}>📍 İl Temsilcisi</Text>
             </View>
           </View>
-          <TouchableOpacity style={s.editBtn} onPress={() => {}}>
+          <TouchableOpacity style={s.editBtn} onPress={() => scrollRef.current?.scrollToEnd({ animated: true })}>
             <Text style={s.editBtnText}>Düzenle</Text>
           </TouchableOpacity>
         </View>

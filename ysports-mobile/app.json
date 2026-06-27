@@ -5,8 +5,14 @@
     "owner": "ysports",
     "version": "1.0.0",
     "orientation": "portrait",
+    "scheme": "ysports",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#090b11"
+    },
     "ios": {
       "supportsTablet": true
     },
