@@ -6,7 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getFirestore, doc, getDoc, collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
 import { getApp } from 'firebase/app';
-import { auth } from '../../../services/FirebaseConfig';
+import { auth } from '../../services/FirebaseConfig';
 
 const LOGO = require('../../../assets/icon.png');
 

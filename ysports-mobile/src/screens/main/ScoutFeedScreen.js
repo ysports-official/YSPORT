@@ -10,7 +10,7 @@ import {
   addDoc, doc, where, serverTimestamp,
 } from 'firebase/firestore';
 import { getApp } from 'firebase/app';
-import { auth } from '../../../services/FirebaseConfig';
+import { auth } from '../../services/FirebaseConfig';
 
 const { width: W, height: H } = Dimensions.get('window');
 const SWIPE_THRESHOLD = W * 0.28;

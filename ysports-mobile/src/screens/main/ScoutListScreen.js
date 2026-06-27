@@ -6,7 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getFirestore, collection, getDocs, query, where, orderBy, limit } from 'firebase/firestore';
 import { getApp } from 'firebase/app';
-import { auth } from '../../../services/FirebaseConfig';
+import { auth } from '../../services/FirebaseConfig';
 
 const TABS = [
   { key: 'all',      label: 'Tümü'    },

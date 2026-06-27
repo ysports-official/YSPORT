@@ -4,7 +4,7 @@ import {
   StatusBar, ActivityIndicator, Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { auth } from '../../../services/FirebaseConfig';
+import { auth } from '../../services/FirebaseConfig';
 import {
   getFirestore, doc, getDoc, collection, getDocs,
   query, where, orderBy, limit, updateDoc, serverTimestamp,

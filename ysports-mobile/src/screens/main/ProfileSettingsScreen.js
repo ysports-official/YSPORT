@@ -6,7 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 import { getApp } from 'firebase/app';
-import { auth } from '../../../services/FirebaseConfig';
+import { auth } from '../../services/FirebaseConfig';
 
 export default function ProfileSettingsScreen({ navigation, route }) {
   const uid  = route?.params?.uid  || '';
