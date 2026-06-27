@@ -8,7 +8,8 @@ import { getFirestore, doc, getDoc, setDoc, collection, addDoc, getDocs,
 import { getAuth } from 'firebase/auth';
 import { getApp } from 'firebase/app';
 
-const db = getFirestore(getApp());
+// ponytail: lazy getter — avoids module-level getApp() before Firebase init
+const db = () => getFirestore(getApp());
 
 const C = {
   bg: '#090b11', card: '#161d2e', border: '#1e2d4a',
@@ -33,7 +34,6 @@ export default function IlTemsilcisiPanelScreen({ navigation, route }) {
   // ── init ──
   useEffect(() => {
     (async () => {
-      const auth = getAuth(getApp());
       await getAuth(getApp()).authStateReady();
       const currentUid = getAuth(getApp()).currentUser?.uid;
       if (currentUid) setUid(currentUid);
@@ -42,8 +42,8 @@ export default function IlTemsilcisiPanelScreen({ navigation, route }) {
 
       try {
         const [userSnap, temsilciSnap] = await Promise.all([
-          getDoc(doc(db, 'users', resolvedUid)),
-          getDoc(doc(db, 'ilTemsilcileri', resolvedUid)),
+          getDoc(doc(db(), 'users', resolvedUid)),
+          getDoc(doc(db(), 'ilTemsilcileri', resolvedUid)),
         ]);
         if (userSnap.exists()) setProfile(p => ({ ...p, ...userSnap.data() }));
         if (temsilciSnap.exists()) setTemsilci(t => ({ ...t, ...temsilciSnap.data() }));
@@ -64,13 +64,13 @@ export default function IlTemsilcisiPanelScreen({ navigation, route }) {
     try {
       // ponytail: count queries via getDocs length — good enough for now, upgrade to count() aggregation if >10k docs
       const [sSnap, kSnap, fSnap] = await Promise.all([
-        getDocs(query(collection(db, 'sporcular'), where('il', '==', il), limit(500))),
-        getDocs(query(collection(db, 'kulupler'),  where('il', '==', il), limit(500))),
-        getDocs(query(collection(db, 'federasyonlar'), where('il', '==', il), limit(500))),
+        getDocs(query(collection(db(), 'sporcular'), where('il', '==', il), limit(500))),
+        getDocs(query(collection(db(), 'kulupler'),  where('il', '==', il), limit(500))),
+        getDocs(query(collection(db(), 'federasyonlar'), where('il', '==', il), limit(500))),
       ]);
       const thisMonth = new Date(); thisMonth.setDate(1); thisMonth.setHours(0,0,0,0);
       const yeniSnap = await getDocs(query(
-        collection(db, 'sporcular'),
+        collection(db(), 'sporcular'),
         where('il', '==', il),
         where('createdAt', '>=', thisMonth),
         limit(500),
@@ -83,7 +83,7 @@ export default function IlTemsilcisiPanelScreen({ navigation, route }) {
     if (!il) return;
     try {
       const snap = await getDocs(query(
-        collection(db, 'pendingAthletes'),
+        collection(db(), 'pendingAthletes'),
         where('il', '==', il),
         orderBy('createdAt', 'desc'),
         limit(20),
@@ -96,7 +96,7 @@ export default function IlTemsilcisiPanelScreen({ navigation, route }) {
     if (!il) return;
     try {
       const snap = await getDocs(query(
-        collection(db, 'duyurular'),
+        collection(db(), 'duyurular'),
         where('il', '==', il),
         orderBy('createdAt', 'desc'),
         limit(5),
@@ -107,7 +107,7 @@ export default function IlTemsilcisiPanelScreen({ navigation, route }) {
 
   const handleApprove = async (athlete) => {
     try {
-      await setDoc(doc(db, 'sporcular', athlete.id), {
+      await setDoc(doc(db(), 'sporcular', athlete.id), {
         approved: true, approvedBy: uid, approvedAt: serverTimestamp(),
       }, { merge: true });
       setPending(p => p.filter(a => a.id !== athlete.id));
@@ -116,7 +116,7 @@ export default function IlTemsilcisiPanelScreen({ navigation, route }) {
 
   const handleReject = async (athlete) => {
     try {
-      await setDoc(doc(db, 'sporcular', athlete.id), {
+      await setDoc(doc(db(), 'sporcular', athlete.id), {
         approved: false, rejectedReason: 'İl temsilcisi reddetti',
       }, { merge: true });
       setPending(p => p.filter(a => a.id !== athlete.id));
@@ -126,7 +126,7 @@ export default function IlTemsilcisiPanelScreen({ navigation, route }) {
   const handleDuyuru = async () => {
     if (!duyuruText.trim()) return;
     try {
-      await addDoc(collection(db, 'duyurular'), {
+      await addDoc(collection(db(), 'duyurular'), {
         text: duyuruText.trim(), scope: 'il', il: temsilci.il,
         createdBy: uid, createdAt: serverTimestamp(),
       });
@@ -138,7 +138,7 @@ export default function IlTemsilcisiPanelScreen({ navigation, route }) {
   const handleIlceEkle = async () => {
     if (!ilceInput.trim()) return;
     try {
-      await addDoc(collection(db, 'ilTemsilcileri', uid, 'ilceler'), {
+      await addDoc(collection(db(), 'ilTemsilcileri', uid, 'ilceler'), {
         ad: ilceInput.trim(), createdAt: serverTimestamp(),
       });
       setTemsilci(t => ({ ...t, ilce: [...(t.ilce || []), ilceInput.trim()] }));
@@ -149,8 +149,8 @@ export default function IlTemsilcisiPanelScreen({ navigation, route }) {
   const handleSaveProfile = async () => {
     setSaving(true); setSaved(false);
     try {
-      await setDoc(doc(db, 'ilTemsilcileri', uid), { ...profile, il: temsilci.il }, { merge: true });
-      await setDoc(doc(db, 'users', uid), profile, { merge: true });
+      await setDoc(doc(db(), 'ilTemsilcileri', uid), { ...profile, il: temsilci.il }, { merge: true });
+      await setDoc(doc(db(), 'users', uid), profile, { merge: true });
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     } catch (e) { console.warn('saveProfile:', e); Alert.alert('Hata', 'Kaydedilemedi.'); }

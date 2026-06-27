@@ -11,7 +11,8 @@ import {
 import { getAuth } from 'firebase/auth';
 import { getApp } from 'firebase/app';
 
-const db = getFirestore(getApp());
+// ponytail: lazy getter — avoids module-level getApp() before Firebase init
+const db = () => getFirestore(getApp());
 
 export default function FederasyonPanelScreen({ navigation, route }) {
   const [uid, setUid]               = useState(route?.params?.uid || null);
@@ -45,7 +46,6 @@ export default function FederasyonPanelScreen({ navigation, route }) {
   useEffect(() => {
     let active = true;
     (async () => {
-      const auth = getAuth(getApp());
       await getAuth(getApp()).authStateReady();
       const resolvedUid = getAuth(getApp()).currentUser?.uid || route?.params?.uid;
       if (!resolvedUid) { setLoading(false); return; }
@@ -53,9 +53,9 @@ export default function FederasyonPanelScreen({ navigation, route }) {
 
       try {
         const [fedSnap, sporcuSnap, duyuruSnap] = await Promise.all([
-          getDoc(doc(db, 'federasyonlar', resolvedUid)),
-          getDocs(collection(db, 'sporcular')),
-          getDocs(query(collection(db, 'duyurular'), where('fedUid', '==', resolvedUid))),
+          getDoc(doc(db(), 'federasyonlar', resolvedUid)),
+          getDocs(collection(db(), 'sporcular')),
+          getDocs(query(collection(db(), 'duyurular'), where('fedUid', '==', resolvedUid))),
         ]);
 
         if (!active) return;
@@ -93,7 +93,7 @@ export default function FederasyonPanelScreen({ navigation, route }) {
     if (!uid) return;
     setSaving(true);
     try {
-      await setDoc(doc(db, 'federasyonlar', uid), {
+      await setDoc(doc(db(), 'federasyonlar', uid), {
         fedAdi, email, telefon, updatedAt: serverTimestamp(),
       }, { merge: true });
       Alert.alert('Kaydedildi', 'Federasyon bilgileri güncellendi.');
@@ -108,7 +108,7 @@ export default function FederasyonPanelScreen({ navigation, route }) {
   // ─── Sporcu listesi ─────────────────────────────────────────────
   const sporcuListesiGor = useCallback(async () => {
     try {
-      const snap = await getDocs(collection(db, 'sporcular'));
+      const snap = await getDocs(collection(db(), 'sporcular'));
       const list = [];
       snap.forEach(s => list.push({ id: s.id, ...s.data() }));
       setSporcular(list);
@@ -122,7 +122,7 @@ export default function FederasyonPanelScreen({ navigation, route }) {
   const onaylariGor = useCallback(async () => {
     try {
       const snap = await getDocs(
-        query(collection(db, 'sporcular'), where('onayDurumu', '==', 'bekliyor'))
+        query(collection(db(), 'sporcular'), where('onayDurumu', '==', 'bekliyor'))
       );
       const list = [];
       snap.forEach(s => list.push({ id: s.id, ...s.data() }));
@@ -135,7 +135,7 @@ export default function FederasyonPanelScreen({ navigation, route }) {
 
   const sporcuOnayla = useCallback(async (sporcuId) => {
     try {
-      await setDoc(doc(db, 'sporcular', sporcuId), { onayDurumu: 'onaylı' }, { merge: true });
+      await setDoc(doc(db(), 'sporcular', sporcuId), { onayDurumu: 'onaylı' }, { merge: true });
       setPendingList(prev => prev.filter(s => s.id !== sporcuId));
     } catch (e) {
       console.warn('onayla error:', e);
@@ -150,11 +150,11 @@ export default function FederasyonPanelScreen({ navigation, route }) {
     }
     setLisansSaving(true);
     try {
-      await addDoc(collection(db, 'lisanslar'), {
+      await addDoc(collection(db(), 'lisanslar'), {
         fedUid: uid, sporcuAdi: lisansAdi, lisansNo,
         createdAt: serverTimestamp(),
       });
-      await setDoc(doc(db, 'federasyonlar', uid), {
+      await setDoc(doc(db(), 'federasyonlar', uid), {
         lisansSayisi: (stats.lisans || 0) + 1,
       }, { merge: true });
       setStats(s => ({ ...s, lisans: s.lisans + 1 }));
@@ -174,7 +174,7 @@ export default function FederasyonPanelScreen({ navigation, route }) {
     if (!duyuruText.trim()) return;
     setDuyuruSaving(true);
     try {
-      const ref = await addDoc(collection(db, 'duyurular'), {
+      const ref = await addDoc(collection(db(), 'duyurular'), {
         fedUid: uid, metin: duyuruText, createdAt: serverTimestamp(),
       });
       setDuyurular(prev => [{ id: ref.id, metin: duyuruText }, ...prev].slice(0, 3));
