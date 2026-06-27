@@ -3,7 +3,8 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, StatusBar, Alert,
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../../services/SupabaseConfig';
 
-export default function MarketScreen() {
+
+export default function MarketScreen({ navigation }) {
   const [tab, setTab]           = useState('piyasa');
   const [athletes,  setAthletes]  = useState([]);
   const [packages,  setPackages]  = useState([]);
@@ -146,6 +147,20 @@ export default function MarketScreen() {
             )}
           </>
         )}
+
+        {/* Scout Feed Banner */}
+        <TouchableOpacity
+          style={s.scoutBanner}
+          onPress={() => navigation.navigate('Scout')}
+          activeOpacity={0.85}
+        >
+          <Text style={s.scoutBannerIcon}>🔍</Text>
+          <View style={{ flex: 1, marginLeft: 12 }}>
+            <Text style={s.scoutBannerTitle}>Scout Feed</Text>
+            <Text style={s.scoutBannerSub}>Sporcuları kaydır, beğen, eşleş</Text>
+          </View>
+          <Text style={s.scoutBannerArrow}>›</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -187,4 +202,9 @@ const s = StyleSheet.create({
   featureText:   { color: '#8ba8d4', fontSize: 13 },
   pkgBtn:        { marginTop: 14, borderRadius: 12, paddingVertical: 14, alignItems: 'center' },
   pkgBtnText:    { color: '#fff', fontSize: 14, fontWeight: '900' },
+  scoutBanner:      { backgroundColor: '#130820', borderRadius: 16, padding: 16, flexDirection: 'row', alignItems: 'center', marginTop: 8, borderWidth: 1.5, borderColor: '#8b2fff88', shadowColor: '#8b2fff', shadowRadius: 10, shadowOpacity: 0.25, elevation: 6 },
+  scoutBannerIcon:  { fontSize: 26 },
+  scoutBannerTitle: { color: '#fff', fontSize: 15, fontWeight: '800' },
+  scoutBannerSub:   { color: '#8b2fff99', fontSize: 11, marginTop: 2 },
+  scoutBannerArrow: { color: '#8b2fff', fontSize: 28, fontWeight: '700' },
 });

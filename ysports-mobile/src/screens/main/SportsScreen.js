@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, StatusBar, TextInput, Alert } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, StatusBar, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const SPORTS = [
@@ -72,7 +72,7 @@ const SPORTS = [
 const CATS = ['Tümü', 'Takım', 'Bireysel', 'Dövüş', 'Kış', 'Su', 'Geleneksel', 'Dijital', 'Zihinsel', 'Diğer'];
 const CAT_COLORS = { Takım: '#1a4fff', Bireysel: '#00b97a', Dövüş: '#e84545', Kış: '#06b6d4', Su: '#3b82f6', Geleneksel: '#c9a227', Dijital: '#8b2fff', Zihinsel: '#ec4899', Diğer: '#6b82a8' };
 
-export default function SportsScreen() {
+export default function SportsScreen({ navigation }) {
   const [search, setSearch]   = useState('');
   const [cat,    setCat]      = useState('Tümü');
 
@@ -126,11 +126,7 @@ export default function SportsScreen() {
             <TouchableOpacity
               style={[s.card, { borderColor: color + '33' }]}
               activeOpacity={0.8}
-              onPress={() => Alert.alert(
-                item.name,
-                `Kategori: ${item.cat}\n\nY SPORTS'ta bu branştaki sporcuları keşfedin ve SGD puanlarını görün.`,
-                [{ text: 'Tamam' }]
-              )}
+              onPress={() => navigation.navigate('SportDetail', { sport: item })}
             >
               <Text style={s.cardIcon}>{item.icon}</Text>
               <Text style={s.cardName}>{item.name}</Text>

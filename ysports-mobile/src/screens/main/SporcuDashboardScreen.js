@@ -1,197 +1,294 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet,
   StatusBar, ActivityIndicator, Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, doc, getDoc } from 'firebase/firestore';
+import {
+  getFirestore, doc, getDoc, collection, getDocs,
+  query, where, orderBy, limit, updateDoc, serverTimestamp,
+} from 'firebase/firestore';
 import { getApp } from 'firebase/app';
 
-export default function SporcuDashboardScreen({ navigation, route }) {
-  const uid  = route?.params?.uid  || '';
-  const role = route?.params?.role || 'sporcu';
+const DB  = () => getFirestore(getApp());
+const BG  = '#090b11';
+const CARD = '#161d2e';
+const BDR  = '#1e2d4a';
 
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
+const SGD_COLOR = (s) =>
+  s >= 71 ? '#00b97a' : s >= 41 ? '#c9a227' : '#e84545';
+
+// ponytail: simple month filter — works for current month only
+const thisMonth = (ts) => {
+  if (!ts) return false;
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  const n = new Date();
+  return d.getMonth() === n.getMonth() && d.getFullYear() === n.getFullYear();
+};
+
+export default function SporcuDashboardScreen({ navigation }) {
+  const [loading,   setLoading]   = useState(true);
+  const [profile,   setProfile]   = useState(null);
+  const [videoCount,setVideoCount] = useState(0);
+  const [lastVideos,setLastVideos] = useState([]);
+  const [contracts, setContracts] = useState([]);
+  const [matches,   setMatches]   = useState([]);
+  const [uid,       setUid]       = useState(null);
 
   useEffect(() => {
+    let cancelled = false;
     (async () => {
       try {
         const auth = getAuth(getApp());
         await auth.authStateReady();
         const u = auth.currentUser;
-        if (!u) { setLoading(false); return; }
-        const snap = await getDoc(doc(getFirestore(getApp()), 'users', u.uid));
-        if (snap.exists()) setProfile(snap.data());
+        if (!u || cancelled) { setLoading(false); return; }
+        setUid(u.uid);
+        const db = DB();
+
+        const [profileSnap, perfSnap, contractSnap, matchSnap] = await Promise.all([
+          getDoc(doc(db, 'users', u.uid)),
+          getDocs(collection(db, 'sporcular', u.uid, 'performans')),
+          getDocs(query(
+            collection(db, 'sozlesmeler'),
+            where('athleteId', '==', u.uid),
+            limit(3),
+          )),
+          getDocs(query(
+            collection(db, 'matches'),
+            where('athleteId', '==', u.uid),
+            where('status', '==', 'pending'),
+            orderBy('createdAt', 'desc'),
+            limit(5),
+          )),
+        ]);
+
+        if (cancelled) return;
+
+        if (profileSnap.exists()) setProfile(profileSnap.data());
+
+        const perfDocs = perfSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+        setVideoCount(perfDocs.filter(d => thisMonth(d.createdAt)).length);
+        // ponytail: last 2 videos for media preview — already fetched, no extra query
+        setLastVideos(perfDocs.sort((a, b) => {
+          const ta = a.createdAt?.toDate?.() ?? 0;
+          const tb = b.createdAt?.toDate?.() ?? 0;
+          return tb - ta;
+        }).slice(0, 2));
+
+        setContracts(contractSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+        setMatches(matchSnap.docs.map(d => ({ id: d.id, ...d.data() })));
       } catch (e) {
         console.warn('SporcuDashboard load error:', e.message);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     })();
-  }, [uid]);
+    return () => { cancelled = true; };
+  }, []);
 
-  const name    = profile?.displayName || profile?.ad || 'Sporcu';
-  const sport   = profile?.sporDali    || 'Karate';
-  const city    = profile?.sehir       || 'Türkiye';
-  const age     = profile?.yas         || '';
-  const sgd     = profile?.sgdScore    || 85;
-  const marketV = profile?.marketValue || '₺350K';
-  const sponsors= profile?.sponsorCount|| 2;
-  const videos  = profile?.videosDone  || 1;
-  const videosTotal = 2;
-  const pct = Math.round((videos / videosTotal) * 100);
+  const handleMatchAction = useCallback(async (matchId, status) => {
+    try {
+      await updateDoc(doc(DB(), 'matches', matchId), {
+        status,
+        ...(status === 'accepted' ? { acceptedAt: serverTimestamp() } : {}),
+      });
+      setMatches(prev => prev.filter(m => m.id !== matchId));
+    } catch (e) {
+      Alert.alert('Hata', e.message);
+    }
+  }, []);
 
   if (loading) {
     return (
       <SafeAreaView style={s.safe}>
-        <View style={s.center}>
-          <ActivityIndicator color="#1a4fff" size="large" />
-        </View>
+        <View style={s.center}><ActivityIndicator color="#1a4fff" size="large" /></View>
       </SafeAreaView>
     );
   }
 
+  const name    = profile?.displayName || profile?.ad || 'Sporcu';
+  const sport   = profile?.sporDali || '';
+  const city    = profile?.sehir    || '';
+  const age     = profile?.yas      || '';
+  const sgd     = typeof profile?.sgdScore === 'number' ? profile.sgdScore : 0;
+  const marketV = profile?.marketValue || '—';
+  const initial = name.charAt(0).toUpperCase();
+  const pct     = Math.min(100, Math.round((videoCount / 2) * 100));
+  const sgdCol  = SGD_COLOR(sgd);
+
   return (
     <SafeAreaView style={s.safe}>
-      <StatusBar barStyle="light-content" backgroundColor="#090b11" />
+      <StatusBar barStyle="light-content" backgroundColor={BG} />
 
-      {/* Top Header */}
+      {/* Header */}
       <View style={s.topbar}>
         <View>
-          <Text style={s.greeting}>Merhaba, {name}! 👋</Text>
-          <Text style={s.sub}>Profesyonel {sport}</Text>
+          <Text style={s.greeting}>Merhaba, {name}!</Text>
+          {sport ? <Text style={s.sub}>Profesyonel {sport}</Text> : null}
         </View>
         <TouchableOpacity
-          style={s.avatar}
-          onPress={() => navigation.navigate('ProfileSettings', { uid, role })}
+          style={[s.avatar, { backgroundColor: '#1a4fff' }]}
+          onPress={() => navigation.navigate('ProfileSettings', { uid })}
         >
-          <Text style={s.avatarIcon}>🧑</Text>
+          <Text style={s.avatarText}>{initial}</Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
 
-        {/* Profile Card */}
-        <TouchableOpacity
-          style={s.profileCard}
-          onPress={() => navigation.navigate('ProfileSettings', { uid, role })}
-          activeOpacity={0.85}
-        >
-          <View style={s.profileAvatar}>
-            <Text style={s.profileAvatarIcon}>🧑</Text>
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={s.profileName}>{name}</Text>
-            <Text style={s.profileMeta}>
-              {[age ? `${age} Yaş` : null, city, sport].filter(Boolean).join(' · ')}
-            </Text>
-            <View style={s.badgeRow}>
-              <View style={[s.badge, { backgroundColor: '#c9a22722', borderColor: '#c9a22744' }]}>
-                <Text style={[s.badgeText, { color: '#c9a227' }]}>🥇 U12 Şampiyonu</Text>
-              </View>
-              <View style={[s.badge, { backgroundColor: '#1a4fff22', borderColor: '#1a4fff44' }]}>
-                <Text style={[s.badgeText, { color: '#1a4fff' }]}>SGS: {sgd}</Text>
-              </View>
-            </View>
-          </View>
-          <Text style={s.arrow}>›</Text>
-        </TouchableOpacity>
-
-        {/* Contract Banner */}
-        <TouchableOpacity
-          style={s.contractBanner}
-          onPress={() => navigation.navigate('ContractView', { uid, role, contractType: 'sporcu' })}
-          activeOpacity={0.85}
-        >
-          <View style={{ flex: 1 }}>
-            <Text style={s.contractTitle}>📜 Dijital Sözleşmeniz Aktiftir</Text>
-            <Text style={s.contractSub}>Unicorn seviyesi yasal taahhütler ve hak edişleriniz aktiftir.</Text>
-          </View>
-          <View style={s.contractBtn}>
-            <Text style={s.contractBtnText}>İncele →</Text>
-          </View>
-        </TouchableOpacity>
-
-        {/* Stats Grid */}
-        <View style={s.statsGrid}>
-          <View style={s.statCard}>
-            <Text style={[s.statVal, { color: '#4ade80' }]}>{marketV}</Text>
-            <Text style={s.statLbl}>Piyasa Değeri</Text>
-          </View>
-          <View style={s.statCard}>
-            <Text style={[s.statVal, { color: '#a78bfa' }]}>{sgd}</Text>
-            <Text style={s.statLbl}>SGS Skoru</Text>
-          </View>
-          <View style={s.statCard}>
-            <Text style={[s.statVal, { color: '#c9a227' }]}>{sponsors}</Text>
-            <Text style={s.statLbl}>Aktif Sponsor</Text>
-          </View>
+        {/* SGD Skor Kartı */}
+        <View style={[s.card, { borderColor: sgdCol + '44', alignItems: 'center', paddingVertical: 24 }]}>
+          <Text style={[s.sgdNumber, { color: sgdCol }]}>{sgd}</Text>
+          <Text style={s.sgdLabel}>SGD Skoru</Text>
+          <Text style={[s.sgdMarket, { color: '#4a6fa5' }]}>Piyasa Değeri: <Text style={{ color: '#00b97a' }}>{marketV}</Text></Text>
+          <TouchableOpacity
+            style={[s.outlineBtn, { borderColor: sgdCol, marginTop: 12 }]}
+            onPress={() => Alert.alert(
+              'SGD Skoru Nedir?',
+              'Sporcu Gelişim ve Değer (SGD) skoru; performans videoları, sözleşme geçmişi, antrenman tutarlılığı ve scout değerlendirmelerine göre hesaplanan 0-100 arası bir endekstir.\n\n0-40: Gelişim aşaması\n41-70: Yükselen sporcu\n71-100: Profesyonel seviye',
+            )}
+          >
+            <Text style={[s.outlineBtnText, { color: sgdCol }]}>SGD Skoru Nedir?</Text>
+          </TouchableOpacity>
         </View>
 
-        {/* Video Commitment Tracker */}
-        <TouchableOpacity
-          style={s.card}
-          onPress={() => navigation.navigate('MediaCenter', { uid, role })}
-          activeOpacity={0.85}
-        >
+        {/* Performans Video Tracker */}
+        <View style={s.card}>
           <View style={s.commitRow}>
-            {/* Circular ring (View-based, no SVG) */}
             <View style={s.ring}>
-              <View style={[s.ringFill, {
-                borderColor: pct >= 100 ? '#00b97a' : pct >= 50 ? '#c9a227' : '#1a4fff',
-              }]} />
+              <View style={[s.ringFill, { borderColor: pct >= 100 ? '#00b97a' : pct >= 50 ? '#c9a227' : '#1a4fff' }]} />
               <View style={s.ringCenter}>
                 <Text style={s.ringPct}>{pct}%</Text>
               </View>
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={s.commitTitle}>Aylık Video Yükleme: {videos} / {videosTotal}</Text>
-              <Text style={s.commitSub}>
-                {pct >= 100
-                  ? 'Taahhüt tamamlandı! ✓'
-                  : `Gecikme Cezası Riski: %0. Bu ay son video için 5 gününüz kaldı.`}
+              <Text style={s.cardTitle}>Aylık Video: {videoCount} / 2</Text>
+              <Text style={s.cardSub}>
+                {pct >= 100 ? 'Taahhüt tamamlandı!' : 'Bu ay 2 video yüklemeniz gerekiyor.'}
               </Text>
             </View>
           </View>
-        </TouchableOpacity>
-
-        {/* Wearable Device */}
-        <View style={s.wearableCard}>
-          <View style={s.wearableHeader}>
-            <View style={s.wearableTitleRow}>
-              <Text style={s.wearableIcon}>🔋</Text>
-              <Text style={s.wearableTitle}>Biyo-Güç & Giyilebilir Cihaz</Text>
-            </View>
-            <View style={s.disconnectedBadge}>
-              <Text style={s.disconnectedText}>Bağlı Değil</Text>
-            </View>
-          </View>
-          <Text style={s.wearableSub}>
-            Giyilebilir cihazını bağla; gücünü antrenmanda harca, ekstra kazanç ve madalya şansını yakala!
-          </Text>
           <TouchableOpacity
-            style={s.connectBtn}
-            onPress={() => Alert.alert('Cihaz Bağlantısı', 'Apple Watch, WHOOP ve Garmin desteği yakında!')}
+            style={[s.solidBtn, { marginTop: 12 }]}
+            onPress={() => Alert.alert(
+              'Video Yükle',
+              'AI Kamera ile analiz yapmak ister misiniz?',
+              [
+                { text: 'İptal', style: 'cancel' },
+                { text: 'Evet', onPress: () => navigation.navigate('AICamera', { uid }) },
+              ],
+            )}
           >
-            <Text style={s.connectBtnText}>🔌 Cihaz Bağlantısı Başlat</Text>
+            <Text style={s.solidBtnText}>Video Yükle</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Quick Actions */}
+        {/* Aktif Sözleşmeler */}
+        <Text style={s.sectionTitle}>AKTİF SÖZLEŞMELER</Text>
+        {contracts.length === 0 ? (
+          <View style={s.emptyCard}>
+            <Text style={s.emptyText}>Henüz sözleşme yok</Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('ScoutFeed', { uid })}
+              style={[s.outlineBtn, { borderColor: '#1a4fff', marginTop: 8 }]}
+            >
+              <Text style={[s.outlineBtnText, { color: '#1a4fff' }]}>Scout Feed'e Git</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          contracts.map(c => (
+            <View key={c.id} style={s.listCard}>
+              <View style={{ flex: 1 }}>
+                <Text style={s.cardTitle}>{c.sponsorAd || c.sponsorId || 'Sponsor'}</Text>
+                <Text style={s.cardSub}>{c.sure || ''}{c.deger ? ` · ${c.deger}` : ''}</Text>
+              </View>
+              {c.durum ? (
+                <View style={[s.badge, {
+                  backgroundColor: c.durum === 'aktif' ? '#00b97a22' : '#1a4fff22',
+                  borderColor: c.durum === 'aktif' ? '#00b97a' : '#1a4fff',
+                }]}>
+                  <Text style={[s.badgeText, { color: c.durum === 'aktif' ? '#00b97a' : '#1a4fff' }]}>
+                    {c.durum}
+                  </Text>
+                </View>
+              ) : null}
+            </View>
+          ))
+        )}
+        {contracts.length > 0 && (
+          <TouchableOpacity
+            style={[s.outlineBtn, { borderColor: BDR, marginBottom: 16 }]}
+            onPress={() => navigation.navigate('ContractView', { uid })}
+          >
+            <Text style={[s.outlineBtnText, { color: '#4a6fa5' }]}>Tüm Sözleşmeler →</Text>
+          </TouchableOpacity>
+        )}
+
+        {/* Scout Match Bildirimleri */}
+        {matches.length > 0 && (
+          <>
+            <Text style={s.sectionTitle}>SCOUT EŞLEŞMELERİ</Text>
+            {matches.map(m => (
+              <View key={m.id} style={s.listCard}>
+                <View style={{ flex: 1 }}>
+                  <Text style={s.cardTitle}>{m.scoutAd || m.scoutId || 'Scout'}</Text>
+                  <Text style={s.cardSub}>{m.createdAt?.toDate?.()?.toLocaleDateString('tr-TR') || ''}</Text>
+                </View>
+                <View style={{ flexDirection: 'row', gap: 6 }}>
+                  <TouchableOpacity
+                    style={[s.badge, { backgroundColor: '#00b97a22', borderColor: '#00b97a' }]}
+                    onPress={() => handleMatchAction(m.id, 'accepted')}
+                  >
+                    <Text style={[s.badgeText, { color: '#00b97a' }]}>Kabul</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[s.badge, { backgroundColor: '#e8454522', borderColor: '#e84545' }]}
+                    onPress={() => handleMatchAction(m.id, 'rejected')}
+                  >
+                    <Text style={[s.badgeText, { color: '#e84545' }]}>Reddet</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))}
+          </>
+        )}
+
+        {/* Medya Merkezi Kısayolu */}
+        <Text style={s.sectionTitle}>MEDYA MERKEZİ</Text>
+        {lastVideos.length === 0 ? (
+          <View style={s.emptyCard}>
+            <Text style={s.emptyText}>Henüz video yüklenmedi</Text>
+          </View>
+        ) : (
+          lastVideos.map(v => (
+            <View key={v.id} style={s.listCard}>
+              <Text style={s.cardTitle}>{v.baslik || v.title || 'Video'}</Text>
+              <Text style={s.cardSub}>{v.createdAt?.toDate?.()?.toLocaleDateString('tr-TR') || ''}</Text>
+            </View>
+          ))
+        )}
+        <TouchableOpacity
+          style={[s.outlineBtn, { borderColor: BDR, marginBottom: 16 }]}
+          onPress={() => navigation.navigate('MediaCenter', { uid })}
+        >
+          <Text style={[s.outlineBtnText, { color: '#4a6fa5' }]}>Medya Merkezine Git →</Text>
+        </TouchableOpacity>
+
+        {/* Hızlı Erişim */}
         <Text style={s.sectionTitle}>HIZLI ERİŞİM</Text>
         <View style={s.quickGrid}>
           {[
-            { icon: '🎬', label: 'Medya Merkezi', screen: 'MediaCenter' },
-            { icon: '📄', label: 'Sözleşmeler',   screen: 'ContractView' },
-            { icon: '🤖', label: 'AI Analiz',      screen: 'AICamera'     },
-            { icon: '⚙️', label: 'Ayarlar',        screen: 'ProfileSettings' },
+            { icon: '🎬', label: 'Medya Merkezi',   screen: 'MediaCenter'     },
+            { icon: '📄', label: 'Sözleşmeler',     screen: 'ContractView'    },
+            { icon: '🤖', label: 'AI Analiz',        screen: 'AICamera'        },
+            { icon: '⚙️', label: 'Profil Ayarları', screen: 'ProfileSettings' },
           ].map(({ icon, label, screen }) => (
             <TouchableOpacity
               key={screen}
               style={s.quickCard}
-              onPress={() => navigation.navigate(screen, { uid, role })}
+              onPress={() => navigation.navigate(screen, { uid })}
               activeOpacity={0.8}
             >
               <Text style={s.quickIcon}>{icon}</Text>
@@ -206,59 +303,45 @@ export default function SporcuDashboardScreen({ navigation, route }) {
 }
 
 const s = StyleSheet.create({
-  safe:            { flex: 1, backgroundColor: '#090b11' },
-  center:          { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  topbar:          { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#1e2d4a' },
-  greeting:        { color: '#fff', fontSize: 16, fontWeight: '800' },
-  sub:             { color: '#8ba8d4', fontSize: 11, marginTop: 2 },
-  avatar:          { width: 36, height: 36, borderRadius: 18, backgroundColor: '#1a4fff', justifyContent: 'center', alignItems: 'center' },
-  avatarIcon:      { fontSize: 18 },
-  scroll:          { padding: 16, paddingBottom: 40 },
+  safe:          { flex: 1, backgroundColor: BG },
+  center:        { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  scroll:        { padding: 16, paddingBottom: 40 },
 
-  profileCard:     { backgroundColor: '#161d2e', borderRadius: 14, padding: 12, flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10, borderWidth: 1, borderColor: '#1e2d4a' },
-  profileAvatar:   { width: 48, height: 48, borderRadius: 24, backgroundColor: '#1a4fff22', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#1a4fff44' },
-  profileAvatarIcon:{ fontSize: 24 },
-  profileName:     { color: '#fff', fontSize: 14, fontWeight: '700' },
-  profileMeta:     { color: '#8ba8d4', fontSize: 10, marginTop: 2 },
-  badgeRow:        { flexDirection: 'row', gap: 5, marginTop: 4 },
-  badge:           { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6, borderWidth: 1 },
-  badgeText:       { fontSize: 9, fontWeight: '700' },
-  arrow:           { color: '#2a3a5a', fontSize: 20 },
+  topbar:        { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: BDR },
+  greeting:      { color: '#fff', fontSize: 16, fontWeight: '800' },
+  sub:           { color: '#8ba8d4', fontSize: 11, marginTop: 2 },
+  avatar:        { width: 38, height: 38, borderRadius: 19, justifyContent: 'center', alignItems: 'center' },
+  avatarText:    { color: '#fff', fontSize: 16, fontWeight: '800' },
 
-  contractBanner:  { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(201,162,39,0.08)', borderWidth: 1, borderColor: 'rgba(201,162,39,0.25)', borderRadius: 12, padding: 10, marginBottom: 10 },
-  contractTitle:   { color: '#c9a227', fontSize: 12, fontWeight: '800' },
-  contractSub:     { color: '#8ba8d4', fontSize: 9.5, marginTop: 2 },
-  contractBtn:     { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8, borderWidth: 1, borderColor: '#c9a227', marginLeft: 8 },
-  contractBtnText: { color: '#c9a227', fontSize: 10, fontWeight: '700' },
+  card:          { backgroundColor: CARD, borderRadius: 14, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: BDR },
+  listCard:      { backgroundColor: CARD, borderRadius: 12, padding: 12, marginBottom: 8, borderWidth: 1, borderColor: BDR, flexDirection: 'row', alignItems: 'center', gap: 8 },
+  emptyCard:     { backgroundColor: CARD, borderRadius: 12, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: BDR, alignItems: 'center' },
+  emptyText:     { color: '#4a6fa5', fontSize: 13 },
 
-  statsGrid:       { flexDirection: 'row', gap: 6, marginBottom: 10 },
-  statCard:        { flex: 1, backgroundColor: '#161d2e', borderRadius: 12, padding: 12, alignItems: 'center', borderWidth: 1, borderColor: '#1e2d4a' },
-  statVal:         { fontSize: 16, fontWeight: '900' },
-  statLbl:         { color: '#8ba8d4', fontSize: 9, marginTop: 3, textAlign: 'center' },
+  sgdNumber:     { fontSize: 64, fontWeight: '900', lineHeight: 70 },
+  sgdLabel:      { color: '#8ba8d4', fontSize: 13, marginTop: 2 },
+  sgdMarket:     { fontSize: 12, marginTop: 6 },
 
-  card:            { backgroundColor: '#161d2e', borderRadius: 14, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: '#1e2d4a' },
-  commitRow:       { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  ring:            { width: 60, height: 60, position: 'relative', justifyContent: 'center', alignItems: 'center' },
-  ringFill:        { position: 'absolute', width: 60, height: 60, borderRadius: 30, borderWidth: 4, borderColor: '#1a4fff' },
-  ringCenter:      { justifyContent: 'center', alignItems: 'center' },
-  ringPct:         { color: '#fff', fontSize: 13, fontWeight: '900' },
-  commitTitle:     { color: '#fff', fontSize: 12, fontWeight: '700', marginBottom: 4 },
-  commitSub:       { color: '#8ba8d4', fontSize: 10, lineHeight: 14 },
+  cardTitle:     { color: '#fff', fontSize: 13, fontWeight: '700', flex: 1 },
+  cardSub:       { color: '#4a6fa5', fontSize: 11, marginTop: 2 },
 
-  wearableCard:    { backgroundColor: 'rgba(16,185,129,0.05)', borderRadius: 14, padding: 14, marginBottom: 20, borderWidth: 1, borderColor: 'rgba(16,185,129,0.25)' },
-  wearableHeader:  { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  wearableTitleRow:{ flexDirection: 'row', alignItems: 'center', gap: 6 },
-  wearableIcon:    { fontSize: 16 },
-  wearableTitle:   { color: '#fff', fontSize: 12, fontWeight: '700' },
-  disconnectedBadge:{ backgroundColor: 'rgba(239,68,68,0.15)', borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2, borderWidth: 1, borderColor: 'rgba(239,68,68,0.25)' },
-  disconnectedText:{ color: '#ef4444', fontSize: 8, fontWeight: '700' },
-  wearableSub:     { color: '#8ba8d4', fontSize: 10, lineHeight: 14, marginBottom: 10 },
-  connectBtn:      { alignSelf: 'flex-start', paddingHorizontal: 14, paddingVertical: 6, borderRadius: 8, backgroundColor: 'rgba(16,185,129,0.15)', borderWidth: 1, borderColor: 'rgba(16,185,129,0.3)' },
-  connectBtnText:  { color: '#34d399', fontSize: 11, fontWeight: '700' },
+  commitRow:     { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  ring:          { width: 60, height: 60, justifyContent: 'center', alignItems: 'center' },
+  ringFill:      { position: 'absolute', width: 60, height: 60, borderRadius: 30, borderWidth: 5, borderColor: '#1a4fff' },
+  ringCenter:    { justifyContent: 'center', alignItems: 'center' },
+  ringPct:       { color: '#fff', fontSize: 13, fontWeight: '900' },
 
-  sectionTitle:    { color: '#4a6fa5', fontSize: 10, fontWeight: '700', letterSpacing: 2, marginBottom: 12 },
-  quickGrid:       { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  quickCard:       { width: '47%', backgroundColor: '#161d2e', borderRadius: 14, padding: 18, alignItems: 'center', borderWidth: 1, borderColor: '#1e2d4a' },
-  quickIcon:       { fontSize: 28, marginBottom: 8 },
-  quickLabel:      { color: '#fff', fontSize: 12, fontWeight: '700' },
+  badge:         { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, borderWidth: 1 },
+  badgeText:     { fontSize: 10, fontWeight: '700' },
+
+  solidBtn:      { backgroundColor: '#1a4fff', borderRadius: 10, paddingVertical: 10, alignItems: 'center' },
+  solidBtnText:  { color: '#fff', fontWeight: '700', fontSize: 13 },
+  outlineBtn:    { borderRadius: 10, paddingVertical: 9, alignItems: 'center', borderWidth: 1 },
+  outlineBtnText:{ fontWeight: '700', fontSize: 12 },
+
+  sectionTitle:  { color: '#4a6fa5', fontSize: 10, fontWeight: '700', letterSpacing: 2, marginBottom: 10, marginTop: 4 },
+  quickGrid:     { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  quickCard:     { width: '47%', backgroundColor: CARD, borderRadius: 14, padding: 18, alignItems: 'center', borderWidth: 1, borderColor: BDR },
+  quickIcon:     { fontSize: 28, marginBottom: 8 },
+  quickLabel:    { color: '#fff', fontSize: 12, fontWeight: '700', textAlign: 'center' },
 });

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet,
-  StatusBar, ActivityIndicator, Image,
+  StatusBar, ActivityIndicator, Image, Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getAuth } from 'firebase/auth';
@@ -17,6 +17,16 @@ export default function HomeScreen({ navigation, route }) {
   const [profile, setProfile]   = useState(null);
   const [loading, setLoading]   = useState(true);
   const [stats,   setStats]     = useState({ sgd: 0, videos: 0, contracts: 0 });
+  const pulse = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, { toValue: 1.03, duration: 800, useNativeDriver: true }),
+        Animated.timing(pulse, { toValue: 1,    duration: 800, useNativeDriver: true }),
+      ])
+    ).start();
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -116,14 +126,33 @@ export default function HomeScreen({ navigation, route }) {
           <Text style={s.aiBtnArrow}>›</Text>
         </TouchableOpacity>
 
+        {/* Keşfet Butonu */}
+        <Animated.View style={{ transform: [{ scale: pulse }] }}>
+        <TouchableOpacity
+          style={s.kesfetBtn}
+          onPress={() => navigation.navigate('Scout')}
+          activeOpacity={0.85}
+        >
+          <Text style={s.kesfetIcon}>🔍</Text>
+          <View style={{ flex: 1, marginLeft: 14 }}>
+            <Text style={s.kesfetTitle}>Keşfet — Scout Feed</Text>
+            <Text style={s.kesfetSub}>Sporcuları kaydır, beğen, eşleş</Text>
+          </View>
+          <View style={s.kesfetBadge}>
+            <Text style={s.kesfetBadgeText}>YENİ</Text>
+          </View>
+          <Text style={[s.aiBtnArrow, { color: '#8b2fff' }]}>›</Text>
+        </TouchableOpacity>
+        </Animated.View>
+
         {/* Hızlı Linkler */}
         <Text style={s.sectionTitle}>HIZLI ERİŞİM</Text>
         <View style={s.quickGrid}>
           {[
-            { icon: '💰', label: 'Piyasa', tab: 'Market' },
-            { icon: '🏅', label: 'Sporcular', tab: 'Athletes' },
-            { icon: '🏆', label: 'Spor Dalları', tab: 'Sports' },
-            { icon: '🔴', label: 'Canlı', tab: 'Live' },
+            { icon: '💰', label: 'Piyasa',      tab: 'Market' },
+            { icon: '🔍', label: 'Scout Feed',  tab: 'Scout'  },
+            { icon: '🏆', label: 'Spor Dalları',tab: 'Sports' },
+            { icon: '🔴', label: 'Canlı',       tab: 'Live'   },
           ].map((item, i) => (
             <TouchableOpacity
               key={i}
@@ -165,6 +194,12 @@ const s = StyleSheet.create({
   aiBtnTitle:  { color: '#fff', fontSize: 15, fontWeight: '800' },
   aiBtnSub:    { color: '#4a6fa5', fontSize: 11, marginTop: 2 },
   aiBtnArrow:  { color: '#1a4fff', fontSize: 28, fontWeight: '700' },
+  kesfetBtn:   { backgroundColor: '#130820', borderRadius: 16, padding: 18, flexDirection: 'row', alignItems: 'center', borderWidth: 1.5, borderColor: '#8b2fff88', marginBottom: 24, shadowColor: '#8b2fff', shadowRadius: 10, shadowOpacity: 0.25, elevation: 6 },
+  kesfetIcon:  { fontSize: 28 },
+  kesfetTitle: { color: '#fff', fontSize: 15, fontWeight: '800' },
+  kesfetSub:   { color: '#8b2fff99', fontSize: 11, marginTop: 2 },
+  kesfetBadge: { backgroundColor: '#8b2fff', borderRadius: 8, paddingHorizontal: 7, paddingVertical: 3, marginRight: 8 },
+  kesfetBadgeText: { color: '#fff', fontSize: 9, fontWeight: '900', letterSpacing: 1 },
   sectionTitle:{ color: '#4a6fa5', fontSize: 10, fontWeight: '700', letterSpacing: 2, marginBottom: 12 },
   quickGrid:   { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 28 },
   quickCard:   { width: '47%', backgroundColor: '#161d2e', borderRadius: 14, padding: 18, alignItems: 'center', borderWidth: 1, borderColor: '#1e2d4a' },

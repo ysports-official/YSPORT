@@ -7,13 +7,19 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import HomeScreen            from './main/HomeScreen';
 import MarketScreen          from './main/MarketScreen';
 import AthletesScreen        from './main/AthletesScreen';
+import ScoutFeedScreen       from './main/ScoutFeedScreen';
 import SportsScreen          from './main/SportsScreen';
+import SportDetailScreen     from './main/SportDetailScreen';
 import LiveScreen            from './main/LiveScreen';
 import SporcuDashboardScreen from './main/SporcuDashboardScreen';
 import ProfileSettingsScreen from './main/ProfileSettingsScreen';
 import ContractScreen        from './main/ContractScreen';
 import MediaCenterScreen     from './main/MediaCenterScreen';
 import OnboardingScreen      from './main/OnboardingScreen';
+import FederasyonPanelScreen from './main/FederasyonPanelScreen';
+import IlTemsilcisiPanelScreen from './main/IlTemsilcisiPanelScreen';
+import KulupPanelScreen        from './main/KulupPanelScreen';
+import ScoutListScreen         from './main/ScoutListScreen';
 // AIScreen lazy loaded — WebView/FileSystem native modülleri startup'ta yüklenmesin
 
 const Tab   = createBottomTabNavigator();
@@ -38,7 +44,11 @@ function HomeStack({ route }) {
       <Stack.Screen name="ProfileSettings" component={ProfileSettingsScreen} />
       <Stack.Screen name="ContractView"    component={ContractScreen}        />
       <Stack.Screen name="MediaCenter"     component={MediaCenterScreen}     />
-      <Stack.Screen name="Onboarding"      component={OnboardingScreen}      />
+      <Stack.Screen name="Onboarding"        component={OnboardingScreen}      />
+      <Stack.Screen name="FederasyonPanel"    component={FederasyonPanelScreen}    />
+      <Stack.Screen name="IlTemsilcisiPanel" component={IlTemsilcisiPanelScreen} />
+      <Stack.Screen name="KulupPanel"        component={KulupPanelScreen}        />
+      <Stack.Screen name="ScoutList"         component={ScoutListScreen}         />
     </Stack.Navigator>
   );
 }
@@ -100,22 +110,28 @@ export default function MainScreen({ route }) {
       />
 
       <Tab.Screen
-        name="Athletes"
-        component={AthletesScreen}
+        name="Scout"
+        component={ScoutFeedScreen}
         options={{
-          tabBarLabel: 'Sporcular',
-          tabBarIcon: ({ focused, color }) => <TabIcon icon="🏅" focused={focused} color={color} />,
+          tabBarLabel: 'Scout Feed',
+          tabBarIcon: ({ focused, color }) => <TabIcon icon="🔍" focused={focused} color={color} />,
         }}
       />
 
       <Tab.Screen
         name="Sports"
-        component={SportsScreen}
         options={{
           tabBarLabel: 'Spor Dalları',
           tabBarIcon: ({ focused, color }) => <TabIcon icon="🏆" focused={focused} color={color} />,
         }}
-      />
+      >
+        {() => (
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="SportsList"  component={SportsScreen} />
+            <Stack.Screen name="SportDetail" component={SportDetailScreen} />
+          </Stack.Navigator>
+        )}
+      </Tab.Screen>
 
       <Tab.Screen
         name="Live"
