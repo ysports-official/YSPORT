@@ -2,7 +2,7 @@
   "expo": {
     "name": "Y SPORTS",
     "slug": "ysports",
-    "owner": "ysports",
+    "owner": "yalcinperik",
     "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "ysports",
@@ -25,14 +25,17 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "permissions": ["CAMERA", "RECORD_AUDIO"]
+      "permissions": [
+        "CAMERA",
+        "RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "c0aed272-02fc-4fc9-91fd-e62b1d4b1ac0"
+        "projectId": "c30918a8-1a34-46eb-942a-588978277040"
       }
     },
     "plugins": [
