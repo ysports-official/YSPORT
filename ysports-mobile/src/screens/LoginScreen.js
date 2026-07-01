@@ -135,6 +135,11 @@ export default function LoginScreen({ navigation, route }) {
                 <Text style={styles.googleText}>Google ile Giriş Yap</Text>
               </TouchableOpacity>
               <Text style={styles.hint}>Test: 5550000000 / 123456</Text>
+              {role === 'sporcu' && (
+                <TouchableOpacity style={styles.registerRow} onPress={() => navigation.navigate('Register')}>
+                  <Text style={styles.registerText}>Hesabın yok mu? <Text style={{ color: '#7c6fff', fontWeight: '700' }}>Kayıt ol</Text></Text>
+                </TouchableOpacity>
+              )}
             </View>
           )}
 
@@ -209,6 +214,8 @@ const styles = StyleSheet.create({
   googleG:    { color: '#4285F4', fontSize: 20, fontWeight: '900' },
   googleText: { color: '#1a1a1a', fontSize: 15, fontWeight: '700' },
   hint:       { color: '#2a3a5a', fontSize: 11, textAlign: 'center' },
+  registerRow: { alignItems: 'center', paddingVertical: 8 },
+  registerText: { color: '#4a6fa5', fontSize: 12 },
   otpMsg:     { color: '#8ba8d4', fontSize: 12, textAlign: 'center', marginBottom: 4 },
   otpInput:   { backgroundColor: '#161d2e', borderRadius: 14, paddingVertical: 20, textAlign: 'center', color: '#1a4fff', fontSize: 28, fontWeight: '900', letterSpacing: 8, borderWidth: 2, marginBottom: 4 },
   retryBtn:   { alignItems: 'center', paddingVertical: 12 },
