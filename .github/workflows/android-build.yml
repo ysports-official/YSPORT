@@ -1,16 +1,9 @@
-name: EAS Android Build
+name: Android APK Build
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
-    inputs:
-      profile:
-        description: 'Build Profile (preview: APK, production: AAB)'
-        required: true
-        default: 'preview'
-        type: choice
-        options:
-          - preview
-          - production
 
 permissions:
   contents: write
@@ -20,7 +13,7 @@ env:
 
 jobs:
   build:
-    name: Build Android (${{ github.event.inputs.profile || 'preview' }})
+    name: Build Android APK
     runs-on: ubuntu-latest
 
     steps:
@@ -33,12 +26,6 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      # NDK'yı Gradle'dan önce pre-install et → ZipFile corruption hatası önlenir
-      - name: 🤖 Pre-install Android NDK 27.1.12297006
-        run: |
-          echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "ndk;27.1.12297006" || \
-          echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "ndk;27.1.12297006"
-
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -49,56 +36,35 @@ jobs:
       - name: 🛠️ Setup Gradle Cache
         uses: gradle/actions/setup-gradle@v4
 
-      # expo/expo-github-action — EAS CLI cache, resmi auth entegrasyonu
-      - name: 🚀 Setup EAS CLI (cached)
-        uses: expo/expo-github-action@v8
-        with:
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
-          eas-cache: true
-
-      # npm ci — npm install'dan daha hızlı, package-lock.json'a göre deterministic
-      - name: 📦 Install Project Dependencies
+      - name: 📦 Install Dependencies
         working-directory: ysports-mobile
         run: npm ci --legacy-peer-deps
 
-      - name: 🏗️ EAS Local Build
+      - name: 🔧 Expo Prebuild
         working-directory: ysports-mobile
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: npx expo prebuild --platform android --clean --no-install
+
+      - name: 🏗️ Build APK
+        working-directory: ysports-mobile/android
         run: |
-          PROFILE="${{ github.event.inputs.profile || 'preview' }}"
-          if [ "$PROFILE" = "production" ]; then
-            EXT="aab"
-          else
-            EXT="apk"
-          fi
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon -Dorg.gradle.jvmargs="-Xmx4g -XX:MaxMetaspaceSize=512m"
 
-          echo "Building with profile: $PROFILE (format: $EXT)..."
-
-          eas build \
-            --platform android \
-            --local \
-            --profile "$PROFILE" \
-            --non-interactive \
-            --output="../app-release.$EXT"
-
-      - name: 🚀 GitHub Release olarak yayınla
+      - name: 🚀 GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PROFILE="${{ github.event.inputs.profile || 'preview' }}"
           TAG="build-${{ github.run_number }}"
           SHORT_SHA="${{ github.sha }}"
           SHORT_SHA="${SHORT_SHA:0:7}"
 
-          gh release create "$TAG" app-release.* \
-            --title "Build #${{ github.run_number }} • ${PROFILE} • ${SHORT_SHA}" \
+          gh release create "$TAG" \
+            ysports-mobile/android/app/build/outputs/apk/release/app-release.apk \
+            --title "Build #${{ github.run_number }} • ${SHORT_SHA}" \
             --notes "**Branch:** ${{ github.ref_name }}
-          **Commit:** ${{ github.sha }}
-          **Profile:** ${PROFILE}
+**Commit:** ${{ github.sha }}
 
-          > APK indirmek için aşağıdaki Assets bölümünü kullanın." \
+> APK indirmek için Assets bölümünü kullanın." \
             --prerelease \
             --repo ysports-official/YSPORT
 
@@ -107,4 +73,3 @@ jobs:
         run: |
           echo "## ✅ Build #${{ github.run_number }} Tamamlandı" >> $GITHUB_STEP_SUMMARY
           echo "📦 **Release:** https://github.com/ysports-official/YSPORT/releases/tag/build-${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
-          echo "⬇️ APK'yı Releases sayfasından indir" >> $GITHUB_STEP_SUMMARY

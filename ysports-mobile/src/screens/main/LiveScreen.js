@@ -3,9 +3,18 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, StatusBar, Animat
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../../services/SupabaseConfig';
 
+// ponytail: mock data — Supabase paused/hata verince göster
+const MOCK_EVENTS = [
+  { id: 1, title: 'Türkiye Şampiyonası — Finaller', sport: 'Boks',       status: 'live',     location: 'İstanbul', home_team: 'Ahmet Y.',    away_team: 'Mert D.',    score: '3-2', time_info: '21:00', sport_emoji: '🥊', color: '#e84545' },
+  { id: 2, title: 'Süper Lig Kapışması',            sport: 'Futbol',     status: 'live',     location: 'Ankara',   home_team: 'Ankara FC',   away_team: 'İstanbul SK', score: '1-1', time_info: "45'",   sport_emoji: '⚽', color: '#00b97a' },
+  { id: 3, title: 'Basketbol Ligi Playoff',          sport: 'Basketbol',  status: 'upcoming', location: 'İzmir',    home_team: 'İzmir BB',    away_team: 'Bursa BS',   score: '-',   time_info: 'Yarın 18:00', sport_emoji: '🏀', color: '#1a4fff' },
+  { id: 4, title: 'Voleybol Devler Ligi',            sport: 'Voleybol',   status: 'upcoming', location: 'Bursa',    home_team: 'Bursa BBSK',  away_team: 'Ankara DSİ', score: '-',   time_info: '16:30', sport_emoji: '🏐', color: '#8b2fff' },
+];
+
 export default function LiveScreen() {
   const [events,   setEvents]   = useState([]);
   const [loading,  setLoading]  = useState(true);
+  const [isDemo,   setIsDemo]   = useState(false);
   const [dot]                   = useState(new Animated.Value(1));
   const channelRef              = useRef(null);
 
@@ -22,7 +31,7 @@ export default function LiveScreen() {
   // İlk veri yükle
   const fetchEvents = async () => {
     try {
-      if (!supabase) { setLoading(false); return; }
+      if (!supabase) throw new Error('no supabase');
       const { data, error } = await supabase
         .from('live_events')
         .select('*')
@@ -30,9 +39,14 @@ export default function LiveScreen() {
         .order('status', { ascending: false }) // live önce
         .order('created_at');
       if (error) throw error;
-      setEvents(data || []);
+      const rows = data || [];
+      if (rows.length === 0) throw new Error('empty');
+      setEvents(rows);
+      setIsDemo(false);
     } catch (e) {
-      console.warn('LiveScreen fetch error:', e.message);
+      console.warn('LiveScreen fetch error — demo mod:', e.message);
+      setEvents(MOCK_EVENTS); // ponytail: fallback to mock
+      setIsDemo(true);
     } finally {
       setLoading(false);
     }
@@ -92,9 +106,11 @@ export default function LiveScreen() {
       <View style={s.topbar}>
         <Animated.View style={[s.liveDot, { opacity: dot }]} />
         <Text style={s.title}>CANLI YAYINLAR</Text>
-        <View style={s.realtimeBadge}>
-          <Text style={s.realtimeText}>🔄 Realtime</Text>
-        </View>
+        {isDemo ? (
+          <View style={s.demoBadge}><Text style={s.demoText}>Demo</Text></View>
+        ) : (
+          <View style={s.realtimeBadge}><Text style={s.realtimeText}>🔄 Realtime</Text></View>
+        )}
         <Text style={s.liveCount}>{live.length} canlı</Text>
       </View>
 
@@ -171,6 +187,8 @@ const s = StyleSheet.create({
   title:         { color: '#fff', fontSize: 16, fontWeight: '800', flex: 1 },
   realtimeBadge: { backgroundColor: '#1a4fff22', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
   realtimeText:  { color: '#1a4fff', fontSize: 9, fontWeight: '700' },
+  demoBadge:     { backgroundColor: '#c9a22733', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
+  demoText:      { color: '#c9a227', fontSize: 9, fontWeight: '700' },
   liveCount:     { color: '#e84545', fontSize: 12, fontWeight: '700', backgroundColor: '#e8454522', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
   scroll:        { padding: 16, paddingBottom: 40 },
   sectionTitle:  { color: '#4a6fa5', fontSize: 10, fontWeight: '700', letterSpacing: 2, marginBottom: 12, marginTop: 8 },

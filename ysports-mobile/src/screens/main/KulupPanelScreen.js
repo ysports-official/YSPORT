@@ -47,9 +47,10 @@ function Empty({ msg }) {
 
 // ─── Main Screen ─────────────────────────────────────────────────
 export default function KulupPanelScreen({ navigation, route }) {
-  const uid  = route?.params?.uid  || auth.currentUser?.uid || '';
   const role = route?.params?.role || 'kulup';
 
+  // ponytail: uid as state — authStateReady() in loadAll resolves it safely
+  const [uid,      setUid]      = useState(route?.params?.uid || auth.currentUser?.uid || '');
   const [loading,  setLoading]  = useState(true);
   const [saving,   setSaving]   = useState(false);
   const [saved,    setSaved]    = useState(false);
@@ -79,7 +80,9 @@ export default function KulupPanelScreen({ navigation, route }) {
   // ── Yükle ──
   const loadAll = useCallback(async () => {
     await auth.authStateReady();
-    const kulupRef = doc(db(), 'kulupler', uid);
+    const resolvedUid = auth.currentUser?.uid || uid;
+    if (resolvedUid && resolvedUid !== uid) setUid(resolvedUid);
+    const kulupRef = doc(db(), 'kulupler', resolvedUid);
     const snap = await getDoc(kulupRef);
     const data = snap.exists() ? snap.data() : {};
     const base = {
@@ -102,7 +105,7 @@ export default function KulupPanelScreen({ navigation, route }) {
     }
 
     // Sponsorlar
-    const sponsorSnap = await getDocs(collection(db(), 'kulupler', uid, 'sponsorlar'));
+    const sponsorSnap = await getDocs(collection(db(), 'kulupler', resolvedUid, 'sponsorlar'));
     setSponsorlar(sponsorSnap.docs.map(d => ({ id: d.id, ...d.data() })));
 
     // Haberler (son 3)
@@ -122,7 +125,7 @@ export default function KulupPanelScreen({ navigation, route }) {
     }
 
     // Takvim
-    const takSnap = await getDocs(collection(db(), 'kulupler', uid, 'takvim'));
+    const takSnap = await getDocs(collection(db(), 'kulupler', resolvedUid, 'takvim'));
     const tak = {};
     takSnap.docs.forEach(d => { tak[d.id] = d.data().saat || ''; });
     setTakvim(tak);

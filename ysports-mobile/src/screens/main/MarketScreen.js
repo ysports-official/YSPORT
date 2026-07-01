@@ -3,6 +3,18 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, StatusBar, Alert,
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../../services/SupabaseConfig';
 
+// ponytail: mock data — Supabase paused/hata verince göster
+const MOCK_ATHLETES = [
+  { id: 1, name: 'Ahmet Yılmaz',  sport: 'Boks',      sgd_score: 87, city: 'İstanbul', age: 22, verified: true,  color: '#e84545', trend: '+5%' },
+  { id: 2, name: 'Elif Kaya',     sport: 'Voleybol',   sgd_score: 79, city: 'Ankara',   age: 19, verified: true,  color: '#8b2fff', trend: '+12%' },
+  { id: 3, name: 'Mert Demir',    sport: 'Futbol',     sgd_score: 72, city: 'İzmir',    age: 25, verified: false, color: '#00b97a', trend: '-2%' },
+  { id: 4, name: 'Zeynep Arslan', sport: 'Atletizm',   sgd_score: 68, city: 'Bursa',    age: 20, verified: true,  color: '#1a4fff', trend: '+8%' },
+];
+const MOCK_PACKAGES = [
+  { id: 1, name: 'Başlangıç Sponsoru', price: '₺5.000/ay',  features: ['Logo', '3 Sporcu', 'Aylık Rapor'],                              sort_order: 1, color: '#1a4fff', active: true },
+  { id: 2, name: 'Pro Sponsor',        price: '₺15.000/ay', features: ['Logo + Video', '10 Sporcu', 'Haftalık Rapor', 'AI Analiz'],       sort_order: 2, color: '#8b2fff', active: true },
+  { id: 3, name: 'Elite Partner',      price: '₺40.000/ay', features: ['Tam Paket', 'Sınırsız Sporcu', 'Gerçek Zamanlı AI', 'Özel Danışman'], sort_order: 3, color: '#c9a227', active: true },
+];
 
 export default function MarketScreen({ navigation }) {
   const [tab, setTab]           = useState('piyasa');
@@ -10,11 +22,12 @@ export default function MarketScreen({ navigation }) {
   const [packages,  setPackages]  = useState([]);
   const [loading,   setLoading]   = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [isDemo,    setIsDemo]    = useState(false);
 
   const fetchData = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
     try {
-      if (!supabase) throw new Error('Supabase bağlantısı kurulamadı');
+      if (!supabase) throw new Error('no supabase');
       const [athRes, pkgRes] = await Promise.all([
         supabase.from('market_athletes').select('*').order('sgd_score', { ascending: false }),
         supabase.from('sponsorship_packages').select('*').eq('active', true).order('sort_order'),
@@ -23,11 +36,17 @@ export default function MarketScreen({ navigation }) {
       if (athRes.error) throw athRes.error;
       if (pkgRes.error) throw pkgRes.error;
 
-      setAthletes(athRes.data || []);
-      setPackages(pkgRes.data || []);
+      const aths = athRes.data || [];
+      const pkgs = pkgRes.data || [];
+      if (aths.length === 0 && pkgs.length === 0) throw new Error('empty');
+      setAthletes(aths);
+      setPackages(pkgs);
+      setIsDemo(false);
     } catch (e) {
-      console.warn('MarketScreen Supabase error:', e.message);
-      Alert.alert('Bağlantı Hatası', 'Piyasa verileri yüklenemedi. İnternet bağlantınızı kontrol edin.');
+      console.warn('MarketScreen Supabase error — demo mod:', e.message);
+      setAthletes(MOCK_ATHLETES); // ponytail: fallback to mock
+      setPackages(MOCK_PACKAGES);
+      setIsDemo(true);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -58,10 +77,14 @@ export default function MarketScreen({ navigation }) {
       <StatusBar barStyle="light-content" backgroundColor="#090b11" />
       <View style={s.topbar}>
         <Text style={s.title}>💰 Piyasa & Sponsorluk</Text>
-        <View style={s.liveIndicator}>
-          <View style={s.liveDot} />
-          <Text style={s.liveText}>Canlı</Text>
-        </View>
+        {isDemo ? (
+          <View style={s.demoBadge}><Text style={s.demoText}>Demo</Text></View>
+        ) : (
+          <View style={s.liveIndicator}>
+            <View style={s.liveDot} />
+            <Text style={s.liveText}>Canlı</Text>
+          </View>
+        )}
       </View>
 
       {/* Sub Tabs */}
@@ -175,6 +198,8 @@ const s = StyleSheet.create({
   liveIndicator: { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: '#00b97a22', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
   liveDot:       { width: 7, height: 7, borderRadius: 4, backgroundColor: '#00b97a' },
   liveText:      { color: '#00b97a', fontSize: 11, fontWeight: '700' },
+  demoBadge:     { backgroundColor: '#c9a22733', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
+  demoText:      { color: '#c9a227', fontSize: 11, fontWeight: '700' },
   tabRow:        { flexDirection: 'row', margin: 16, backgroundColor: '#161d2e', borderRadius: 12, padding: 4 },
   tab:           { flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 9 },
   tabActive:     { backgroundColor: '#1a4fff' },

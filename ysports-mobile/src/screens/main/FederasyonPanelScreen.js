@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  SafeAreaView, ScrollView, View, Text, TextInput,
+  ScrollView, View, Text, TextInput,
   TouchableOpacity, ActivityIndicator, StatusBar,
   Modal, FlatList, Alert, StyleSheet,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   getFirestore, doc, getDoc, setDoc, collection,
   addDoc, getDocs, query, where, serverTimestamp,

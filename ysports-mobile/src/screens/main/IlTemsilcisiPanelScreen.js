@@ -1,9 +1,10 @@
 import { auth } from '../../services/FirebaseConfig';
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
-  SafeAreaView, ScrollView, View, Text, TextInput, TouchableOpacity,
+  ScrollView, View, Text, TextInput, TouchableOpacity,
   ActivityIndicator, FlatList, StatusBar, StyleSheet, Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { getFirestore, doc, getDoc, setDoc, collection, addDoc, getDocs,
   query, where, orderBy, limit, serverTimestamp } from 'firebase/firestore';
 import { getApp } from 'firebase/app';

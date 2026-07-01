@@ -1,5 +1,5 @@
-import { auth } from '../../services/FirebaseConfig';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { auth } from '../../services/FirebaseConfig';
 import {
   View, Text, StyleSheet, Dimensions, Animated,
   PanResponder, TouchableOpacity, ActivityIndicator,
