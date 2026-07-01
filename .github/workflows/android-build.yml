@@ -53,23 +53,24 @@ jobs:
       - name: 🚀 GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_NUM: ${{ github.run_number }}
+          COMMIT_SHA: ${{ github.sha }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
-          TAG="build-${{ github.run_number }}"
-          SHORT_SHA="${{ github.sha }}"
-          SHORT_SHA="${SHORT_SHA:0:7}"
-
+          TAG="build-${RUN_NUM}"
+          SHORT_SHA="${COMMIT_SHA:0:7}"
+          NOTES="Branch: ${REF_NAME} | Commit: ${SHORT_SHA}"
           gh release create "$TAG" \
             ysports-mobile/android/app/build/outputs/apk/release/app-release.apk \
-            --title "Build #${{ github.run_number }} • ${SHORT_SHA}" \
-            --notes "**Branch:** ${{ github.ref_name }}
-**Commit:** ${{ github.sha }}
-
-> APK indirmek için Assets bölümünü kullanın." \
+            --title "Build #${RUN_NUM} - ${SHORT_SHA}" \
+            --notes "$NOTES" \
             --prerelease \
             --repo ysports-official/YSPORT
 
-      - name: ✅ Build Summary
+      - name: Build Summary
         if: success()
+        env:
+          RUN_NUM: ${{ github.run_number }}
         run: |
-          echo "## ✅ Build #${{ github.run_number }} Tamamlandı" >> $GITHUB_STEP_SUMMARY
-          echo "📦 **Release:** https://github.com/ysports-official/YSPORT/releases/tag/build-${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
+          echo "Build ${RUN_NUM} done" >> $GITHUB_STEP_SUMMARY
+          echo "Release: https://github.com/ysports-official/YSPORT/releases/tag/build-${RUN_NUM}" >> $GITHUB_STEP_SUMMARY
