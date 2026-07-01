@@ -36,9 +36,15 @@ jobs:
       - name: 🛠️ Setup Gradle Cache
         uses: gradle/actions/setup-gradle@v4
 
+      - name: 🤖 Pre-install Android NDK
+        run: |
+          echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "ndk;27.1.12297006" || \
+          echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "ndk;27.1.12297006" || \
+          echo "NDK install skipped — Gradle will handle it"
+
       - name: 📦 Install Dependencies
         working-directory: ysports-mobile
-        run: npm ci --legacy-peer-deps
+        run: npm install --legacy-peer-deps
 
       - name: 🔧 Expo Prebuild
         working-directory: ysports-mobile
